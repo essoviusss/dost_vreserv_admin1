@@ -8,20 +8,57 @@ import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
-import { useNavigate } from 'react-router-dom';
+import axios from "axios";
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom"; 
 
 const theme = createTheme();
 
 
 export default function Login() {
-    const navigate = useNavigate();
-  const handleSubmit = (event) => {
-    event.preventDefault();
-    const data = new FormData(event.currentTarget);
-    console.log({
-      email: data.get('email'),
-      password: data.get('password'),
-    });
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+
+    if (token) {
+      navigate("/AdmDashboard");
+    }
+  }, [navigate]);
+
+  const signIn = async () => {
+    const url = "http://localhost/vreserv_admin_api/login.php";
+
+    let fData = new FormData();
+    fData.append("username", username);
+    fData.append("password", password);
+  
+    try {
+      const response = await axios.post(url, fData);
+      console.log(response.data);
+  
+      if (response.data.message !== "Success") {
+        console.log("Login failed:", response.data.message);
+        alert(response.data.message);
+        return;
+      }
+  
+      // Save the JWT token in the local storage
+      const jwtToken = await response.data.token;
+      
+      if (response.data.message === "Success") {
+        alert("Login Successful");
+        localStorage.setItem("token", jwtToken);
+        navigate("/AdmDashboard", { replace: true });
+      } else {
+        alert("User does not exist");
+      }
+      } catch (error) {
+        console.error("Error:", error);
+        alert(error);
+      }
   };
 
   return (
@@ -42,8 +79,8 @@ export default function Login() {
           <Typography component="h1" variant="h5">
             VRESERV
           </Typography>
-          <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
             <TextField
+              onChange={e => setUsername(e.target.value)}
               margin="normal"
               required
               fullWidth
@@ -54,6 +91,7 @@ export default function Login() {
               autoFocus
             />
             <TextField
+              onChange={e => setPassword(e.target.value)}
               margin="normal"
               required
               fullWidth
@@ -64,6 +102,7 @@ export default function Login() {
               autoComplete="current-password"
             />
             <Button
+              onClick={signIn}
               type="submit"
               fullWidth
               variant="contained"
@@ -71,9 +110,6 @@ export default function Login() {
             >
               Login
             </Button>
-
-
-          </Box>
         </Box>
       </Container>
     </ThemeProvider>
