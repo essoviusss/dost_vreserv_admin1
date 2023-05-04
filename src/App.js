@@ -8,9 +8,6 @@ import AdmNavbar from './pages/AdmNavbar';
 import AdmSchedule from './pages/AdmSchedule';
 import AdmTravelRequest from './pages/AdmTravelRequest';
 
-
-
-
 function App() {
   return (
     <Router>
@@ -29,8 +26,6 @@ function App() {
             <Route path="/DriverHome" element={<RoleGuard requiredRole="Driver" />}>
               <Route index element={<DriverHome />} />
             </Route> */}
-
-
         </Routes>
       {/* </FormDataProvider> */}
     </Router>
