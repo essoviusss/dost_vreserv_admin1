@@ -8,6 +8,7 @@ import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import { useState } from "react";
 import axios from "axios";
+import Header from './Header';
 
 export default function AdmVehicle() {
   const [open, setOpen] = React.useState(false);
@@ -41,6 +42,7 @@ export default function AdmVehicle() {
 
   return (
     <div>
+      <Header />
       <Button variant="contained" onClick={handleClickOpen}>
         + Add New Vehicle
       </Button>

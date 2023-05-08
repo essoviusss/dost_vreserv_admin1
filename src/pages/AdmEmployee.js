@@ -11,6 +11,7 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
+import Header from './Header';
 
 export default function AdmEmployee() {
 //inserting employee
@@ -64,6 +65,7 @@ export default function AdmEmployee() {
 
   return (
     <div>
+        <Header/>
         <div>
             <Button variant="contained" onClick={handleClickOpen}>
                 + Add New Employee

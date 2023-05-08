@@ -9,6 +9,7 @@ import DialogTitle from '@mui/material/DialogTitle';
 import { useState, useEffect } from "react";
 import axios from "axios";
 import { v4 as uuidv4 } from 'uuid';
+import Header from './Header';
 
 export default function AdmVehicle() {
   const [open, setOpen] = React.useState(false);
@@ -62,6 +63,7 @@ export default function AdmVehicle() {
 
   return (
     <div>
+      <Header/>
       <Button variant="contained" onClick={handleClickOpen}>
         + Add New Driver
       </Button>
