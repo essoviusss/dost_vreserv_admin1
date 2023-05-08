@@ -1,5 +1,8 @@
 export default function AdmSchedule(){
     return(
-        <div>PMS Schedule</div>
+
+        <div>
+            PMS Schedule
+        </div>
     );
 }
