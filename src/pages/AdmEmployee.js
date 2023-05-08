@@ -12,6 +12,7 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import Header from './Header';
+import { v4 as uuidv4 } from 'uuid';
 
 export default function AdmEmployee() {
 //inserting employee
@@ -21,6 +22,9 @@ export default function AdmEmployee() {
   const [employee_username, setEmployeeUsername] = useState("");
   const [employee_password, setEmployeePassword] = useState("");
   const [employee_unit, setEmployeeUnit] = useState("");
+  const [employees, setEmployee] = useState([]);
+
+  const UID = uuidv4();
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -34,6 +38,7 @@ export default function AdmEmployee() {
     const url = "http://localhost/vreserv_admin_api/add_employee.php";
 
     let fData = new FormData();
+    fData.append("user_id", UID);
     fData.append("employee_name", employee_name);
     fData.append("employee_email", employee_email);
     fData.append("employee_username", employee_username);
@@ -43,25 +48,25 @@ export default function AdmEmployee() {
 
     axios.post(url, fData)
       .then(response => {
-        alert(response.data.data);
+        alert("Employee added successfully!");
+        handleClose();
       })
       .catch(error => {
        alert(error);
       });
   }
 
-  //read table
-  const [responseData, setResponseData] = useState([]);
-
   useEffect(() => {
-    axios.get('http://localhost/vreserv_admin_api/available_employee.php')
+    axios.get('http://localhost/vreserv_admin_api/read_employee.php')
       .then(response => {
-        setResponseData(response.data);
+        if(Array.isArray(response.data)){
+          setEmployee(response.data);
+        }
       })
       .catch(error => {
         console.log(error);
       });
-  }, []);
+  }, [employees]);
 
   return (
     <div>
@@ -132,28 +137,31 @@ export default function AdmEmployee() {
                 <Button onClick={addEmployee}>Save</Button>
                 </DialogActions>
             </Dialog>
+            <div>
+            <table>
+              <thead>
+                <tr>
+                  <th>Employee ID</th>
+                  <th>Employee Name</th>
+                  <th>Employee Email</th>
+                  <th>Employee Unit</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                {employees.map(employee => (
+                  <tr key={employee.employee_id}>
+                    <td>{employee.employee_id}</td>
+                    <td>{employee.employee_name}</td>
+                    <td>{employee.employee_email}</td>
+                    <td>{employee.employee_unit}</td>
+                    <td><Button>Delete</Button></td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          </div>
         </div>
-        <div className='employee-tbl'>
-        <table>
-        <thead>
-          <tr>
-            <th>Employee ID</th>
-            <th>Employee Name</th>
-            <th>Employee Unit</th>
-          </tr>
-        </thead>
-        <tbody>
-          {responseData && responseData.map((data, index) => (
-            <tr key={index}>
-              <td>{data.employee_id}</td>
-              <td>{data.employee_name}</td>
-              <td>{data.employee_unit}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-
-        </div>
-    </div>
   );
 }
