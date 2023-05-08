@@ -42,7 +42,7 @@ export default function AdmEmployee() {
 
     axios.post(url, fData)
       .then(response => {
-        alert(response.data);
+        alert(response.data.data);
       })
       .catch(error => {
        alert(error);
