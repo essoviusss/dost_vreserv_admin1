@@ -1,6 +1,7 @@
 import { useNavigate } from "react-router";
 import { useEffect } from 'react';
 import useAuth from "../hooks/useAuth";
+import Header from "./Header";
 
 export default function AdmDashboard(){
     const navigate = useNavigate();
@@ -20,6 +21,7 @@ export default function AdmDashboard(){
       };
     return(
         <div>
+            <Header/>
             <div>Dashboard</div>
             <div>
                 <button onClick={logout} style={{ marginLeft: "10px" }}>

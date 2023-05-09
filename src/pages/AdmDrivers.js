@@ -1,5 +1,4 @@
 import * as React from 'react';
-import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
@@ -8,6 +7,8 @@ import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import { useState, useEffect } from "react";
 import axios from "axios";
+import Header from './Header';
+import Button from '@mui/material/Button';
 import { v4 as uuidv4 } from 'uuid';
 
 export default function AdmVehicle() {
@@ -29,7 +30,8 @@ export default function AdmVehicle() {
     setOpen(false);
   };
 
-  function addDriver(){
+  async function addDriver() {
+    
     const url = "http://localhost/vreserv_admin_api/add_driver.php";
 
     let fData = new FormData();
@@ -38,22 +40,25 @@ export default function AdmVehicle() {
     fData.append("driver_email", driver_email);
     fData.append("driver_username", driver_username);
     fData.append("driver_password", driver_password);
-
+    console.log(fData);
 
     axios.post(url, fData)
-      .then(response => {
-        alert("Driver added successfully!!");
-        handleClose();
-      })
-      .catch(error => {
-       alert(error);
-      });
+    .then(response => {
+      alert("Driver added successfully!");
+      handleClose();
+    })
+    .catch(error => {
+     alert(error);
+    });
   }
+
 
   useEffect(() => {
     axios.get('http://localhost/vreserv_admin_api/read_driver.php')
       .then(response => {
-        setDrivers(response.data);
+        if(Array.isArray(response.data)){
+          setDrivers(response.data);
+        }
       })
       .catch(error => {
         console.log(error);
@@ -62,6 +67,7 @@ export default function AdmVehicle() {
 
   return (
     <div>
+      <Header/>
       <Button variant="contained" onClick={handleClickOpen}>
         + Add New Driver
       </Button>
@@ -124,7 +130,9 @@ export default function AdmVehicle() {
             <tr>
               <th>Driver ID</th>
               <th>Driver Name</th>
+              <th>Driver Email</th>
               <th>Driver Status</th>
+              <th>Action</th>
             </tr>
           </thead>
           <tbody>
@@ -132,7 +140,9 @@ export default function AdmVehicle() {
               <tr key={driver.driver_id}>
                 <td>{driver.driver_id}</td>
                 <td>{driver.driver_name}</td>
+                <td>{driver.driver_email}</td>
                 <td>{driver.driver_status}</td>
+                <td><Button>{driver.driver_status === "available" ? "Not Available" : "Available"}</Button></td>
               </tr>
             ))}
           </tbody>

@@ -10,6 +10,8 @@ import Sidebar from './pages/Sidebar';
 import AdmVehicles from './pages/AdmVehicles';
 import AdmDrivers from './pages/AdmDrivers';
 import AdmEmployee from './pages/AdmEmployee';
+import Approved from './pages/AdmComponents/Approved';
+import Rejected from './pages/AdmComponents/Rejected';
 
 
 function MainContent() {
@@ -34,6 +36,8 @@ function MainContent() {
                 <Route path="/AdmVehicles" element={<AdmVehicles />} />
                 <Route path="/AdmDrivers" element={<AdmDrivers />} />
                 <Route path="/AdmEmployee" element={<AdmEmployee />} />
+                <Route path="/Approved" element={<Approved />} />
+                <Route path="/Rejected" element={<Rejected />} />
             </Routes>
       </div>
     </div>
