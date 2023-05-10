@@ -6,6 +6,7 @@ import {
   CDBSidebarHeader,
   CDBSidebarMenu,
   CDBSidebarMenuItem,
+  CDBSidebarSubmenu,
 } from 'cdbreact';
 import { NavLink } from 'react-router-dom';
 
@@ -41,6 +42,7 @@ const Sidebar = () => {
               <CDBSidebarMenuItem icon="exclamation-circle">PMS Schedule</CDBSidebarMenuItem>
             </NavLink>
           </CDBSidebarMenu>
+          
         </CDBSidebarContent>
 
         <CDBSidebarFooter style={{ textAlign: 'center' }}>
