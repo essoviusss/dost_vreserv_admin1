@@ -141,8 +141,8 @@ export default function AdmVehicle() {
                 <td>{driver.driver_id}</td>
                 <td>{driver.driver_name}</td>
                 <td>{driver.driver_email}</td>
-                <td>{driver.driver_status}</td>
                 <td><Button>{driver.driver_status === "available" ? "Not Available" : "Available"}</Button></td>
+                <td></td>
               </tr>
             ))}
           </tbody>
