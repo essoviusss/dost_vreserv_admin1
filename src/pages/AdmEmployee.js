@@ -3,6 +3,7 @@ import { useState } from "react";
 import { useEffect } from 'react';
 import axios from "axios";
 import { v4 as uuidv4 } from 'uuid';
+import Header from './Header';
 // import '../pages/Components/EmployeeTable.css'
 //material UI
 import Button from '@mui/material/Button';
@@ -26,9 +27,14 @@ export default function AdmEmployee() {
   const [employee_password, setEmployeePassword] = useState("");
   const [employee_unit, setEmployeeUnit] = useState("");
   const [employees, setEmployees] = useState([]);
+
   //read
   const [selectedEmployee, setSelectedEmployee] = useState({});
 
+  //update
+  const [editEmployeeName, setEditEmployeeName] = useState("");
+  const [editEmployeeEmail, setEditEmployeeEmail] = useState("");
+  const [editEmployeeUnit, setEditEmployeeUnit] = useState("");
 
   //modals
   const handleOpenView = (employee) => {
@@ -62,11 +68,8 @@ export default function AdmEmployee() {
     setOpenEdit(false);
   }; 
 
-//update
-const [editEmployeeName, setEditEmployeeName] = useState("");
-const [editEmployeeEmail, setEditEmployeeEmail] = useState("");
-const [editEmployeeUnit, setEditEmployeeUnit] = useState("");
 
+//update
 function handleUpdate() {
   const url = "http://localhost/vreserv_admin_api/edit_employee.php";
 
@@ -89,11 +92,7 @@ function handleUpdate() {
       alert(error);
     });
 }
-
-
-
-
-  
+ 
   //insert
   function addEmployee(){
     const url = "http://localhost/vreserv_admin_api/add_employee.php";
@@ -145,13 +144,10 @@ function handleUpdate() {
        alert(error);
       });
   }
-  
-
-
-   
 
   return (
     <div>
+      <Header/>
         <div>
             <Button variant="contained" onClick={handleOpen}>
                 + Add New Employee

@@ -12,124 +12,170 @@ import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
-import FormControl from '@mui/material/FormControl';
-import Select, { SelectChangeEvent } from '@mui/material/Select';
+import Select from '@mui/material/Select';
 
 export default function AdmVehicleRequest(){
-    const [requestData, setRequestData] = useState([]);
-    
-    //modal
-    const [openRequest, setOpenRequest] = React.useState(false);
-    const [editRequest, setEditRequest] = React.useState(false);
+  //defaultValue
+  const [selectedRequest, setSelectedRequest] = useState({});
+  const [request, setRequest] = useState([]);
 
-    //select status
-    // const [age, setAge] = React.useState('');
+  //update
+  const [editVehicleName, setEditVehicleName] = useState("");
+  const [editDriverName, setEditDriverName] = useState("");
+  const [editRequestStatus, setEditRequestStatus] = useState("");
 
-    // const handleChange = (event: SelectChangeEvent) => {
-    // setAge(event.target.value as string);
-    // };
-    //read
-    const [selectedRequest, setSelectedRequest] = useState({});
+  //modal
+  const [openView, setOpenView] = React.useState(false);
+  const [openEdit, setOpenEdit] = React.useState(false);
 
-    //view dialog
-    const VehicleView = (request) => {
-        setSelectedRequest(request);
-        setOpenRequest(true);
-      };
-    
-    //view dialog
-    const CloseRequestView = () => {
-        setOpenRequest(false);
-        setSelectedRequest({});
-      };
-    
-    //edit dialog
-    const VehicleEdit = (request) => {
-        setSelectedRequest(request);
-        setEditRequest(true);
-      };
-    
-    //edit dialog
-    const CloseRequestEdit = () => {
-        setEditRequest(false);
-        setSelectedRequest({});
-      };
+  //dialog
+  const handleOpenView = (request) => {
+    setSelectedRequest(request);
+    setOpenView(true);
+  };
+
+  const handleOpenEdit = (request) => {
+    setSelectedRequest(request);
+    setEditVehicleName(request.vehicle_name);
+    setEditDriverName(request.driver_name);
+    setEditRequestStatus(request.request_status);
+    setOpenEdit(true);
+  };
+
+  const CloseView = () => {
+    setOpenView(false);
+  };
+  
+  const CloseEdit = () => {
+    setOpenEdit(false);
+  };
+  
+  //read
+  useEffect(() => {
+    axios
+      .get("http://localhost/vreserv_admin_api/read_request.php")
+      .then((response) => {
+        if(Array.isArray(response.data)){
+          setRequest(response.data);
+        }
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }, [request]);
+
+   //update
+   function handleUpdate() {
+    const url = "http://localhost/vreserv_admin_api/edit_vehicleRequest.php";
+  
+    let fData = new FormData();
+    fData.append("request_id", selectedRequest.request_id);
+    fData.append("vehicle_name", editVehicleName);
+    fData.append("driver_name", editDriverName);
+    fData.append("request_status", editRequestStatus);
+    fData.append("selected_vehicle_name", selectedRequest.vehicle_name);
+    fData.append("selected_driver_name", selectedRequest.driver_name);
+    fData.append("selected_request_status", selectedRequest.request_status);
+  
+    axios
+      .post(url, fData)
+      .then((response) => {
+        alert("Request updated successfully!!");
+        CloseEdit();
+      })
+      .catch((error) => {
+        alert(error);
+      });
+  }
 
 
 
-    useEffect(() => {
-        axios.get("http://localhost/vreserv_admin_api/read_request.php")
-          .then(response => {
-            setRequestData(response.data);
-          })
-          .catch(error => {
-            console.log(error);
-          });
-      }, []);
-
-      return (
+    return(
         <div>
-            <Header/>
+            <Header />
             <table>
-                <thead>
-                    <tr>
-                    <th>Vehicle Name</th>
-                    <th>Driver Name</th>
-                    <th>Request Date</th>
-                    <th>Purpose</th>
-                    <th>Requested By</th>
-                    <th>Request Status</th>
-                    <th>Action</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {requestData.map(request => (
-                    <tr key={request.request_date}>
-                        <td>{request.vehicle_name}</td>
-                        <td>{request.driver_name}</td>
-                        <td>{request.request_date}</td>
-                        <td>{request.purpose}</td>
-                        <td>{request.requested_by}</td>
-                        <td>{request.request_status}</td>
-                        <tr>
-                        <td>
-                            <Button variant="contained" onClick={() => VehicleView(request)}>
-                                View
-                            </Button>
-                        </td>
-                        <td>
-                            <Button variant="contained" onClick={() => VehicleEdit(request)}>
-                                Edit
-                            </Button>
-                            
-                        </td>
-                        
-                        </tr>
-
-                    </tr>
-                    ))}
-                </tbody>
-            </table>
-
-            {/* dialog for modals */}
-
-            <Dialog open={openRequest} onClose={CloseRequestView} >
-                <DialogTitle>View Details</DialogTitle>
-                    <DialogContent>
+        <thead>
+          <tr>
+            <th>Vehicle Name</th>
+            <th>Driver Name</th>
+            <th>Request Date</th>
+            <th>Request Status</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          {request.map((request) => (
+            <tr key={request.request_id}>
+              <td>{request.vehicle_name}</td>
+              <td>{request.driver_name}</td>
+              <td>{request.request_date}</td>
+              <td>{request.request_status}</td>
+              <td>
+                  <Button variant="contained" onClick={() => handleOpenView(request)}>
+                    View
+                  </Button>  
+                </td>
+                <td>
+                  <Button variant="contained" onClick={() => handleOpenEdit(request)}>
+                    Edit
+                  </Button> 
+                </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+      {/* view modal*/}
+      <Dialog open={openView} onClose={CloseView} fullWidth maxWidth="sm">
+            <DialogTitle>View Details</DialogTitle>
+            <DialogContent>
                         <DialogContentText>
                             {/* To add a new employee account, please enter the details in the designated input field. */}
                         </DialogContentText>
                             <div>
-                                <label>{selectedRequest.vehicle_name}</label>
-                                <p>Vehicle to be requested</p>
+                            <TextField
+                                    autoFocus
+                                    margin="dense"
+                                    id="name"
+                                    label="Vehicle to be Requested"
+                                    type="text"
+                                    fullWidth
+                                    variant="filled"
+                                    defaultValue={selectedRequest.vehicle_name}
+                                    InputProps={{
+                                        readOnly: true,
+                                      }}
+                                />
                             </div>
                             <div>
-                                <label>{selectedRequest.driver_name}</label>
-                                <p>Name of the driver</p>
+                            <TextField
+                                    autoFocus
+                                    margin="dense"
+                                    id="name"
+                                    label="Name of the Driver"
+                                    type="text"
+                                    fullWidth
+                                    variant="filled"
+                                    defaultValue={selectedRequest.driver_name}
+                                    InputProps={{
+                                        readOnly: true,
+                                      }}
+                                />
                             </div>
-
-                            <div>{selectedRequest.request_status}</div>
-
+                            <div>
+                            <TextField
+                                    autoFocus
+                                    margin="dense"
+                                    id="name"
+                                    label="Status"
+                                    type="text"
+                                    fullWidth
+                                    variant="filled"
+                                    defaultValue={selectedRequest.request_status}
+                                    InputProps={{
+                                        readOnly: true,
+                                      }}
+                                />
+                            </div>
                             <div>
                                 <h6>Schedule of Travel</h6>
                             </div>                                
@@ -154,7 +200,7 @@ export default function AdmVehicleRequest(){
                                 <label>Total No. of Passenger/s : {selectedRequest.passenger_count}</label>
                             </div>
                             <div>
-                                <label>Name of Passenger/s: {selectedRequest.driver_name}</label>
+                                <label>Name of Passenger/s: {selectedRequest.passenger_name}</label>
                             </div>
                             <div>
                                 <label>Purpose: {selectedRequest.purpose}</label>
@@ -162,65 +208,62 @@ export default function AdmVehicleRequest(){
                             <div>
                                 <label>Requested by: {selectedRequest.requested_by}</label>
                             </div>
+
                                 
 
                     </DialogContent>
-                        <DialogActions>
-                            <Button onClick={CloseRequestView}>Close</Button>
-                                {/* <Button onClick={addEmployee}>Save</Button> */}
-                        </DialogActions>
+                <DialogActions>
+                <Button onClick={CloseView}>Close</Button>
+                </DialogActions>
             </Dialog>
-
-            <Dialog open={editRequest} onClose={CloseRequestEdit} >
+        
+        {/* edit modal */}
+        <Dialog open={openEdit} onClose={CloseEdit} fullWidth maxWidth="sm">
                 <DialogTitle>Edit Details</DialogTitle>
-                    <DialogContent>
-                        <DialogContentText>
-                            {/* To add a new employee account, please enter the details in the designated input field. */}
-                        </DialogContentText>
-                            {/* <div>
-                                <label>{selectedRequest.vehicle_name}</label>
-                                <p>Vehicle to be requested</p>
-                            </div>
-                            <div>
-                                <label>{selectedRequest.driver_name}</label>
-                                <p>Name of the driver</p>
-                            </div> */}
-                            <InputLabel id="demo-simple-select-label">Status</InputLabel>
-                                <Select
-                                    labelId="demo-simple-select-label"
-                                    id="demo-simple-select"
-                                    // value={age}
-                                    label="Status"
-                                    // onChange={handleChange}
-                                    >
-                                    <MenuItem value={'Pending'}>Pending</MenuItem>
-                                    <MenuItem value={'For Approval'}>For Approval</MenuItem>
-                                    <MenuItem value={'Approved'}>Approved</MenuItem>
-                                    <MenuItem value={'Disapproved'}>Disapproved</MenuItem>
-                                    <MenuItem value={'Cancelled'}>Cancelled</MenuItem>
-                                </Select>
+                  <DialogContent>
+                    <DialogContentText>
+                    {/* To add a new employee account, please enter the details in the designated input field. */}
+                    </DialogContentText>
+                    <TextField
+                        autoFocus
+                        margin="dense"
+                        id="name"
+                        label="Plate Number"
+                        type="text"
+                        fullWidth
+                        variant="standard"
+                        defaultValue={selectedRequest.vehicle_name}
+                        onChange={(event) => setEditVehicleName(event.target.value)}
+                    />
+                    <TextField
+                        autoFocus
+                        margin="dense"
+                        id="name"
+                        label="Driver Name"
+                        type="text"
+                        fullWidth
+                        variant="standard"
+                        defaultValue={selectedRequest.driver_name}
+                        onChange={(event) => setEditDriverName(event.target.value)}
+                    />
+                    <TextField
+                        autoFocus
+                        margin="dense"
+                        id="name"
+                        label="Request Status"
+                        type="text"
+                        fullWidth
+                        variant="standard"
+                        defaultValue={selectedRequest.request_status}
+                        onChange={(event) => setEditRequestStatus(event.target.value)}
+                    />              
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={CloseEdit}>Close</Button>
+            <Button onClick={handleUpdate}>Save</Button>
+          </DialogActions>
+        </Dialog>
 
-                            <div>{selectedRequest.request_status}</div>
-                            <div>
-                                <TextField
-                                    autoFocus
-                                    margin="dense"
-                                    id="name"
-                                    label="Vehicle Name"
-                                    type="text"
-                                    fullWidth
-                                    variant="filled"
-                                    defaultValue={selectedRequest.vehicle_name}
-                                />
-                            </div>
-                                
-
-                    </DialogContent>
-                        <DialogActions>
-                            <Button onClick={CloseRequestEdit}>Close</Button>
-                                {/* <Button onClick={addEmployee}>Save</Button> */}
-                        </DialogActions>
-            </Dialog>
         </div>
-      );
+    );
 }
