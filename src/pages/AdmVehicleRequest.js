@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import Header from "./Header";
+import { jsPDF } from "jspdf";
+
 
 //material ui
 import Button from '@mui/material/Button';
@@ -10,9 +12,7 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
-import InputLabel from '@mui/material/InputLabel';
-import MenuItem from '@mui/material/MenuItem';
-import Select from '@mui/material/Select';
+
 
 export default function AdmVehicleRequest(){
   //defaultValue
@@ -28,6 +28,107 @@ export default function AdmVehicleRequest(){
   const [openView, setOpenView] = React.useState(false);
   const [openEdit, setOpenEdit] = React.useState(false);
 
+
+  //pdf
+  const generatePDF = () => {
+    const doc = new jsPDF();
+  
+    const pageTitle = `
+    Republic of the Philippines
+    DEPARTMENT OF SCIENCE AND TECHNOLOGY
+    Regional Office No. 1
+    DMMMSU MLUC Campus, City of San Fernando, La Union`;
+  
+    const subtitle = `
+    REQUEST FOR THE USE OF VEHICLE`;
+  
+    const content1 = `
+    Vehicle to be requested: ${selectedRequest.vehicle_name}
+    Name of Driver: ${selectedRequest.driver_name}
+    Schedule of Travel
+        Time of Departure: ${selectedRequest.departure_time}
+        Time of Return to Garage: ${selectedRequest.arrival_time}
+    Destination: ${selectedRequest.destination}
+    
+    Passenger/s: ${selectedRequest.passenger_names.join(", ")}
+    Total No. of Passengers: ${selectedRequest.passenger_count}
+    Purpose(Attach gate pass if applicable): ${selectedRequest.purpose}
+
+    Requested by:
+
+              ${selectedRequest.requested_by}
+          ___________________________
+          Signature Over Printed Name
+    
+    Date of Request: ${selectedRequest.request_date}
+    `;
+  
+    const pageWidth = doc.internal.pageSize.getWidth();
+    const textLines = pageTitle.split("\n");
+    const textLines1 = subtitle.split("\n");
+    const textLinesContent = content1.split("\n");
+  
+    const textHeight = doc.internal.getLineHeight() / doc.internal.scaleFactor;
+  
+    const centerX = pageWidth / 2;
+    const topY = textHeight + 10; 
+  
+    const centerX1 = pageWidth / 2;
+    const topY1 = textHeight + 33;
+  
+    const topY2 = textHeight + 45;
+  
+    const fontSize = 10; 
+    
+    const lineSpacingFactor1 = 0.8;
+    textLines.forEach((line, index) => {
+      const textWidth = doc.getStringUnitWidth(line) * fontSize / doc.internal.scaleFactor;
+      const lineX = centerX - (textWidth / 2);
+      const lineY = topY + (index * textHeight * lineSpacingFactor1);
+  
+      doc.setFontSize(fontSize); 
+      doc.text(line, lineX, lineY);
+    });
+  
+    textLines1.forEach((line, index) => {
+      const textWidth = doc.getStringUnitWidth(line) * fontSize / doc.internal.scaleFactor;
+      const lineX = centerX1 - (textWidth / 2);
+      const lineY = topY1 + (index * textHeight);
+  
+      doc.setFontSize(fontSize); 
+      doc.setFont("helvetica", "bold");
+      doc.text(line, lineX, lineY);
+    });
+  
+    const content1X = 15; 
+    const content1Y = topY2;
+  
+    const lineSpacingFactor2 = 0.8;
+
+    textLinesContent.forEach((line, index) => {
+      const splitLine = line.split(":");
+      const label = splitLine[0] + (splitLine[1] ? ":" : ""); 
+      const value = splitLine[1] || ""; 
+    
+      const lineX = content1X;
+      const lineY = content1Y + (index * textHeight * lineSpacingFactor2); 
+    
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(fontSize); 
+      doc.text(label, lineX, lineY);
+    
+      if (value) {
+        const labelWidth = doc.getStringUnitWidth(label) * fontSize / doc.internal.scaleFactor;
+      
+        doc.setFont("helvetica", "normal");
+        doc.text(value, lineX + labelWidth, lineY);
+      }
+    });
+    
+    // Save the PDF
+    doc.save(`${selectedRequest.requested_by}.VRESERV_Request_Report.pdf`);
+  };
+  
   //dialog
   const handleOpenView = (request) => {
     setSelectedRequest(request);
@@ -87,9 +188,6 @@ export default function AdmVehicleRequest(){
         alert(error);
       });
   }
-
-
-
     return(
         <div>
             <Header />
@@ -200,7 +298,10 @@ export default function AdmVehicleRequest(){
                                 <label>Total No. of Passenger/s : {selectedRequest.passenger_count}</label>
                             </div>
                             <div>
-                                <label>Name of Passenger/s: {selectedRequest.passenger_name}</label>
+                                <label>Name of Passenger/s: </label>
+                                {selectedRequest.passenger_names && Array.isArray(selectedRequest.passenger_names) && selectedRequest.passenger_names.map((passenger, index) => (
+                                  <div key={index}>{passenger}</div>
+                                ))}
                             </div>
                             <div>
                                 <label>Purpose: {selectedRequest.purpose}</label>
@@ -214,6 +315,7 @@ export default function AdmVehicleRequest(){
                     </DialogContent>
                 <DialogActions>
                 <Button onClick={CloseView}>Close</Button>
+                <Button onClick={generatePDF}>Download PDF</Button>
                 </DialogActions>
             </Dialog>
         
