@@ -18,8 +18,7 @@ export default function AdmVehicle() {
   const UID = uuidv4();
   //insert
   const [driver_name, setDriverName] = useState("");
-  const [driver_email, setDriverEmail] = useState("");
-  const [driver_username, setDriverUsername] = useState("");
+  const [email, setDriverEmail] = useState("");
   const [driver_password, setDriverPassword] = useState("");
   const [driver_status, setDriverStatus] = useState("");
   const [drivers, setDrivers] = useState([]);
@@ -46,7 +45,7 @@ export default function AdmVehicle() {
   const handleOpenEdit = (driver) => {
     setSelectedDriver(driver);
     setEditDriverName(driver.driver_name);
-    setEditDriverEmail(driver.driver_email);
+    setEditDriverEmail(driver.email);
     setEditDriverStatus(driver.driver_status);
     setOpenEdit(true);
   };
@@ -76,8 +75,7 @@ export default function AdmVehicle() {
     let fData = new FormData();
     fData.append("user_id", UID);
     fData.append("driver_name", driver_name);
-    fData.append("driver_email", driver_email);
-    fData.append("driver_username", driver_username);
+    fData.append("email", email);
     fData.append("driver_password", driver_password);
     fData.append("driver_status", driver_status);
     console.log(fData);
@@ -112,10 +110,10 @@ export default function AdmVehicle() {
     let fData = new FormData();
     fData.append("driver_id", selectedDriver.driver_id);
     fData.append("driver_name", editDriverName);
-    fData.append("driver_email", editDriverEmail);
+    fData.append("email", editDriverEmail);
     fData.append("driver_status", editDriverStatus);
     fData.append("selected_driver_name", selectedDriver.driver_name);
-    fData.append("selected_driver_email", selectedDriver.driver_email);
+    fData.append("selected_email", selectedDriver.email);
     fData.append("selected_driver_status", selectedDriver.driver_status);
   
     axios
@@ -176,16 +174,7 @@ export default function AdmVehicle() {
             variant="standard"
             onChange={e => setDriverEmail(e.target.value)}
           />
-          <TextField
-            autoFocus
-            margin="dense"
-            id="name"
-            label="Username"
-            type="text"
-            fullWidth
-            variant="standard"
-            onChange={e => setDriverUsername(e.target.value)}
-          />
+          
           <TextField
             autoFocus
             margin="dense"
@@ -217,7 +206,7 @@ export default function AdmVehicle() {
             {drivers.map(driver => (
               <tr key={driver.driver_id}>
                 <td>{driver.driver_name}</td>
-                <td>{driver.driver_email}</td>
+                <td>{driver.email}</td>
                 <td>{driver.driver_status}</td>
                 <td>
                   <Button variant="contained" onClick={() => handleOpenView(driver)}>
@@ -265,24 +254,12 @@ export default function AdmVehicle() {
                     type="email"
                     fullWidth
                     variant="filled"
-                    defaultValue={selectedDriver.driver_email}
+                    defaultValue={selectedDriver.email}
                     InputProps={{
                       readOnly: true,
                     }}
                 />
-                {/* <TextField
-                    autoFocus
-                    margin="dense"
-                    id="name"
-                    label="Username"
-                    type="text"
-                    fullWidth
-                    variant="filled"
-                    // defaultValue={selectedEmployee.employee_username}
-                    InputProps={{
-                      readOnly: true,
-                    }}
-                /> */}
+                
                 <TextField
                     autoFocus
                     margin="dense"
@@ -327,19 +304,10 @@ export default function AdmVehicle() {
                         type="email"
                         fullWidth
                         variant="standard"
-                        defaultValue={selectedDriver.driver_email}
+                        defaultValue={selectedDriver.email}
                         onChange={(event) => setEditDriverEmail(event.target.value)}
                     />
-                    {/* <TextField
-                        autoFocus
-                        margin="dense"
-                        id="name"
-                        label="Username"
-                        type="text"
-                        fullWidth
-                        variant="standard"
-                        // defaultValue={selectedEmployee.employee_username}
-                    /> */}
+                    
                     <TextField
                         autoFocus
                         margin="dense"
