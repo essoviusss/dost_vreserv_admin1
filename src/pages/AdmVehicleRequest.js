@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import Header from "./Header";
-import { jsPDF } from "jspdf";
-
 
 //material ui
 import Button from '@mui/material/Button';
@@ -12,7 +10,6 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
-
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import Select from '@mui/material/Select';
@@ -23,7 +20,7 @@ import SearchIcon from '@mui/icons-material/Search';
 import FormControl from '@mui/joy/FormControl';
 import FormLabel from '@mui/joy/FormLabel';
 import Textarea from '@mui/joy/Textarea';
-
+import { Table, TableBody, TableCell, TableContainer, TablePagination, TableRow } from '@mui/material';
 
 export default function AdmVehicleRequest(){
   //defaultValue
@@ -47,107 +44,18 @@ export default function AdmVehicleRequest(){
   const [openView, setOpenView] = React.useState(false);
   const [openEdit, setOpenEdit] = React.useState(false);
 
-
-  //pdf
-  const generatePDF = () => {
-    const doc = new jsPDF();
-  
-    const pageTitle = `
-    Republic of the Philippines
-    DEPARTMENT OF SCIENCE AND TECHNOLOGY
-    Regional Office No. 1
-    DMMMSU MLUC Campus, City of San Fernando, La Union`;
-  
-    const subtitle = `
-    REQUEST FOR THE USE OF VEHICLE`;
-  
-    const content1 = `
-    Vehicle to be requested: ${selectedRequest.vehicle_name}
-    Name of Driver: ${selectedRequest.driver_name}
-    Schedule of Travel
-        Time of Departure: ${selectedRequest.departure_time}
-        Time of Return to Garage: ${selectedRequest.arrival_time}
-    Destination: ${selectedRequest.destination}
-    
-    Passenger/s: ${selectedRequest.passenger_names.join(", ")}
-    Total No. of Passengers: ${selectedRequest.passenger_count}
-    Purpose(Attach gate pass if applicable): ${selectedRequest.purpose}
-
-    Requested by:
-
-              ${selectedRequest.requested_by}
-          ___________________________
-          Signature Over Printed Name
-    
-    Date of Request: ${selectedRequest.request_date}
-    `;
-  
-    const pageWidth = doc.internal.pageSize.getWidth();
-    const textLines = pageTitle.split("\n");
-    const textLines1 = subtitle.split("\n");
-    const textLinesContent = content1.split("\n");
-  
-    const textHeight = doc.internal.getLineHeight() / doc.internal.scaleFactor;
-  
-    const centerX = pageWidth / 2;
-    const topY = textHeight + 10; 
-  
-    const centerX1 = pageWidth / 2;
-    const topY1 = textHeight + 33;
-  
-    const topY2 = textHeight + 45;
-  
-    const fontSize = 10; 
-    
-    const lineSpacingFactor1 = 0.8;
-    textLines.forEach((line, index) => {
-      const textWidth = doc.getStringUnitWidth(line) * fontSize / doc.internal.scaleFactor;
-      const lineX = centerX - (textWidth / 2);
-      const lineY = topY + (index * textHeight * lineSpacingFactor1);
-  
-      doc.setFontSize(fontSize); 
-      doc.text(line, lineX, lineY);
-    });
-  
-    textLines1.forEach((line, index) => {
-      const textWidth = doc.getStringUnitWidth(line) * fontSize / doc.internal.scaleFactor;
-      const lineX = centerX1 - (textWidth / 2);
-      const lineY = topY1 + (index * textHeight);
-  
-      doc.setFontSize(fontSize); 
-      doc.setFont("helvetica", "bold");
-      doc.text(line, lineX, lineY);
-    });
-  
-    const content1X = 15; 
-    const content1Y = topY2;
-  
-    const lineSpacingFactor2 = 0.8;
-
-    textLinesContent.forEach((line, index) => {
-      const splitLine = line.split(":");
-      const label = splitLine[0] + (splitLine[1] ? ":" : ""); 
-      const value = splitLine[1] || ""; 
-    
-      const lineX = content1X;
-      const lineY = content1Y + (index * textHeight * lineSpacingFactor2); 
-    
-      doc.setFont("helvetica", "bold");
-      doc.setFontSize(fontSize); 
-      doc.text(label, lineX, lineY);
-    
-      if (value) {
-        const labelWidth = doc.getStringUnitWidth(label) * fontSize / doc.internal.scaleFactor;
-      
-        doc.setFont("helvetica", "normal");
-        doc.text(value, lineX + labelWidth, lineY);
-      }
-    });
-    
-    // Save the PDF
-    doc.save(`${selectedRequest.requested_by}.VRESERV_Request_Report.pdf`);
+  //table
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(5);
+  const handleChangePage = (event, newPage) => {
+    setPage(newPage);
   };
-  
+
+  const handleChangeRowsPerPage = (event) => {
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setPage(0);
+  };
+
   //dialog
   const handleOpenView = (request) => {
     setSelectedRequest(request);
@@ -232,7 +140,7 @@ useEffect(() => {
    //update
    function handleUpdate() {
     const url = "http://localhost/vreserv_admin_api/edit_vehicleRequest.php";
-  
+    
     let fData = new FormData();
     fData.append("request_id", selectedRequest.request_id);
     fData.append("vehicle_name", editVehicleName);
@@ -248,11 +156,14 @@ useEffect(() => {
     } else {
       fData.append("reason", "");
     }
-  
     axios
       .post(url, fData)
       .then((response) => {
-        alert("Request updated successfully!!");
+        if(response.data === "Success"){
+          alert("Request updated successfully!!");
+        } else{
+          alert(response.data);
+        }
         CloseEdit();
       })
       .catch((error) => {
@@ -260,69 +171,86 @@ useEffect(() => {
       });
   }
 
-
    //search
    function filterRequest(request) {
     if(searchQuery) {
-      return request.filter(request => request.requested_by.toLowerCase().includes(searchQuery.toLowerCase()));
+      return request.filter(request => request.requested_by.toLowerCase().includes(searchQuery.toLowerCase())
+      || request.vehicle_name.toLowerCase().includes(searchQuery.toLowerCase())
+      || request.driver_name.toLowerCase().includes(searchQuery.toLowerCase())
+      || request.request_date.toLowerCase().includes(searchQuery.toLowerCase())
+      );
     }
     return request;
   }
 
- main
+  
+
     return(
         <div>
             <Header />
             <Paper
-      component="form"
-      sx={{ p: '2px 4px', display: 'flex', alignItems: 'center', width: 400 }}
-    >
-      <InputBase
-        sx={{ ml: 1, flex: 1 }}
-        placeholder="Search"
-        inputProps={{ 'aria-label': 'search request' }}
-        value={searchQuery}
-          onChange={e => setSearchQuery(e.target.value)}
-      />
-      <IconButton type="button" sx={{ p: '10px' }} aria-label="search">
-        <SearchIcon />
-      </IconButton>
-    </Paper>
-            <table>
-        <thead>
-          <tr>
-            <th>Vehicle Name</th>
-            <th>Driver Name</th>
-            <th>Request Date</th>
-            <th>Requested by</th>
-            <th>PM Officer</th>
-            <th>Request Status</th>
-            <th>Action</th>
-          </tr>
-        </thead>
-        <tbody>
-          {filterRequest(request).map((request) => (
-            <tr key={request.request_id}>
-              <td>{request.vehicle_name}</td>
-              <td>{request.driver_name}</td>
-              <td>{request.request_date}</td>
-              <td>{request.requested_by}</td>
-              <td>{request.pm_officer}</td>
-              <td>{request.request_status}</td>
-              <td>
+            component="form"
+            sx={{ p: '2px 4px', display: 'flex', alignItems: 'center', width: 400 }}
+            >
+            <InputBase
+              sx={{ ml: 1, flex: 1 }}
+              placeholder="Search"
+              inputProps={{ 'aria-label': 'search request' }}
+              value={searchQuery}
+                onChange={e => setSearchQuery(e.target.value)}
+            />
+            <IconButton type="button" sx={{ p: '10px' }} aria-label="search">
+              <SearchIcon />
+            </IconButton>
+          </Paper>
+    <Paper>
+      <TableContainer>
+        <Table>
+          <thead>
+            <tr>
+              <th style={{ textAlign: 'center' }}>Vehicle Name</th>
+              <th style={{ textAlign: 'center' }}>Driver Name</th>
+              <th style={{ textAlign: 'center' }}>Request Date</th>
+              <th style={{ textAlign: 'center' }}>Requested by</th>
+              <th style={{ textAlign: 'center' }}>PM Officer</th>
+              <th style={{ textAlign: 'center' }}>Request Status</th>
+              <th style={{ textAlign: 'center' }}>Action</th>
+            </tr>
+          </thead>
+          <TableBody>
+            {filterRequest(request).slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((request) => (
+              <TableRow key={request.request_id}>
+                <TableCell style={{ textAlign: 'center' }}>{request.vehicle_name}</TableCell>
+                <TableCell style={{ textAlign: 'center' }}>{request.driver_name}</TableCell>
+                <TableCell style={{ textAlign: 'center' }}>{request.request_date}</TableCell>
+                <TableCell style={{ textAlign: 'center' }}>{request.requested_by}</TableCell>
+                <TableCell style={{ textAlign: 'center' }}>{request.pm_officer}</TableCell>
+                <TableCell style={{ textAlign: 'center' }}>{request.request_status}</TableCell>
+                <TableCell style={{ textAlign: 'center' }}>
                   <Button variant="contained" onClick={() => handleOpenView(request)}>
                     View
-                  </Button>  
-                </td>
-                <td>
+                  </Button>
+                </TableCell>
+                <TableCell style={{ textAlign: 'center' }}>
                   <Button variant="contained" onClick={() => handleOpenEdit(request)}>
                     Edit
-                  </Button> 
-                </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+                  </Button>
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </TableContainer>
+      <TablePagination
+        rowsPerPageOptions={[5, 7, 25]}
+        component="div"
+        count={request.length}
+        rowsPerPage={rowsPerPage}
+        page={page}
+        onPageChange={handleChangePage}
+        onRowsPerPageChange={handleChangeRowsPerPage}
+      />
+    </Paper>
       {/* view modal*/}
       <Dialog open={openView} onClose={CloseView} fullWidth maxWidth="sm">
             <DialogTitle>View Details</DialogTitle>
@@ -445,7 +373,6 @@ useEffect(() => {
                     </DialogContent>
                 <DialogActions>
                 <Button onClick={CloseView}>Close</Button>
-                <Button onClick={generatePDF}>Download PDF</Button>
                 </DialogActions>
             </Dialog>
         
