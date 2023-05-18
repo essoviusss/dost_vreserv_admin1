@@ -13,9 +13,16 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
+import { Table, TableBody, TableCell, TableContainer, TablePagination, TableRow } from '@mui/material';
+import Paper from '@mui/material/Paper';
+import jwtDecode from 'jwt-decode';
+import useAuth from "../hooks/useAuth";
+import { useNavigate } from "react-router";
 
 export default function AdmEmployee() {
   const UID = uuidv4();
+  const isLoggedIn = useAuth();
+  const navigate = useNavigate();
   //modal
   const [open, setOpen] = React.useState(false);
   const [openView, setOpenView] = React.useState(false);
@@ -50,7 +57,18 @@ export default function AdmEmployee() {
     setOpenEdit(true);
   };
 
-  
+  //table
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(5);
+
+  const handleChangePage = (event, newPage) => {
+    setPage(newPage);
+  };
+
+  const handleChangeRowsPerPage = (event) => {
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setPage(0);
+  };
 
   const handleOpen = () => {
     setOpen(true);
@@ -100,20 +118,39 @@ function handleUpdate() {
     let fData = new FormData();
     fData.append("user_id", UID);
     fData.append("employee_name", employee_name);
-    fData.append("email", email);
+    fData.append("employee_email", email);
     fData.append("employee_password", employee_password);
     fData.append("employee_unit", employee_unit);
 
 
     axios.post(url, fData)
       .then(response => {
-        alert("Employee added successfully!!");
+        if(response.data === "Success"){
+          alert("Employee added successfully!!");
+        }
         handleClose();
       })
       .catch(error => {
        alert(error);
       });
   }
+
+  //token expiry
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+
+    if (token) {
+        const decodedToken = jwtDecode(token);
+        const currentTime = Math.floor(Date.now() / 1000); // get the current time
+        if (currentTime > decodedToken.exp) {
+            localStorage.removeItem("token");
+            alert("Token expired, please login again");
+            navigate('/');
+        }
+    } else if (!isLoggedIn) {
+        navigate('/');
+    }
+  }, [isLoggedIn, navigate]);
 
   //read table
   useEffect(() => {
@@ -205,39 +242,51 @@ function handleUpdate() {
             </Dialog>
         </div>
         <div className='employee-tbl'>
-        <table>
-        <thead>
-          <tr>
-            <th>Employee Name</th>
-              
-            <th>Employee Unit</th>
-            <th>Action</th>
-          </tr>
-        </thead>
-        <tbody>
-          {employees.map(employee => (
-                <tr key={employee.employee_id}>
-                  <td>{employee.employee_name}</td>
-                  <td>{employee.employee_unit}</td>
-                  <td>
-                    <Button variant="contained" onClick={() => handleOpenView(employee)}>
-                    View
-                    </Button>           
-                  </td>
-                  <td>
-                    <Button variant="contained" onClick={() => handleOpenEdit(employee)}>
-                      Edit
-                    </Button>           
-                  </td>
-                  <td>
-                    <Button variant="contained" onClick={() => deleteEmployee(employee.employee_id)}>
-                      Delete
-                    </Button>
-                  </td>
+        <Paper>
+          <TableContainer>
+            <Table>
+              <thead>
+                <tr>
+                  <th style={{ textAlign: 'center' }}>Employee Name</th>
+                  <th style={{ textAlign: 'center' }}>Employee Email</th>
+                  <th style={{ textAlign: 'center' }}>Employee Unit</th>
+                  <th style={{ textAlign: 'center' }}>Action</th>
                 </tr>
-              ))}
-        </tbody>
-      </table>
+              </thead>
+              <TableBody>
+                {employees.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((employee) => (
+                  <TableRow key={employee.employee_id}>
+                    <TableCell style={{ textAlign: 'center' }}>{employee.employee_name}</TableCell>
+                    <TableCell style={{ textAlign: 'center' }}>{employee.email}</TableCell>
+                    <TableCell style={{ textAlign: 'center' }}>{employee.employee_unit}</TableCell>
+                    <TableCell style={{ textAlign: 'center' }}>
+                      <div style={{ display: 'flex', gap: '8px', justifyContent: 'center' }}>
+                        <Button variant="contained" onClick={() => handleOpenView(employee)}>
+                          View
+                        </Button>
+                        <Button variant="contained" onClick={() => handleOpenEdit(employee)}>
+                          Edit
+                        </Button>
+                        <Button variant="contained" onClick={() => deleteEmployee(employee.employee_id)}>
+                          Delete
+                        </Button>
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+            <TablePagination
+              rowsPerPageOptions={[5, 10, 25]}
+              component="div"
+              count={employees.length}
+              rowsPerPage={rowsPerPage}
+              page={page}
+              onPageChange={handleChangePage}
+              onRowsPerPageChange={handleChangeRowsPerPage}
+            />
+          </TableContainer>
+        </Paper>
       <Dialog open={openView} onClose={CloseView}>
                 <DialogTitle>View Details</DialogTitle>
                 <DialogContent>

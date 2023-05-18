@@ -12,10 +12,18 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import Button from '@mui/material/Button';
+import { Table, TableBody, TableCell, TableContainer, TablePagination, TableRow } from '@mui/material';
+import Paper from '@mui/material/Paper';
+import jwtDecode from 'jwt-decode';
+import useAuth from "../hooks/useAuth";
+import { useNavigate } from "react-router";
+
 
 
 export default function AdmVehicle() {
   const UID = uuidv4();
+  const isLoggedIn = useAuth();
+  const navigate = useNavigate();
   //insert
   const [driver_name, setDriverName] = useState("");
   const [email, setDriverEmail] = useState("");
@@ -35,6 +43,19 @@ export default function AdmVehicle() {
   const [editDriverName, setEditDriverName] = useState("");
   const [editDriverEmail, setEditDriverEmail] = useState("");
   const [editDriverStatus, setEditDriverStatus] = useState("");
+
+  //table
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(5);
+
+  const handleChangePage = (event, newPage) => {
+    setPage(newPage);
+  };
+
+  const handleChangeRowsPerPage = (event) => {
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setPage(0);
+  };
 
   //dialog
   const handleOpenView = (driver) => {
@@ -75,20 +96,39 @@ export default function AdmVehicle() {
     let fData = new FormData();
     fData.append("user_id", UID);
     fData.append("driver_name", driver_name);
-    fData.append("email", email);
+    fData.append("driver_email", email);
     fData.append("driver_password", driver_password);
     fData.append("driver_status", driver_status);
     console.log(fData);
 
     axios.post(url, fData)
     .then(response => {
-      alert("Driver added successfully!");
+      if(response.data === "Success"){
+        alert("Driver added successfully!");
+      }
       handleClose();
     })
     .catch(error => {
      alert(error);
     });
   }
+
+  //token expiry
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+
+    if (token) {
+        const decodedToken = jwtDecode(token);
+        const currentTime = Math.floor(Date.now() / 1000); // get the current time
+        if (currentTime > decodedToken.exp) {
+            localStorage.removeItem("token");
+            alert("Token expired, please login again");
+            navigate('/');
+        }
+    } else if (!isLoggedIn) {
+        navigate('/');
+    }
+  }, [isLoggedIn, navigate]);
 
   //read
   useEffect(() => {
@@ -193,40 +233,51 @@ export default function AdmVehicle() {
         </DialogActions>
       </Dialog>
       <div>
-        <table>
-          <thead>
-            <tr>
-              <th>Driver Name</th>
-              <th>Driver Email</th>
-              <th>Status</th>
-              <th>Action</th>
-            </tr>
-          </thead>
-          <tbody>
-            {drivers.map(driver => (
-              <tr key={driver.driver_id}>
-                <td>{driver.driver_name}</td>
-                <td>{driver.email}</td>
-                <td>{driver.driver_status}</td>
-                <td>
-                  <Button variant="contained" onClick={() => handleOpenView(driver)}>
-                    View
-                  </Button>  
-                </td>
-                <td>
-                  <Button variant="contained" onClick={() => handleOpenEdit(driver)}>
-                    Edit
-                  </Button> 
-                </td>
-                <td>
-                  <Button variant="contained" onClick={() => deleteDriver(driver.driver_id)}>
-                    Delete
-                  </Button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+        <Paper>
+          <TableContainer>
+            <Table>
+              <thead>
+                <tr>
+                  <th style={{ textAlign: 'center' }}>Driver Name</th>
+                  <th style={{ textAlign: 'center' }}>Driver Email</th>
+                  <th style={{ textAlign: 'center' }}>Status</th>
+                  <th style={{ textAlign: 'center' }}>Action</th>
+                </tr>
+              </thead>
+              <TableBody>
+                {drivers.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((driver) => (
+                  <TableRow key={driver.driver_id}>
+                    <TableCell style={{ textAlign: 'center' }}>{driver.driver_name}</TableCell>
+                    <TableCell style={{ textAlign: 'center' }}>{driver.email}</TableCell>
+                    <TableCell style={{ textAlign: 'center' }}>{driver.driver_status}</TableCell>
+                    <TableCell style={{ textAlign: 'center' }}>
+                      <div style={{ display: 'flex', gap: '8px', justifyContent: 'center' }}>
+                        <Button variant="contained" onClick={() => handleOpenView(driver)}>
+                          View
+                        </Button>
+                        <Button variant="contained" onClick={() => handleOpenEdit(driver)}>
+                          Edit
+                        </Button>
+                        <Button variant="contained" onClick={() => deleteDriver(driver.driver_id)}>
+                          Delete
+                        </Button>
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          <TablePagination
+          rowsPerPageOptions={[5, 10, 25]}
+          component="div"
+          count={drivers.length}
+          rowsPerPage={rowsPerPage}
+          page={page}
+          onPageChange={handleChangePage}
+          onRowsPerPageChange={handleChangeRowsPerPage}
+        />
+      </TableContainer>
+        </Paper>
         <Dialog open={openView} onClose={CloseView} fullWidth maxWidth="sm">
             <DialogTitle>View Details</DialogTitle>
               <DialogContent>

@@ -7,8 +7,13 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import Header from "./Header";
+import jwtDecode from 'jwt-decode';
+import useAuth from "../hooks/useAuth";
+import { useNavigate } from "react-router";
 
 export default function AdmSchedule() {
+    const isLoggedIn = useAuth();
+    const navigate = useNavigate();
     const [open, setOpen] = useState(false);
     const [month, setMonth] = useState('');
     const [vehicles, setVehicles] = useState([]);
@@ -79,6 +84,23 @@ export default function AdmSchedule() {
         alert(error);
       });
   }
+
+  //token expiry
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+
+    if (token) {
+        const decodedToken = jwtDecode(token);
+        const currentTime = Math.floor(Date.now() / 1000); // get the current time
+        if (currentTime > decodedToken.exp) {
+            localStorage.removeItem("token");
+            alert("Token expired, please login again");
+            navigate('/');
+        }
+    } else if (!isLoggedIn) {
+        navigate('/');
+    }
+  }, [isLoggedIn, navigate]);
 
   useEffect(() => {
     axios.get('http://localhost/vreserv_admin_api/read_pms.php')

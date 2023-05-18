@@ -21,6 +21,7 @@ import FormControl from '@mui/joy/FormControl';
 import FormLabel from '@mui/joy/FormLabel';
 import Textarea from '@mui/joy/Textarea';
 import { Table, TableBody, TableCell, TableContainer, TablePagination, TableRow } from '@mui/material';
+import jsPDF from 'jspdf';
 
 export default function AdmVehicleRequest(){
   //defaultValue
@@ -29,6 +30,8 @@ export default function AdmVehicleRequest(){
   const [vehicle, setVehicles] = useState([]);
   const [drivers, setDrivers] = useState([]); 
 
+  //jwt
+  const role = localStorage.getItem("admin_role");
 
   //update
   const [editFormCode, setEditFormCode] = useState("");
@@ -141,6 +144,7 @@ useEffect(() => {
       });
   }, [request]);
 
+
    //update
    function handleUpdate() {
     const url = "http://localhost/vreserv_admin_api/edit_vehicleRequest.php";
@@ -164,6 +168,7 @@ useEffect(() => {
     } else {
       fData.append("reason", "");
     }
+    
     axios
       .post(url, fData)
       .then((response) => {
@@ -191,8 +196,266 @@ useEffect(() => {
     return request;
   }
 
-  
+  const generatePDF = () => {
+    const doc = new jsPDF();
+    const passengerNames = Array.isArray(selectedRequest.passenger_names)
+      ? selectedRequest.passenger_names.join(", ")
+      : selectedRequest.passenger_names || "No passengers";
 
+    console.log("Passenger Names:", passengerNames);
+
+    console.log("Passenger Names:", passengerNames);
+
+    const pageTitle = `
+    Republic of the Philippines
+    DEPARTMENT OF SCIENCE AND TECHNOLOGY
+    Regional Office No. 1
+    DMMMSU MLUC Campus, City of San Fernando, La Union`;
+  
+    const subtitle = `
+    REQUEST FOR THE USE OF VEHICLE`;
+  
+    const content1 = `
+    Vehicle to be requested: ${selectedRequest.vehicle_name}
+    Name of Driver: ${selectedRequest.driver_name}
+    Schedule of Travel
+        Time of Departure: ${selectedRequest.departure_time}
+        Time of Return to Garage: ${selectedRequest.arrival_time}
+    Destination: ${selectedRequest.destination}
+  
+    Passenger/s:  ${passengerNames}
+    Total No. of Passengers: ${selectedRequest.passenger_count}
+    Purpose(Attach gate pass if applicable): ${selectedRequest.purpose}
+  
+    Requested by:
+  
+              ${selectedRequest.requested_by}
+          ___________________________
+          Signature Over Printed Name
+  
+    Date of Request: ${selectedRequest.request_date}
+    `;
+  
+    const pageWidth = doc.internal.pageSize.getWidth();
+    const textLines = pageTitle.split("\n");
+    const textLines1 = subtitle.split("\n");
+    const textLinesContent = content1.split("\n");
+  
+    const textHeight = doc.internal.getLineHeight() / doc.internal.scaleFactor;
+  
+    const centerX = pageWidth / 2;
+    const topY = textHeight + 10;
+  
+    const centerX1 = pageWidth / 2;
+    const topY1 = textHeight + 33;
+  
+    const topY2 = textHeight + 45;
+  
+    const fontSize = 10;
+    const lineSpacingFactor1 = 0.6;
+    const lineSpacingFactor2 = 0.6;
+  
+    textLines.forEach((line, index) => {
+      const textWidth = doc.getStringUnitWidth(line) * fontSize / doc.internal.scaleFactor;
+      const lineX = centerX - (textWidth / 2);
+      const lineY = topY + (index * textHeight * lineSpacingFactor1);
+  
+      doc.setFontSize(fontSize);
+      doc.text(line, lineX, lineY);
+    });
+  
+    textLines1.forEach((line, index) => {
+      const textWidth = doc.getStringUnitWidth(line) * fontSize / doc.internal.scaleFactor;
+      const lineX = centerX1 - (textWidth / 2);
+      const lineY = topY1 + (index * textHeight);
+  
+      doc.setFontSize(fontSize);
+      doc.setFont("helvetica", "bold");
+      doc.text(line, lineX, lineY);
+    });
+  
+    const content1X = 15;
+    const content1Y = topY2;
+  
+    textLinesContent.forEach((line, index) => {
+      const splitLine = line.split(":");
+      const label = splitLine[0] + (splitLine[1] ? ":" : "");
+      const value = splitLine[1] || "";
+  
+      const lineX = content1X;
+      const lineY = content1Y + (index * textHeight * lineSpacingFactor2);
+  
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(fontSize);
+      doc.text(label, lineX, lineY);
+  
+      if (value) {
+        const labelWidth = doc.getStringUnitWidth(label) * fontSize / doc.internal.scaleFactor;
+  
+        doc.setFont("helvetica", "normal");
+        doc.text(value, lineX + labelWidth, lineY);
+      }
+    });
+  
+    const contentTitle = "RECOMMENDATION";
+    const contentContent = "Availability of requested Vehicle and Driver";
+
+    const checkbox1Label = "Available";
+    const checkbox2Label = "Not Available";
+    const checkbox3Label = "Schedule Maintenance";
+    const checkbox4Label = "Breakdown";
+    const checkbox5Label = "Other__________________________";
+    const bTitle = `
+    ${selectedRequest.pm_officer}
+    Preventive Maintenance Officer for Vehicles
+    `;
+    const bDate =  `
+
+    Date:___________________
+    `;
+    const bRemarks = `Remarks:_____________________________________________________________________`;
+
+    const contentTitle2 = "ACTION OF REQUEST";
+    const checkbox1Label6 = "Approved";
+    const checkbox2Label7 = "Disapproved, Reasons:____________________________________________________________";
+
+    const bTitle2 = `
+    ${selectedRequest.approved_by}
+    OIC, Regional Director
+    `;
+    const bDate2 = "Date:___________________";
+
+    const boxX = content1X;
+    const boxY = content1Y + (textLinesContent.length * textHeight * lineSpacingFactor2) + 2;
+    const boxWidth = pageWidth - 2 * content1X;
+    const boxHeight = doc.internal.pageSize.getHeight() - boxY - 20;
+
+    doc.setFillColor(255, 255, 255);
+    doc.setDrawColor(0);
+    doc.setLineWidth(0.3);
+
+    doc.rect(boxX, boxY, boxWidth, boxHeight, 'FD');
+
+    const contentTitleWidth = doc.getStringUnitWidth(contentTitle) * fontSize / doc.internal.scaleFactor;
+    const contentTitleX = boxX + (boxWidth - contentTitleWidth) / 2;
+    const contentTitleY = boxY + 5;
+
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(fontSize);
+    doc.text(contentTitle, contentTitleX, contentTitleY);
+
+    const contentContentX = boxX + 5;
+    const contentContentY = contentTitleY + textHeight ;
+
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(fontSize);
+    doc.text(contentContent, contentContentX, contentContentY);
+
+    const checkboxX = contentContentX;
+    const checkboxY = contentContentY + textHeight + 2;
+    const checkboxSize = 5;
+    const checkboxSpacing = 50;
+
+    doc.setFontSize(fontSize);
+    doc.setLineWidth(0.1);
+    doc.rect(checkboxX, checkboxY, checkboxSize, checkboxSize);
+    doc.text(checkboxX + checkboxSize + 2, checkboxY + checkboxSize - 1, checkbox1Label);
+
+    doc.setFontSize(fontSize);
+    doc.setLineWidth(0.1);
+    doc.rect(checkboxX + checkboxSpacing, checkboxY, checkboxSize, checkboxSize);
+    doc.text(checkboxX + checkboxSpacing + checkboxSize + 2, checkboxY + checkboxSize - 1, checkbox2Label);
+
+    const checkboxY2 = checkboxY + checkboxSize + 2;
+
+    doc.setFontSize(fontSize);
+    doc.setLineWidth(0.1);
+    doc.rect(checkboxX, checkboxY2, checkboxSize, checkboxSize);
+    doc.text(checkboxX + checkboxSize + 2, checkboxY2 + checkboxSize - 1, checkbox3Label);
+
+    doc.setFontSize(fontSize);
+    doc.setLineWidth(0.1);
+    doc.rect(checkboxX + checkboxSpacing, checkboxY2, checkboxSize, checkboxSize);
+    doc.text(checkboxX + checkboxSpacing + checkboxSize + 2, checkboxY2 + checkboxSize - 1, checkbox4Label);
+
+    doc.setFontSize(fontSize);
+    doc.setLineWidth(0.1);
+    doc.rect(checkboxX + checkboxSpacing * 2, checkboxY2, checkboxSize, checkboxSize);
+    doc.text(checkboxX + checkboxSpacing * 2 + checkboxSize + 2, checkboxY2 + checkboxSize - 1, checkbox5Label);
+
+    const bTitleX = pageWidth / 2; 
+    const bTitleY = checkboxY + checkboxSize + 20;
+
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(fontSize);
+    doc.text(bTitle, bTitleX, bTitleY, { align: "center" });
+
+    const bDateX = pageWidth / 2; 
+    const bDateY = bTitleY + textHeight;
+
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(fontSize);
+    doc.text(bDate, bDateX, bDateY, { align: "center" });
+
+    const bRemarksX = pageWidth / 2; // Calculate X-coordinate for center alignment
+    const bRemarksY = bTitleY + textHeight + 17;
+
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(fontSize);
+    doc.text(bRemarks, bRemarksX, bRemarksY, { align: "center" });
+
+    const lineStartX = content1X;
+    const lineEndX = pageWidth - content1X;
+    const lineY = bRemarksY + textHeight;
+
+    doc.setLineWidth(0.3);
+    doc.setDrawColor(0); // Set the line color to black
+    doc.line(lineStartX, lineY, lineEndX, lineY);
+
+    const contentTitle2X = pageWidth / 2;
+    const contentTitle2Y = lineY + 5;
+
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(fontSize);
+    doc.text(contentTitle2, contentTitle2X, contentTitle2Y, { align: "center" });
+
+
+    const checkboxX11 = contentContentX;
+    const checkboxY11 = contentContentY + textHeight + 70; // Adjust the top margin value here
+    const checkboxSize11 = 5;
+    const checkboxSpacing11 = 2;
+
+    // Checkbox 1: Approved
+    doc.setFontSize(fontSize);
+    doc.setLineWidth(0.1);
+    doc.rect(checkboxX11, checkboxY11, checkboxSize11, checkboxSize11);
+    doc.setFont("helvetica", "normal");
+    doc.text(checkboxX11 + checkboxSize11 + 2, checkboxY11 + checkboxSize11 - 1, checkbox1Label6);
+
+    // Checkbox 2: Disapproved
+    doc.setFontSize(fontSize);
+    doc.setLineWidth(0.1);
+    doc.rect(checkboxX11, checkboxY11 + checkboxSize11 + checkboxSpacing11, checkboxSize11, checkboxSize11);
+    doc.setFont("helvetica", "normal");
+    doc.text(checkboxX11 + checkboxSize11 + 2, checkboxY11 + checkboxSize11 * 2  + checkboxSpacing11, checkbox2Label7);
+
+    const bTitle2X = pageWidth / 2;
+    const bTitle2Y = checkboxY11 + checkboxSize11 * 2 + 20; // Adjust the top margin value here
+
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(fontSize);
+    doc.text(bTitle2, bTitle2X, bTitle2Y, { align: "center" });
+
+    const bDate2X = pageWidth / 2;
+    const bDate2Y = bTitle2Y + textHeight + 8;
+
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(fontSize);
+    doc.text(bDate2, bDate2X, bDate2Y, { align: "center" });
+
+    // Save the PDF
+    doc.save(`${selectedRequest.requested_by}.VRESERV_Request_Report.pdf`);
+};
     return(
         <div>
             <Header />
@@ -226,27 +489,30 @@ useEffect(() => {
             </tr>
           </thead>
           <TableBody>
-            {filterRequest(request).slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((request) => (
-              <TableRow key={request.request_id}>
-                <TableCell style={{ textAlign: 'center' }}>{request.vehicle_name}</TableCell>
-                <TableCell style={{ textAlign: 'center' }}>{request.driver_name}</TableCell>
-                <TableCell style={{ textAlign: 'center' }}>{request.request_date}</TableCell>
-                <TableCell style={{ textAlign: 'center' }}>{request.requested_by}</TableCell>
-                <TableCell style={{ textAlign: 'center' }}>{request.pm_officer}</TableCell>
-                <TableCell style={{ textAlign: 'center' }}>{request.request_status}</TableCell>
-                <TableCell style={{ textAlign: 'center' }}>
-
-                  <Button variant="contained" onClick={() => handleOpenView(request)}>
-                    View
-                  </Button>
-                </TableCell>
-                <TableCell style={{ textAlign: 'center' }}>
-                  <Button variant="contained" onClick={() => handleOpenEdit(request)}>
-                    Edit
-                  </Button>
-                </TableCell>
-              </TableRow>
-            ))}
+            {filterRequest(request)
+              .filter((request) =>  request.request_status === "Pending" && role === "Manager" || 
+                                    request.request_status === "For Approval" && role === "ORD")
+              .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+              .map((request) => (
+                <TableRow key={request.request_id}>
+                  <TableCell style={{ textAlign: 'center' }}>{request.vehicle_name}</TableCell>
+                  <TableCell style={{ textAlign: 'center' }}>{request.driver_name}</TableCell>
+                  <TableCell style={{ textAlign: 'center' }}>{request.request_date}</TableCell>
+                  <TableCell style={{ textAlign: 'center' }}>{request.requested_by}</TableCell>
+                  <TableCell style={{ textAlign: 'center' }}>{request.pm_officer}</TableCell>
+                  <TableCell style={{ textAlign: 'center' }}>{request.request_status}</TableCell>
+                  <TableCell style={{ textAlign: 'center' }}>
+                    <Button variant="contained" onClick={() => handleOpenView(request)}>
+                      View
+                    </Button>
+                  </TableCell>
+                  <TableCell style={{ textAlign: 'center' }}>
+                    <Button variant="contained" onClick={() => handleOpenEdit(request)}>
+                      Edit
+                    </Button>
+                  </TableCell>
+                </TableRow>
+              ))}
           </TableBody>
         </Table>
       </TableContainer>
@@ -386,10 +652,7 @@ useEffect(() => {
               <label>Total No. of Passenger/s : {selectedRequest.passenger_count}</label>
             </div>
             <div>
-              <label>Name of Passenger/s: </label>
-              {selectedRequest.passenger_names && Array.isArray(selectedRequest.passenger_names) && selectedRequest.passenger_names.map((passenger, index) => (
-                <div key={index}>{passenger}</div>
-              ))}
+              <label>Name of Passenger/s: {selectedRequest.passenger_names}</label>
             </div>
             <div>
               <label>Purpose: {selectedRequest.purpose}</label>
@@ -399,6 +662,7 @@ useEffect(() => {
             </div>   
           </DialogContent>
           <DialogActions>
+            <Button onClick={generatePDF}>Download PDF</Button>
             <Button onClick={CloseView}>Close</Button>
           </DialogActions>
       </Dialog>
@@ -430,7 +694,7 @@ useEffect(() => {
                   autoFocus
                   margin="dense"
                   id="name"
-                  label="Form Code"
+                  label="REV Code"
                   type="text"
                   fullWidth
                   variant="standard"

@@ -10,7 +10,8 @@ import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import axios from "axios";
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom"; 
+import { useNavigate } from "react-router-dom";
+
 
 const theme = createTheme();
 
@@ -37,7 +38,6 @@ export default function Login() {
   
     try {
       const response = await axios.post(url, fData);
-      console.log(response.data);
   
       if (response.data.message !== "Success") {
         console.log("Login failed:", response.data.message);
@@ -47,10 +47,13 @@ export default function Login() {
   
       // Save the JWT token in the local storage
       const jwtToken = await response.data.token;
+      const admin_role = await response.data.admin_role;
       
       if (response.data.message === "Success") {
         alert("Login Successful");
         localStorage.setItem("token", jwtToken);
+        localStorage.setItem("admin_role", admin_role);
+        alert(admin_role);
         navigate("/AdmDashboard", { replace: true });
       } else {
         alert("User does not exist");
