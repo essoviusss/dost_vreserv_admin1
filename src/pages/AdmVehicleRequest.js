@@ -91,9 +91,9 @@ export default function AdmVehicleRequest(){
   
   //update
   const STATUSES = [
-    { value: 'Pending', label: 'Pending' },
-    { value: 'For Approval', label: 'For Approval' },
-    { value: 'Cancelled', label: 'Cancelled' },
+    role === "Manager" ? { value: 'Pending', label: 'Pending' } : { value: 'For Approval', label: 'For Approval' },
+    role === "Manager" ? { value: 'For Approval', label: 'For Approval' } : { value: 'Approved', label: 'Approved' }, 
+    role === "Manager" ? { value: 'Cancelled', label: 'Cancelled' } : { value: 'Disapproved', label: 'Disapproved' },
   ];
 
   //read available vehicle
