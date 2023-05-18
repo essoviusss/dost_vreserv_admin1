@@ -20,6 +20,7 @@ import SearchIcon from '@mui/icons-material/Search';
 import FormControl from '@mui/joy/FormControl';
 import FormLabel from '@mui/joy/FormLabel';
 import Textarea from '@mui/joy/Textarea';
+import { Table, TableBody, TableCell, TableContainer, TablePagination, TableRow } from '@mui/material';
 
 export default function AdmVehicleRequest(){
   //defaultValue
@@ -45,6 +46,18 @@ export default function AdmVehicleRequest(){
   //modal
   const [openView, setOpenView] = React.useState(false);
   const [openEdit, setOpenEdit] = React.useState(false);
+
+  //table
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(5);
+  const handleChangePage = (event, newPage) => {
+    setPage(newPage);
+  };
+
+  const handleChangeRowsPerPage = (event) => {
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setPage(0);
+  };
 
   //dialog
   const handleOpenView = (request) => {
@@ -131,7 +144,7 @@ useEffect(() => {
    //update
    function handleUpdate() {
     const url = "http://localhost/vreserv_admin_api/edit_vehicleRequest.php";
-  
+    
     let fData = new FormData();
     fData.append("request_id", selectedRequest.request_id);
     fData.append("form_code", editFormCode);
@@ -151,11 +164,14 @@ useEffect(() => {
     } else {
       fData.append("reason", "");
     }
-  
     axios
       .post(url, fData)
       .then((response) => {
-        alert("Request updated successfully!!");
+        if(response.data === "Success"){
+          alert("Request updated successfully!!");
+        } else{
+          alert(response.data);
+        }
         CloseEdit();
       })
       .catch((error) => {
@@ -166,64 +182,84 @@ useEffect(() => {
    //search
    function filterRequest(request) {
     if(searchQuery) {
-      return request.filter(request => request.requested_by.toLowerCase().includes(searchQuery.toLowerCase()));
+      return request.filter(request => request.requested_by.toLowerCase().includes(searchQuery.toLowerCase())
+      || request.vehicle_name.toLowerCase().includes(searchQuery.toLowerCase())
+      || request.driver_name.toLowerCase().includes(searchQuery.toLowerCase())
+      || request.request_date.toLowerCase().includes(searchQuery.toLowerCase())
+      );
     }
     return request;
   }
 
-
+  
 
     return(
         <div>
             <Header />
             <Paper
-      component="form"
-      sx={{ p: '2px 4px', display: 'flex', alignItems: 'center', width: 400 }}
-    >
-      <InputBase
-        sx={{ ml: 1, flex: 1 }}
-        placeholder="Search"
-        inputProps={{ 'aria-label': 'search request' }}
-        value={searchQuery}
-          onChange={e => setSearchQuery(e.target.value)}
-      />
-      <IconButton type="button" sx={{ p: '10px' }} aria-label="search">
-        <SearchIcon />
-      </IconButton>
-    </Paper>
-            <table>
-        <thead>
-          <tr>
-            <th>Vehicle Name</th>
-            <th>Driver Name</th>
-            <th>Request Date</th>
-            <th>Requested by</th>
-            <th>Status</th>
-            <th>Action</th>
-          </tr>
-        </thead>
-        <tbody>
-          {filterRequest(request).map((request) => (
-            <tr key={request.request_id}>
-              <td>{request.vehicle_name}</td>
-              <td>{request.driver_name}</td>
-              <td>{request.request_date}</td>
-              <td>{request.requested_by}</td>
-              <td>{request.request_status}</td>
-              <td>
+            component="form"
+            sx={{ p: '2px 4px', display: 'flex', alignItems: 'center', width: 400 }}
+            >
+            <InputBase
+              sx={{ ml: 1, flex: 1 }}
+              placeholder="Search"
+              inputProps={{ 'aria-label': 'search request' }}
+              value={searchQuery}
+                onChange={e => setSearchQuery(e.target.value)}
+            />
+            <IconButton type="button" sx={{ p: '10px' }} aria-label="search">
+              <SearchIcon />
+            </IconButton>
+          </Paper>
+    <Paper>
+      <TableContainer>
+        <Table>
+          <thead>
+            <tr>
+              <th style={{ textAlign: 'center' }}>Vehicle Name</th>
+              <th style={{ textAlign: 'center' }}>Driver Name</th>
+              <th style={{ textAlign: 'center' }}>Request Date</th>
+              <th style={{ textAlign: 'center' }}>Requested by</th>
+              <th style={{ textAlign: 'center' }}>PM Officer</th>
+              <th style={{ textAlign: 'center' }}>Request Status</th>
+              <th style={{ textAlign: 'center' }}>Action</th>
+            </tr>
+          </thead>
+          <TableBody>
+            {filterRequest(request).slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((request) => (
+              <TableRow key={request.request_id}>
+                <TableCell style={{ textAlign: 'center' }}>{request.vehicle_name}</TableCell>
+                <TableCell style={{ textAlign: 'center' }}>{request.driver_name}</TableCell>
+                <TableCell style={{ textAlign: 'center' }}>{request.request_date}</TableCell>
+                <TableCell style={{ textAlign: 'center' }}>{request.requested_by}</TableCell>
+                <TableCell style={{ textAlign: 'center' }}>{request.pm_officer}</TableCell>
+                <TableCell style={{ textAlign: 'center' }}>{request.request_status}</TableCell>
+                <TableCell style={{ textAlign: 'center' }}>
+
                   <Button variant="contained" onClick={() => handleOpenView(request)}>
                     View
-                  </Button>  
-                </td>
-                <td>
+                  </Button>
+                </TableCell>
+                <TableCell style={{ textAlign: 'center' }}>
                   <Button variant="contained" onClick={() => handleOpenEdit(request)}>
                     Edit
-                  </Button> 
-                </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+                  </Button>
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </TableContainer>
+      <TablePagination
+        rowsPerPageOptions={[5, 7, 25]}
+        component="div"
+        count={request.length}
+        rowsPerPage={rowsPerPage}
+        page={page}
+        onPageChange={handleChangePage}
+        onRowsPerPageChange={handleChangeRowsPerPage}
+      />
+    </Paper>
       {/* view modal*/}
       <Dialog open={openView} onClose={CloseView} fullWidth maxWidth="sm">
         <DialogTitle>View Details</DialogTitle>

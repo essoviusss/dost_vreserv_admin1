@@ -22,7 +22,7 @@ export default function AdmEmployee() {
   const [openEdit, setOpenEdit] = React.useState(false);
   //inserting employee
   const [employee_name, setEmployeeName] = useState("");
-  const [employee_email, setEmployeeEmail] = useState("");
+  const [email, setEmployeeEmail] = useState("");
   const [employee_username, setEmployeeUsername] = useState("");
   const [employee_password, setEmployeePassword] = useState("");
   const [employee_unit, setEmployeeUnit] = useState("");
@@ -45,7 +45,7 @@ export default function AdmEmployee() {
   const handleOpenEdit = (employee) => {
     setSelectedEmployee(employee);
     setEditEmployeeName(employee.employee_name);
-    setEditEmployeeEmail(employee.employee_email);
+    setEditEmployeeEmail(employee.email);
     setEditEmployeeUnit(employee.employee_unit);
     setOpenEdit(true);
   };
@@ -76,10 +76,10 @@ function handleUpdate() {
   let fData = new FormData();
   fData.append("employee_id", selectedEmployee.employee_id);
   fData.append("employee_name", editEmployeeName);
-  fData.append("employee_email", editEmployeeEmail);
+  fData.append("email", editEmployeeEmail);
   fData.append("employee_unit", editEmployeeUnit);
   fData.append("selected_employee_name", selectedEmployee.employee_name);
-  fData.append("selected_employee_email", selectedEmployee.employee_email);
+  fData.append("selected_email", selectedEmployee.email);
   fData.append("selected_employee_unit", selectedEmployee.employee_unit);
 
   axios
@@ -100,8 +100,7 @@ function handleUpdate() {
     let fData = new FormData();
     fData.append("user_id", UID);
     fData.append("employee_name", employee_name);
-    fData.append("employee_email", employee_email);
-    fData.append("employee_username", employee_username);
+    fData.append("email", email);
     fData.append("employee_password", employee_password);
     fData.append("employee_unit", employee_unit);
 
@@ -182,16 +181,6 @@ function handleUpdate() {
                     autoFocus
                     margin="dense"
                     id="name"
-                    label="Username"
-                    type="text"
-                    fullWidth
-                    variant="standard"
-                    onChange={e => setEmployeeUsername(e.target.value)}
-                />
-                <TextField
-                    autoFocus
-                    margin="dense"
-                    id="name"
                     label="Password"
                     type="password"
                     fullWidth
@@ -220,7 +209,7 @@ function handleUpdate() {
         <thead>
           <tr>
             <th>Employee Name</th>
-            {/* <th>Username</th> */}
+              
             <th>Employee Unit</th>
             <th>Action</th>
           </tr>
@@ -229,7 +218,6 @@ function handleUpdate() {
           {employees.map(employee => (
                 <tr key={employee.employee_id}>
                   <td>{employee.employee_name}</td>
-                  {/* <td>{employee.username}</td> */}
                   <td>{employee.employee_unit}</td>
                   <td>
                     <Button variant="contained" onClick={() => handleOpenView(employee)}>
@@ -277,24 +265,12 @@ function handleUpdate() {
                     type="email"
                     fullWidth
                     variant="filled"
-                    defaultValue={selectedEmployee.employee_email}
+                    defaultValue={selectedEmployee.email}
                     InputProps={{
                       readOnly: true,
                     }}
                 />
-                {/* <TextField
-                    autoFocus
-                    margin="dense"
-                    id="name"
-                    label="Username"
-                    type="text"
-                    fullWidth
-                    variant="filled"
-                    // defaultValue={selectedEmployee.employee_username}
-                    InputProps={{
-                      readOnly: true,
-                    }}
-                /> */}
+               
                 <TextField
                     autoFocus
                     margin="dense"
@@ -339,19 +315,10 @@ function handleUpdate() {
                         type="email"
                         fullWidth
                         variant="standard"
-                        defaultValue={selectedEmployee.employee_email}
+                        defaultValue={selectedEmployee.email}
                         onChange={(event) => setEditEmployeeEmail(event.target.value)}
                     />
-                    {/* <TextField
-                        autoFocus
-                        margin="dense"
-                        id="name"
-                        label="Username"
-                        type="text"
-                        fullWidth
-                        variant="standard"
-                        // defaultValue={selectedEmployee.employee_username}
-                    /> */}
+                    
                     <TextField
                         autoFocus
                         margin="dense"
