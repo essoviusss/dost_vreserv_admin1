@@ -31,11 +31,14 @@ export default function AdmVehicleRequest(){
 
 
   //update
+  const [editFormCode, setEditFormCode] = useState("");
+  const [editRevCode, setEditRevCode] = useState("");
   const [editVehicleName, setEditVehicleName] = useState("");
   const [editDriverName, setEditDriverName] = useState("");
   const [editRequestStatus, setEditRequestStatus] = useState("");
   const [editReason, setEditReason] = useState("");
   const [editPMOfficer, setEditPMOfficer] = useState("");
+  const [editApprovedBy, setEditApprovedBy] = useState("");
 
   //search
   const [searchQuery, setSearchQuery] = useState('');
@@ -64,10 +67,13 @@ export default function AdmVehicleRequest(){
 
   const handleOpenEdit = (request) => {
     setSelectedRequest(request);
+    setEditFormCode(request.form_code);
+    setEditRevCode(request.rev_code);
     setEditVehicleName(request.vehicle_name);
     setEditDriverName(request.driver_name);
     setEditRequestStatus(request.request_status);
     setEditPMOfficer(request.pm_officer);
+    setEditApprovedBy(request.approved_by);
     setEditReason(request.reason);
     setOpenEdit(true);
   };
@@ -84,8 +90,6 @@ export default function AdmVehicleRequest(){
   const STATUSES = [
     { value: 'Pending', label: 'Pending' },
     { value: 'For Approval', label: 'For Approval' },
-    { value: 'Approved', label: 'Approved' },
-    { value: 'Disapproved', label: 'Disapproved' },
     { value: 'Cancelled', label: 'Cancelled' },
   ];
 
@@ -143,14 +147,18 @@ useEffect(() => {
     
     let fData = new FormData();
     fData.append("request_id", selectedRequest.request_id);
+    fData.append("form_code", editFormCode);
+    fData.append("rev_code", editRevCode);
     fData.append("vehicle_name", editVehicleName);
     fData.append("driver_name", editDriverName);
     fData.append("pm_officer", editPMOfficer);
+    fData.append("approved_by", editApprovedBy);
     fData.append("request_status", editRequestStatus);
     fData.append("selected_vehicle_name", selectedRequest.vehicle_name);
     fData.append("selected_driver_name", selectedRequest.driver_name);
     fData.append("selected_request_status", selectedRequest.request_status);
     fData.append("selected_PMOfficer", selectedRequest.pm_officer);
+    fData.append("selected_ApprovedBy", selectedRequest.approved_by);
     if(editRequestStatus === 'Cancelled') {
       fData.append("reason", editReason);
     } else {
@@ -227,6 +235,7 @@ useEffect(() => {
                 <TableCell style={{ textAlign: 'center' }}>{request.pm_officer}</TableCell>
                 <TableCell style={{ textAlign: 'center' }}>{request.request_status}</TableCell>
                 <TableCell style={{ textAlign: 'center' }}>
+
                   <Button variant="contained" onClick={() => handleOpenView(request)}>
                     View
                   </Button>
@@ -253,139 +262,186 @@ useEffect(() => {
     </Paper>
       {/* view modal*/}
       <Dialog open={openView} onClose={CloseView} fullWidth maxWidth="sm">
-            <DialogTitle>View Details</DialogTitle>
+        <DialogTitle>View Details</DialogTitle>
+          <DialogContent>
+            <DialogContentText>
+              {/* To add a new employee account, please enter the details in the designated input field. */}
+            </DialogContentText>
+            <div>
+              <label>{selectedRequest.form_code}</label>
+            </div>
+            <div>
+              <label>{selectedRequest.rev_code}</label>
+            </div>
+            <div> 
+              <TextField
+               autoFocus
+               margin="dense"
+               id="name"
+               label="Vehicle to be Requested"
+               type="text"
+               fullWidth
+               variant="filled"
+               defaultValue={selectedRequest.vehicle_name}
+               InputProps={{
+                  readOnly: true,
+                }}
+              />
+            </div>
+            <div>
+              <TextField
+              autoFocus
+              margin="dense"
+              id="name"
+              label="Driver Name"
+              type="text"
+              fullWidth
+              variant="filled"
+              defaultValue={selectedRequest.driver_name}
+              InputProps={{
+                readOnly: true,
+              }}
+              />           
+            </div>
+            <div>
+              <TextField
+              autoFocus
+              margin="dense"
+              id="name"
+              label="Status"
+              type="text"
+              fullWidth
+              variant="filled"
+              defaultValue={selectedRequest.request_status}
+              InputProps={{
+                readOnly: true,
+              }}
+              />
+              {selectedRequest.request_status === 'Cancelled' && (
+              <TextField
+              autoFocus
+              margin="dense"
+              id="name"
+              label="Reason"
+              type="text"
+              fullWidth
+              variant="filled"
+              defaultValue={selectedRequest.reason}
+              InputProps={{
+                readOnly: true,
+              }}
+              />
+              )}
+            </div>
+            <div>
+            <TextField
+            autoFocus
+            margin="dense"
+            id="name"
+            label="Preventive Maintenance Officer"
+            type="text"
+            fullWidth
+            variant="filled"
+            defaultValue={selectedRequest.pm_officer}
+            InputProps={{
+              readOnly: true,
+            }}
+            />
+            </div>
+            <div>
+            <TextField
+            autoFocus
+            margin="dense"
+            id="name"
+            label="Approved By"
+            type="text"
+            fullWidth
+            variant="filled"
+            defaultValue={selectedRequest.approved_by}
+            InputProps={{
+              readOnly: true,
+            }}
+            />
+            </div>
+            <div>
+              <h6>Schedule of Travel</h6>
+            </div>
+
+            <div>
+              <label>Date: {selectedRequest.request_date}</label>
+            </div>
+            <div>
+              <label>Time of Departure: {selectedRequest.departure_time}</label>
+            </div>
+            <div>
+              <label>Time of Return to Garage: {selectedRequest.arrival_time}</label>
+            </div>
+            <div>
+              <label>Destination: {selectedRequest.destination}</label>
+            </div>
+            <div>
+              <h6>Other Details</h6>
+            </div>
+            <div>
+              <label>Total No. of Passenger/s : {selectedRequest.passenger_count}</label>
+            </div>
+            <div>
+              <label>Name of Passenger/s: </label>
+              {selectedRequest.passenger_names && Array.isArray(selectedRequest.passenger_names) && selectedRequest.passenger_names.map((passenger, index) => (
+                <div key={index}>{passenger}</div>
+              ))}
+            </div>
+            <div>
+              <label>Purpose: {selectedRequest.purpose}</label>
+            </div>
+            <div>
+              <label>Requested by: {selectedRequest.requested_by}</label>
+            </div>   
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={CloseView}>Close</Button>
+          </DialogActions>
+      </Dialog>
+
+      {/* edit modal */}
+      <Dialog open={openEdit} onClose={CloseEdit} fullWidth maxWidth="sm">
+        <DialogTitle>Edit Details</DialogTitle>
             <DialogContent>
-                        <DialogContentText>
-                            {/* To add a new employee account, please enter the details in the designated input field. */}
-                        </DialogContentText>
-                            <div>
-                            <TextField
-                                    autoFocus
-                                    margin="dense"
-                                    id="name"
-                                    label="Vehicle to be Requested"
-                                    type="text"
-                                    fullWidth
-                                    variant="filled"
-                                    defaultValue={selectedRequest.vehicle_name}
-                                    InputProps={{
-                                        readOnly: true,
-                                      }}
-                                />
-                            </div>
-                            <div>
-                            <TextField
-                                    autoFocus
-                                    margin="dense"
-                                    id="name"
-                                    label="Driver Name"
-                                    type="text"
-                                    fullWidth
-                                    variant="filled"
-                                    defaultValue={selectedRequest.driver_name}
-                                    InputProps={{
-                                        readOnly: true,
-                                      }}
-                                />
-                            
+              <DialogContentText>
+                {/* To add a new employee account, please enter the details in the designated input field. */}
+              </DialogContentText>
 
-                            </div>
-                            <div>
-                              <TextField
-                                autoFocus
-                                margin="dense"
-                                id="name"
-                                label="Status"
-                                type="text"
-                                fullWidth
-                                variant="filled"
-                                defaultValue={selectedRequest.request_status}
-                                InputProps={{
-                                    readOnly: true,
-                                  }}
-                              />
-                              {selectedRequest.request_status === 'Cancelled' && (
-                                <TextField
-                                  autoFocus
-                                  margin="dense"
-                                  id="name"
-                                  label="Reason"
-                                  type="text"
-                                  fullWidth
-                                  variant="filled"
-                                  defaultValue={selectedRequest.reason}
-                                  InputProps={{
-                                      readOnly: true,
-                                    }}
-                                />
-                              )}
-                            </div>
-                            <div>
-                            <TextField
-                                    autoFocus
-                                    margin="dense"
-                                    id="name"
-                                    label="Preventive Maintenance Officer"
-                                    type="text"
-                                    fullWidth
-                                    variant="filled"
-                                    defaultValue={selectedRequest.pm_officer}
-                                    InputProps={{
-                                        readOnly: true,
-                                      }}
-                                />
-                            </div>
-                            <div>
-                                <h6>Schedule of Travel</h6>
-                            </div>                                
-                                
-                            <div>
-                                <label>Date: {selectedRequest.request_date}</label>
-                            </div>
+              <div>
+                <TextField
+                  autoFocus
+                  margin="dense"
+                  id="name"
+                  label="Form Code"
+                  type="text"
+                  fullWidth
+                  variant="standard"
+                  defaultValue={selectedRequest.form_code}
+                  onChange={(event) => setEditFormCode(event.target.value)}
+                />
+              </div>
 
-                            <div>
-                                <label>Time of Departure: {selectedRequest.departure_time}</label>
-                            </div>
-                            <div>
-                                <label>Time of Return to Garage: {selectedRequest.arrival_time}</label>
-                            </div>
-                            <div>
-                                <label>Destination: {selectedRequest.destination}</label>
-                            </div>
-                            <div>
-                                <h6>Other Details</h6>
-                            </div>
-                            <div>
-                                <label>Total No. of Passenger/s : {selectedRequest.passenger_count}</label>
-                            </div>
-                            <div>
-                                <label>Name of Passenger/s: </label>
-                                {selectedRequest.passenger_names && Array.isArray(selectedRequest.passenger_names) && selectedRequest.passenger_names.map((passenger, index) => (
-                                  <div key={index}>{passenger}</div>
-                                ))}
-                            </div>
-                            <div>
-                                <label>Purpose: {selectedRequest.purpose}</label>
-                            </div>
-                            <div>
-                                <label>Requested by: {selectedRequest.requested_by}</label>
-                            </div>   
-                    </DialogContent>
-                <DialogActions>
-                <Button onClick={CloseView}>Close</Button>
-                </DialogActions>
-            </Dialog>
-        
-        {/* edit modal */}
-        <Dialog open={openEdit} onClose={CloseEdit} fullWidth maxWidth="sm">
-                <DialogTitle>Edit Details</DialogTitle>
-                  <DialogContent>
-                    <DialogContentText>
-                    {/* To add a new employee account, please enter the details in the designated input field. */}
-                    </DialogContentText>
-                    <div>
-                    <FormControl fullWidth variant="standard" margin="dense">
-                        <InputLabel id="vehicle-select-label">Vehicle</InputLabel>
+              <div>
+                <TextField
+                  autoFocus
+                  margin="dense"
+                  id="name"
+                  label="Form Code"
+                  type="text"
+                  fullWidth
+                  variant="standard"
+                  defaultValue={selectedRequest.rev_code}
+                  onChange={(event) => setEditRevCode(event.target.value)}
+                />
+              </div>
+
+              <div>
+              <FormControl fullWidth variant="standard" margin="dense">
+                <InputLabel id="vehicle-select-label">Vehicle</InputLabel>
                         <Select
                             labelId="vehicle-select-label"
                             id="vehicle-select"
@@ -419,8 +475,6 @@ useEffect(() => {
                         </Select>
                     </FormControl>
                 </div>
-  
-
                      <div>
                       <FormControl fullWidth variant="standard" margin="dense">
                           <InputLabel id="request-status-label">Request Status</InputLabel>
@@ -442,7 +496,6 @@ useEffect(() => {
                           <>
                             <FormLabel>Reason for Cancellation</FormLabel>
                             <Textarea 
-                              placeholder="" 
                               minRows={2} 
                               value={editReason}
                               onChange={(event) => setEditReason(event.target.value)}
@@ -450,7 +503,7 @@ useEffect(() => {
                           </>
                         )}
                       </div>
-                      <div>
+                    <div>
                       <TextField
                         autoFocus
                         margin="dense"
@@ -461,11 +514,23 @@ useEffect(() => {
                         variant="standard"
                         defaultValue={selectedRequest.pm_officer}
                         onChange={(event) => setEditPMOfficer(event.target.value)}
-                    />
-                      </div>
-                      <div>
-                      
-                      </div>
+                      />
+                    </div>
+
+                    <div>
+                      <TextField
+                        autoFocus
+                        margin="dense"
+                        id="name"
+                        label="Approved by"
+                        type="text"
+                        fullWidth
+                        variant="standard"
+                        defaultValue={selectedRequest.approved_by}
+                        onChange={(event) => setEditApprovedBy(event.target.value)}
+                      />
+                    </div>
+
                     <div>
                       <h6>Schedule of Travel</h6>
                     </div>   
