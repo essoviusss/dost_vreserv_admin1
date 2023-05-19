@@ -490,8 +490,11 @@ useEffect(() => {
           </thead>
           <TableBody>
             {filterRequest(request)
-              .filter((request) =>  request.request_status === "Pending" && role === "Manager" || 
-                                    request.request_status === "For Approval" && role === "ORD")
+              .filter((request) =>  (request.request_status === "Pending" && role === "Manager") || 
+                                    (request.request_status === "For Approval" && role === "ORD") || 
+                                    (request.request_status === "Pending" || request.request_status === "Approved" || request.request_status === "For Approval"
+                                    || request.request_status === "Disapproved" || request.request_status === "Cancelled"
+                                    && role === "SuperAdmin"))
               .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
               .map((request) => (
                 <TableRow key={request.request_id}>
