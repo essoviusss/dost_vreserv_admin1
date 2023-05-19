@@ -26,7 +26,7 @@ import jsPDF from 'jspdf';
 export default function AdmVehicleRequest(){
   //defaultValue
   const [selectedRequest, setSelectedRequest] = useState({});
-  const [request, setRequest] = useState([]);
+  const [requests, setRequest] = useState([]);
   const [vehicle, setVehicles] = useState([]);
   const [drivers, setDrivers] = useState([]); 
 
@@ -129,20 +129,32 @@ useEffect(() => {
     });
 }, []);
 
-
   //read - request
   useEffect(() => {
-    axios
-      .get("http://localhost/vreserv_admin_api/read_request.php")
-      .then((response) => {
-        if(Array.isArray(response.data)){
-          setRequest(response.data);
+    const fetchData = async () => {
+      try {
+        const admin_role = localStorage.getItem("admin_role");
+        // Define the FormData
+        let formData = new FormData();
+        formData.append('admin_role', admin_role);
+
+        const response = await axios.post("http://localhost/vreserv_admin_api/read_request.php", formData);
+
+        if (Array.isArray(response.data.data) && response.data.message === "Success") {
+          // Set the requests state
+          setRequest(response.data.data);
+          console.log("Very Nice");
+        } else {
+          console.log("Madi");
         }
-      })
-      .catch((error) => {
+      } catch (error) {
         console.log(error);
-      });
-  }, [request]);
+      }
+    };
+
+    // Call the fetchData function
+    fetchData();
+  }, []);
 
 
    //update
@@ -489,40 +501,33 @@ useEffect(() => {
             </tr>
           </thead>
           <TableBody>
-            {filterRequest(request)
-              .filter((request) =>  (request.request_status === "Pending" && role === "Manager") || 
-                                    (request.request_status === "For Approval" && role === "ORD") || 
-                                    (request.request_status === "Pending" || request.request_status === "Approved" || request.request_status === "For Approval"
-                                    || request.request_status === "Disapproved" || request.request_status === "Cancelled"
-                                    && role === "SuperAdmin"))
-              .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-              .map((request) => (
-                <TableRow key={request.request_id}>
-                  <TableCell style={{ textAlign: 'center' }}>{request.vehicle_name}</TableCell>
-                  <TableCell style={{ textAlign: 'center' }}>{request.driver_name}</TableCell>
-                  <TableCell style={{ textAlign: 'center' }}>{request.request_date}</TableCell>
-                  <TableCell style={{ textAlign: 'center' }}>{request.requested_by}</TableCell>
-                  <TableCell style={{ textAlign: 'center' }}>{request.pm_officer}</TableCell>
-                  <TableCell style={{ textAlign: 'center' }}>{request.request_status}</TableCell>
-                  <TableCell style={{ textAlign: 'center' }}>
-                    <Button variant="contained" onClick={() => handleOpenView(request)}>
-                      View
-                    </Button>
-                  </TableCell>
-                  <TableCell style={{ textAlign: 'center' }}>
-                    <Button variant="contained" onClick={() => handleOpenEdit(request)}>
-                      Edit
-                    </Button>
-                  </TableCell>
-                </TableRow>
-              ))}
+            {requests.map((request) => (
+              <TableRow key={request.request_id}>
+                <TableCell style={{ textAlign: 'center' }}>{request.vehicle_name}</TableCell>
+                <TableCell style={{ textAlign: 'center' }}>{request.driver_name}</TableCell>
+                <TableCell style={{ textAlign: 'center' }}>{request.request_date}</TableCell>
+                <TableCell style={{ textAlign: 'center' }}>{request.requested_by}</TableCell>
+                <TableCell style={{ textAlign: 'center' }}>{request.pm_officer}</TableCell>
+                <TableCell style={{ textAlign: 'center' }}>{request.request_status}</TableCell>
+                <TableCell style={{ textAlign: 'center' }}>
+                  <Button variant="contained" onClick={() => handleOpenView(request)}>
+                    View
+                  </Button>
+                </TableCell>
+                <TableCell style={{ textAlign: 'center' }}>
+                  <Button variant="contained" onClick={() => handleOpenEdit(request)}>
+                    Edit
+                  </Button>
+                </TableCell>
+              </TableRow>
+            ))}
           </TableBody>
         </Table>
       </TableContainer>
       <TablePagination
         rowsPerPageOptions={[5, 7, 25]}
         component="div"
-        count={request.length}
+        count={requests.length}
         rowsPerPage={rowsPerPage}
         page={page}
         onPageChange={handleChangePage}

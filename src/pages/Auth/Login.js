@@ -11,6 +11,7 @@ import { createTheme, ThemeProvider } from '@mui/material/styles';
 import axios from "axios";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+const qs = require('qs');
 
 
 const theme = createTheme();
@@ -29,9 +30,35 @@ export default function Login() {
     }
   }, [navigate]);
 
+  const appendRole = async () => {
+    await signIn();
+    const admin_role = localStorage.getItem("admin_role");
+
+    if (!admin_role) {
+        alert("No admin role found in local storage!");
+        return;
+    }
+  
+    const url1 = "http://localhost/vreserv_admin_api/read_request.php";
+
+    let fData1 = new FormData();
+    fData1.append("admin_role", admin_role);
+  
+    try {
+      const response = await axios.post(url1, fData1);
+      if(response.data.message === "Success"){
+        console.log("Nice");
+      }
+    } catch (e) {
+      alert(e);
+    }
+  }
+
+
+
   const signIn = async () => {
     const url = "http://localhost/vreserv_admin_api/login.php";
-
+  
     let fData = new FormData();
     fData.append("username", username);
     fData.append("password", password);
@@ -48,7 +75,7 @@ export default function Login() {
       // Save the JWT token in the local storage
       const jwtToken = await response.data.token;
       const admin_role = await response.data.admin_role;
-      
+  
       if (response.data.message === "Success") {
         alert("Login Successful");
         localStorage.setItem("token", jwtToken);
@@ -58,10 +85,10 @@ export default function Login() {
       } else {
         alert("User does not exist");
       }
-      } catch (error) {
-        console.error("Error:", error);
-        alert(error);
-      }
+    } catch (error) {
+      console.error("Error:", error);
+      alert(error);
+    }
   };
 
   return (
@@ -105,7 +132,7 @@ export default function Login() {
               autoComplete="current-password"
             />
             <Button
-              onClick={signIn}
+              onClick={appendRole}
               type="submit"
               fullWidth
               variant="contained"

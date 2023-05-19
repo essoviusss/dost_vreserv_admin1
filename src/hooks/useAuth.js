@@ -5,7 +5,7 @@ const useAuth = () => {
 
   useEffect(() => {
     const token = localStorage.getItem('token');
-    const admin_role = localStorage.getItem('admin_role');
+    const admin_role = localStorage.getItem('token');
     setIsLoggedIn(!!token);
   }, []);
 
