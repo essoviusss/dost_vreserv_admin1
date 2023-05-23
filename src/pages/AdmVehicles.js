@@ -11,12 +11,16 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
-
-
+import { Table, TableBody, TableCell, TableContainer, TablePagination, TableRow } from '@mui/material';
+import Paper from '@mui/material/Paper';
+import jwtDecode from 'jwt-decode';
+import useAuth from "../hooks/useAuth";
+import { useNavigate } from "react-router";
 
 export default function AdmVehicle() {
   const UID = uuidv4();
-
+  const isLoggedIn = useAuth();
+  const navigate = useNavigate();
   //insert
   const [vehicle_number, setVehicleNumber] = useState("");
   const [vehicle_name, setVehicleName] = useState("");
@@ -31,7 +35,18 @@ export default function AdmVehicle() {
   const [editVehicleNumber, setEditVehicleNumber] = useState("");
   const [editVehicleStatus, setEditVehicleStatus] = useState("");
 
-  
+  //table
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(5);
+
+  const handleChangePage = (event, newPage) => {
+    setPage(newPage);
+  };
+
+  const handleChangeRowsPerPage = (event) => {
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setPage(0);
+  };
   
   //modal
   const [open, setOpen] = React.useState(false);
@@ -86,6 +101,23 @@ export default function AdmVehicle() {
      alert(error);
     });
   }
+
+  //token expiry
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+
+    if (token) {
+        const decodedToken = jwtDecode(token);
+        const currentTime = Math.floor(Date.now() / 1000); // get the current time
+        if (currentTime > decodedToken.exp) {
+            localStorage.removeItem("token");
+            alert("Token expired, please login again");
+            navigate('/');
+        }
+    } else if (!isLoggedIn) {
+        navigate('/');
+    }
+  }, [isLoggedIn, navigate]);
   
   //read
   useEffect(() => {
@@ -180,42 +212,51 @@ export default function AdmVehicle() {
           <Button onClick={addVehicle}>Save</Button>
         </DialogActions>
       </Dialog>
-      <table>
-        <thead>
-          <tr>
-            {/* <th>Vehicle ID</th> */}
-            <th>Vehicle Number</th>
-            <th>Vehicle Name</th>
-            <th>Vehicle Status</th>
-            <th>Action</th>
-          </tr>
-        </thead>
-        <tbody>
-          {vehicles.map((vehicle) => (
-            <tr key={vehicle.vehicle_id}>
-              {/* <td>{vehicle.vehicle_id}</td> */}
-              <td>{vehicle.vehicle_number}</td>
-              <td>{vehicle.vehicle_name}</td>
-              <td>{vehicle.vehicle_status}</td>
-              <td>
+      <Paper>
+      <TableContainer>
+        <Table>
+          <thead>
+            <tr>
+              <th style={{ textAlign: 'center' }}>Vehicle Number</th>
+              <th style={{ textAlign: 'center' }}>Vehicle Name</th>
+              <th style={{ textAlign: 'center' }}>Vehicle Status</th>
+              <th style={{ textAlign: 'center' }}>Action</th>
+            </tr>
+          </thead>
+          <TableBody>
+            {vehicles.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((vehicle) => (
+              <TableRow key={vehicle.vehicle_id}>
+                <TableCell style={{ textAlign: 'center' }}>{vehicle.vehicle_number}</TableCell>
+                <TableCell style={{ textAlign: 'center' }}>{vehicle.vehicle_name}</TableCell>
+                <TableCell style={{ textAlign: 'center' }}>{vehicle.vehicle_status}</TableCell>
+                <TableCell>
+                <div style={{ display: 'flex', justifyContent: 'center', gap: '8px' }}>
                   <Button variant="contained" onClick={() => handleOpenView(vehicle)}>
                     View
-                  </Button>  
-                </td>
-                <td>
+                  </Button>
                   <Button variant="contained" onClick={() => handleOpenEdit(vehicle)}>
                     Edit
-                  </Button> 
-                </td>
-                <td>
+                  </Button>
                   <Button variant="contained" onClick={() => deleteVehicle(vehicle.vehicle_id)}>
                     Delete
                   </Button>
-                </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+                </div>
+              </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+        <TablePagination
+          rowsPerPageOptions={[5, 10, 25]}
+          component="div"
+          count={vehicles.length}
+          rowsPerPage={rowsPerPage}
+          page={page}
+          onPageChange={handleChangePage}
+          onRowsPerPageChange={handleChangeRowsPerPage}
+        />
+      </TableContainer>
+      </Paper>
       {/* view modal*/}
       <Dialog open={openView} onClose={CloseView} fullWidth maxWidth="sm">
             <DialogTitle>View Details</DialogTitle>

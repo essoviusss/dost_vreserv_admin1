@@ -13,16 +13,23 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
+import { Table, TableBody, TableCell, TableContainer, TablePagination, TableRow } from '@mui/material';
+import Paper from '@mui/material/Paper';
+import jwtDecode from 'jwt-decode';
+import useAuth from "../hooks/useAuth";
+import { useNavigate } from "react-router";
 
 export default function AdmEmployee() {
   const UID = uuidv4();
+  const isLoggedIn = useAuth();
+  const navigate = useNavigate();
   //modal
   const [open, setOpen] = React.useState(false);
   const [openView, setOpenView] = React.useState(false);
   const [openEdit, setOpenEdit] = React.useState(false);
   //inserting employee
   const [employee_name, setEmployeeName] = useState("");
-  const [employee_email, setEmployeeEmail] = useState("");
+  const [email, setEmployeeEmail] = useState("");
   const [employee_username, setEmployeeUsername] = useState("");
   const [employee_password, setEmployeePassword] = useState("");
   const [employee_unit, setEmployeeUnit] = useState("");
@@ -45,12 +52,23 @@ export default function AdmEmployee() {
   const handleOpenEdit = (employee) => {
     setSelectedEmployee(employee);
     setEditEmployeeName(employee.employee_name);
-    setEditEmployeeEmail(employee.employee_email);
+    setEditEmployeeEmail(employee.email);
     setEditEmployeeUnit(employee.employee_unit);
     setOpenEdit(true);
   };
 
-  
+  //table
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(5);
+
+  const handleChangePage = (event, newPage) => {
+    setPage(newPage);
+  };
+
+  const handleChangeRowsPerPage = (event) => {
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setPage(0);
+  };
 
   const handleOpen = () => {
     setOpen(true);
@@ -76,10 +94,10 @@ function handleUpdate() {
   let fData = new FormData();
   fData.append("employee_id", selectedEmployee.employee_id);
   fData.append("employee_name", editEmployeeName);
-  fData.append("employee_email", editEmployeeEmail);
+  fData.append("email", editEmployeeEmail);
   fData.append("employee_unit", editEmployeeUnit);
   fData.append("selected_employee_name", selectedEmployee.employee_name);
-  fData.append("selected_employee_email", selectedEmployee.employee_email);
+  fData.append("selected_email", selectedEmployee.email);
   fData.append("selected_employee_unit", selectedEmployee.employee_unit);
 
   axios
@@ -100,21 +118,39 @@ function handleUpdate() {
     let fData = new FormData();
     fData.append("user_id", UID);
     fData.append("employee_name", employee_name);
-    fData.append("employee_email", employee_email);
-    fData.append("employee_username", employee_username);
+    fData.append("employee_email", email);
     fData.append("employee_password", employee_password);
     fData.append("employee_unit", employee_unit);
 
 
     axios.post(url, fData)
       .then(response => {
-        alert("Employee added successfully!!");
+        if(response.data === "Success"){
+          alert("Employee added successfully!!");
+        }
         handleClose();
       })
       .catch(error => {
        alert(error);
       });
   }
+
+  //token expiry
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+
+    if (token) {
+        const decodedToken = jwtDecode(token);
+        const currentTime = Math.floor(Date.now() / 1000); // get the current time
+        if (currentTime > decodedToken.exp) {
+            localStorage.removeItem("token");
+            alert("Token expired, please login again");
+            navigate('/');
+        }
+    } else if (!isLoggedIn) {
+        navigate('/');
+    }
+  }, [isLoggedIn, navigate]);
 
   //read table
   useEffect(() => {
@@ -182,16 +218,6 @@ function handleUpdate() {
                     autoFocus
                     margin="dense"
                     id="name"
-                    label="Username"
-                    type="text"
-                    fullWidth
-                    variant="standard"
-                    onChange={e => setEmployeeUsername(e.target.value)}
-                />
-                <TextField
-                    autoFocus
-                    margin="dense"
-                    id="name"
                     label="Password"
                     type="password"
                     fullWidth
@@ -216,40 +242,51 @@ function handleUpdate() {
             </Dialog>
         </div>
         <div className='employee-tbl'>
-        <table>
-        <thead>
-          <tr>
-            <th>Employee Name</th>
-            {/* <th>Username</th> */}
-            <th>Employee Unit</th>
-            <th>Action</th>
-          </tr>
-        </thead>
-        <tbody>
-          {employees.map(employee => (
-                <tr key={employee.employee_id}>
-                  <td>{employee.employee_name}</td>
-                  {/* <td>{employee.username}</td> */}
-                  <td>{employee.employee_unit}</td>
-                  <td>
-                    <Button variant="contained" onClick={() => handleOpenView(employee)}>
-                    View
-                    </Button>           
-                  </td>
-                  <td>
-                    <Button variant="contained" onClick={() => handleOpenEdit(employee)}>
-                      Edit
-                    </Button>           
-                  </td>
-                  <td>
-                    <Button variant="contained" onClick={() => deleteEmployee(employee.employee_id)}>
-                      Delete
-                    </Button>
-                  </td>
+        <Paper>
+          <TableContainer>
+            <Table>
+              <thead>
+                <tr>
+                  <th style={{ textAlign: 'center' }}>Employee Name</th>
+                  <th style={{ textAlign: 'center' }}>Employee Email</th>
+                  <th style={{ textAlign: 'center' }}>Employee Unit</th>
+                  <th style={{ textAlign: 'center' }}>Action</th>
                 </tr>
-              ))}
-        </tbody>
-      </table>
+              </thead>
+              <TableBody>
+                {employees.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((employee) => (
+                  <TableRow key={employee.employee_id}>
+                    <TableCell style={{ textAlign: 'center' }}>{employee.employee_name}</TableCell>
+                    <TableCell style={{ textAlign: 'center' }}>{employee.email}</TableCell>
+                    <TableCell style={{ textAlign: 'center' }}>{employee.employee_unit}</TableCell>
+                    <TableCell style={{ textAlign: 'center' }}>
+                      <div style={{ display: 'flex', gap: '8px', justifyContent: 'center' }}>
+                        <Button variant="contained" onClick={() => handleOpenView(employee)}>
+                          View
+                        </Button>
+                        <Button variant="contained" onClick={() => handleOpenEdit(employee)}>
+                          Edit
+                        </Button>
+                        <Button variant="contained" onClick={() => deleteEmployee(employee.employee_id)}>
+                          Delete
+                        </Button>
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+            <TablePagination
+              rowsPerPageOptions={[5, 10, 25]}
+              component="div"
+              count={employees.length}
+              rowsPerPage={rowsPerPage}
+              page={page}
+              onPageChange={handleChangePage}
+              onRowsPerPageChange={handleChangeRowsPerPage}
+            />
+          </TableContainer>
+        </Paper>
       <Dialog open={openView} onClose={CloseView}>
                 <DialogTitle>View Details</DialogTitle>
                 <DialogContent>
@@ -277,24 +314,12 @@ function handleUpdate() {
                     type="email"
                     fullWidth
                     variant="filled"
-                    defaultValue={selectedEmployee.employee_email}
+                    defaultValue={selectedEmployee.email}
                     InputProps={{
                       readOnly: true,
                     }}
                 />
-                {/* <TextField
-                    autoFocus
-                    margin="dense"
-                    id="name"
-                    label="Username"
-                    type="text"
-                    fullWidth
-                    variant="filled"
-                    // defaultValue={selectedEmployee.employee_username}
-                    InputProps={{
-                      readOnly: true,
-                    }}
-                /> */}
+               
                 <TextField
                     autoFocus
                     margin="dense"
@@ -339,19 +364,10 @@ function handleUpdate() {
                         type="email"
                         fullWidth
                         variant="standard"
-                        defaultValue={selectedEmployee.employee_email}
+                        defaultValue={selectedEmployee.email}
                         onChange={(event) => setEditEmployeeEmail(event.target.value)}
                     />
-                    {/* <TextField
-                        autoFocus
-                        margin="dense"
-                        id="name"
-                        label="Username"
-                        type="text"
-                        fullWidth
-                        variant="standard"
-                        // defaultValue={selectedEmployee.employee_username}
-                    /> */}
+                    
                     <TextField
                         autoFocus
                         margin="dense"
