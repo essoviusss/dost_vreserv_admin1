@@ -9,21 +9,6 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
-
-import Header from "./Header";
-import jwtDecode from 'jwt-decode';
-import useAuth from "../hooks/useAuth";
-import { useNavigate } from "react-router";
-
-export default function AdmSchedule() {
-    const isLoggedIn = useAuth();
-    const navigate = useNavigate();
-    const [open, setOpen] = useState(false);
-    const [month, setMonth] = useState('');
-    const [vehicles, setVehicles] = useState([]);
-    const [selectedVehicle, setSelectedVehicle] = useState('');
-    const [pms, setPMS] = useState([]);
-  
 import Paper from '@mui/material/Paper';
 import InputBase from '@mui/material/InputBase';
 import IconButton from '@mui/material/IconButton';
@@ -34,8 +19,14 @@ import { StaticDateTimePicker } from '@mui/x-date-pickers/StaticDateTimePicker';
 import dayjs from 'dayjs';
 
 
+import jwtDecode from 'jwt-decode';
+import useAuth from "../hooks/useAuth";
+import { useNavigate } from "react-router";
 
 export default function AdmSchedule() {
+    const isLoggedIn = useAuth();
+    const navigate = useNavigate();
+  
   //modal
   const [open, setOpen] = useState(false);
   const [openEdit, setOpenEdit] = React.useState(false);
