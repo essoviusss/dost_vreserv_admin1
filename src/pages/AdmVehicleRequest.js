@@ -154,11 +154,11 @@ useEffect(() => {
 
     // Call the fetchData function
     fetchData();
-  }, []);
+  }, [requests]);
 
 
    //update
-   function handleUpdate() {
+   async function handleUpdate() {
     const url = "http://localhost/vreserv_admin_api/edit_vehicleRequest.php";
     
     let fData = new FormData();
@@ -175,25 +175,19 @@ useEffect(() => {
     fData.append("selected_request_status", selectedRequest.request_status);
     fData.append("selected_PMOfficer", selectedRequest.pm_officer);
     fData.append("selected_ApprovedBy", selectedRequest.approved_by);
-    if(editRequestStatus === 'Cancelled') {
+    if(editRequestStatus === 'Cancelled' || editRequestStatus === 'Disapproved' ) {
       fData.append("reason", editReason);
     } else {
       fData.append("reason", "");
     }
     
-    axios
-      .post(url, fData)
-      .then((response) => {
-        if(response.data === "Success"){
-          alert("Request updated successfully!!");
-        } else{
-          alert(response.data);
-        }
-        CloseEdit();
-      })
-      .catch((error) => {
-        alert(error);
-      });
+    const response = await axios.post(url, fData);
+    if(response.data.message === "Success"){
+      alert("Updated");
+    } else{
+      alert("Madi");
+    }
+    CloseEdit();
   }
 
    //search
@@ -495,7 +489,6 @@ useEffect(() => {
               <th style={{ textAlign: 'center' }}>Driver Name</th>
               <th style={{ textAlign: 'center' }}>Request Date</th>
               <th style={{ textAlign: 'center' }}>Requested by</th>
-              <th style={{ textAlign: 'center' }}>PM Officer</th>
               <th style={{ textAlign: 'center' }}>Request Status</th>
               <th style={{ textAlign: 'center' }}>Action</th>
             </tr>
@@ -507,7 +500,6 @@ useEffect(() => {
                 <TableCell style={{ textAlign: 'center' }}>{request.driver_name}</TableCell>
                 <TableCell style={{ textAlign: 'center' }}>{request.request_date}</TableCell>
                 <TableCell style={{ textAlign: 'center' }}>{request.requested_by}</TableCell>
-                <TableCell style={{ textAlign: 'center' }}>{request.pm_officer}</TableCell>
                 <TableCell style={{ textAlign: 'center' }}>{request.request_status}</TableCell>
                 <TableCell style={{ textAlign: 'center' }}>
                   <Button variant="contained" onClick={() => handleOpenView(request)}>
@@ -541,12 +533,6 @@ useEffect(() => {
             <DialogContentText>
               {/* To add a new employee account, please enter the details in the designated input field. */}
             </DialogContentText>
-            <div>
-              <label>{selectedRequest.form_code}</label>
-            </div>
-            <div>
-              <label>{selectedRequest.rev_code}</label>
-            </div>
             <div> 
               <TextField
                autoFocus
@@ -591,7 +577,7 @@ useEffect(() => {
                 readOnly: true,
               }}
               />
-              {selectedRequest.request_status === 'Cancelled' && (
+              {selectedRequest.request_status === 'Cancelled' || selectedRequest.request_status === 'Disapproved' && (
               <TextField
               autoFocus
               margin="dense"
@@ -684,34 +670,6 @@ useEffect(() => {
               </DialogContentText>
 
               <div>
-                <TextField
-                  autoFocus
-                  margin="dense"
-                  id="name"
-                  label="Form Code"
-                  type="text"
-                  fullWidth
-                  variant="standard"
-                  defaultValue={selectedRequest.form_code}
-                  onChange={(event) => setEditFormCode(event.target.value)}
-                />
-              </div>
-
-              <div>
-                <TextField
-                  autoFocus
-                  margin="dense"
-                  id="name"
-                  label="REV Code"
-                  type="text"
-                  fullWidth
-                  variant="standard"
-                  defaultValue={selectedRequest.rev_code}
-                  onChange={(event) => setEditRevCode(event.target.value)}
-                />
-              </div>
-
-              <div>
               <FormControl fullWidth variant="standard" margin="dense">
                 <InputLabel id="vehicle-select-label">Vehicle</InputLabel>
                         <Select
@@ -764,9 +722,11 @@ useEffect(() => {
                             ))}
                           </Select>
                         </FormControl>
-                        {editRequestStatus === 'Cancelled' && (
+                        {(editRequestStatus === 'Cancelled' || editRequestStatus === 'Disapproved') && (
                           <>
-                            <FormLabel>Reason for Cancellation</FormLabel>
+                            <FormLabel>
+                              {editRequestStatus === 'Cancelled' ? 'Reason for Cancellation' : 'Reason for Disapproval'}
+                            </FormLabel>
                             <Textarea 
                               minRows={2} 
                               value={editReason}
@@ -774,6 +734,7 @@ useEffect(() => {
                             />
                           </>
                         )}
+
                       </div>
                     <div>
                       <TextField

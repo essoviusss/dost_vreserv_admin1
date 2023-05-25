@@ -30,7 +30,6 @@ export default function AdmEmployee() {
   //inserting employee
   const [employee_name, setEmployeeName] = useState("");
   const [email, setEmployeeEmail] = useState("");
-  const [employee_username, setEmployeeUsername] = useState("");
   const [employee_password, setEmployeePassword] = useState("");
   const [employee_unit, setEmployeeUnit] = useState("");
   const [employees, setEmployees] = useState([]);
@@ -88,7 +87,7 @@ export default function AdmEmployee() {
 
 
 //update
-function handleUpdate() {
+async function handleUpdate() {
   const url = "http://localhost/vreserv_admin_api/edit_employee.php";
 
   let fData = new FormData();
@@ -100,15 +99,13 @@ function handleUpdate() {
   fData.append("selected_email", selectedEmployee.email);
   fData.append("selected_employee_unit", selectedEmployee.employee_unit);
 
-  axios
-    .post(url, fData)
-    .then((response) => {
-      alert("Employee updated successfully!!");
-      CloseEdit();
-    })
-    .catch((error) => {
-      alert(error);
-    });
+  const response = await axios.post(url, fData);
+  if(response.data.message === "Success"){
+    alert("Updated");
+  } else{
+    alert("Error");
+  }
+  CloseEdit();
 }
  
   //insert
@@ -339,6 +336,7 @@ function handleUpdate() {
                 {/* <Button onClick={addEmployee}>Save</Button> */}
                 </DialogActions>
             </Dialog>
+            {/* edit modal */}
             <Dialog open={openEdit} onClose={CloseEdit}>
                     <DialogTitle>Edit Details</DialogTitle>
                     <DialogContent>
