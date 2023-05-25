@@ -3,7 +3,9 @@ import { useEffect } from 'react';
 import useAuth from "../hooks/useAuth";
 import Header from "./Header";
 import jwtDecode from 'jwt-decode';
+import './GlobalCSS/content.css';
 
+//MUI
 
 export default function AdmDashboard(){
     const navigate = useNavigate();
