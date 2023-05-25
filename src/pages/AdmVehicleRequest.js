@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import Header from "./Header";
+import './Components/AdmVehicleRequest.css'
 
 //material ui
 import Button from '@mui/material/Button';
@@ -463,69 +464,87 @@ useEffect(() => {
     doc.save(`${selectedRequest.requested_by}.VRESERV_Request_Report.pdf`);
 };
     return(
-        <div>
-            <Header />
-            <Paper
-            component="form"
-            sx={{ p: '2px 4px', display: 'flex', alignItems: 'center', width: 400 }}
-            >
-            <InputBase
-              sx={{ ml: 1, flex: 1 }}
-              placeholder="Search"
-              inputProps={{ 'aria-label': 'search request' }}
-              value={searchQuery}
-                onChange={e => setSearchQuery(e.target.value)}
-            />
-            <IconButton type="button" sx={{ p: '10px' }} aria-label="search">
-              <SearchIcon />
-            </IconButton>
+      <div className="page-container">
+        <Header/>
+        <div className="rlogs-text">Requests</div>
+        <Paper
+          component="form"
+          sx={{ p: '2px 4px', display: 'flex', alignItems: 'center', width: '100%' }}
+          >
+          <InputBase
+            style={{ fontFamily: 'Poppins, sans-serif' }}
+            sx={{ ml: 1, flex: 1 }}
+            placeholder="Search"
+            inputProps={{ 'aria-label': 'search request' }}
+            value={searchQuery}
+            onChange={e => setSearchQuery(e.target.value)}
+          />
+          <IconButton type="button" sx={{ p: '10px' }} aria-label="search">
+            <SearchIcon />
+          </IconButton>
+      </Paper>
+      <Paper sx={{ borderRadius: '10px', marginTop: '2%' }}>
+        <TableContainer>
+          <Table>
+            <thead>
+              <tr>
+                <th className='requestlog-th' style={{ textAlign: 'center' }}>Vehicle Name</th>
+                <th className='requestlog-th' style={{ textAlign: 'center' }}>Driver Name</th>
+                <th className='requestlog-th' style={{ textAlign: 'center' }}>Requested By</th>
+                <th className='requestlog-th' style={{ textAlign: 'center' }}>Request Status</th>
+                <th className='requestlog-th' style={{ textAlign: 'center' }}>Action</th>
+              </tr>
+              </thead>
+              <TableBody>
+                {requests.map((request) => (
+                  <TableRow key={request.request_id}>
+                    <TableCell style={{ fontFamily: 'Poppins, sans-serif', textAlign: 'center', wordBreak: 'break-word', maxWidth: '120px' }}>{request.vehicle_name}</TableCell>
+                    <TableCell style={{ fontFamily: 'Poppins, sans-serif', textAlign: 'center', wordBreak: 'break-word', maxWidth: '140px' }}>{request.driver_name}</TableCell>
+                    <TableCell style={{ fontFamily: 'Poppins, sans-serif', textAlign: 'center', wordBreak: 'break-word', maxWidth: '140px' }}>{request.requested_by}</TableCell>
+                    <TableCell style={{ fontFamily: 'Poppins, sans-serif', textAlign: 'center', padding: 0 }}>
+                      <div style={{ 
+                        backgroundColor: 
+                          request.request_status === "Pending" ? '#FDC858' :
+                          request.request_status === "Approved" ? 'green' :
+                          request.request_status === "Disapproved" ? '#b21127' :
+                          request.request_status === "Cancelled" ? '#6e6e6e' :
+                          request.request_status === "For Approval" ? '#025BAD' : 'inherit', 
+                        color: 'white',
+                        padding: '5px 5px',
+                        borderRadius: '50px',
+                        width: '80%', // Adjust as needed
+                        margin: 'auto',
+                        wordBreak: 'break-word',
+                        maxWidth: '120px' // Adjust the width as needed
+                      }}>
+                        {request.request_status}
+                      </div>
+                    </TableCell>
+                    <TableCell style={{ fontFamily: 'Poppins, sans-serif', textAlign: 'center', wordBreak: 'break-word', maxWidth: '140px' }}>
+                      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', width: '150px' }}>
+                        <Button variant="contained" style={{ marginRight: '10px' }} onClick={() => handleOpenView(request)}>
+                          View
+                        </Button>
+                        <Button variant="contained" onClick={() => handleOpenEdit(request)}>
+                          Edit
+                        </Button>
+                      </div>
+                    </TableCell>
+                  </TableRow>        
+                  ))}
+                </TableBody>
+              </Table>
+              </TableContainer>
+        <TablePagination
+          rowsPerPageOptions={[5, 7, 25]}
+          component="div"
+          count={requests.length}
+          rowsPerPage={rowsPerPage}
+          page={page}
+          onPageChange={handleChangePage}
+          onRowsPerPageChange={handleChangeRowsPerPage}
+        />
           </Paper>
-    <Paper>
-      <TableContainer>
-        <Table>
-          <thead>
-            <tr>
-              <th style={{ textAlign: 'center' }}>Vehicle Name</th>
-              <th style={{ textAlign: 'center' }}>Driver Name</th>
-              <th style={{ textAlign: 'center' }}>Request Date</th>
-              <th style={{ textAlign: 'center' }}>Requested by</th>
-              <th style={{ textAlign: 'center' }}>Request Status</th>
-              <th style={{ textAlign: 'center' }}>Action</th>
-            </tr>
-          </thead>
-          <TableBody>
-            {requests.map((request) => (
-              <TableRow key={request.request_id}>
-                <TableCell style={{ textAlign: 'center' }}>{request.vehicle_name}</TableCell>
-                <TableCell style={{ textAlign: 'center' }}>{request.driver_name}</TableCell>
-                <TableCell style={{ textAlign: 'center' }}>{request.request_date}</TableCell>
-                <TableCell style={{ textAlign: 'center' }}>{request.requested_by}</TableCell>
-                <TableCell style={{ textAlign: 'center' }}>{request.request_status}</TableCell>
-                <TableCell style={{ textAlign: 'center' }}>
-                  <Button variant="contained" onClick={() => handleOpenView(request)}>
-                    View
-                  </Button>
-                </TableCell>
-                <TableCell style={{ textAlign: 'center' }}>
-                  <Button variant="contained" onClick={() => handleOpenEdit(request)}>
-                    Edit
-                  </Button>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
-      <TablePagination
-        rowsPerPageOptions={[5, 7, 25]}
-        component="div"
-        count={requests.length}
-        rowsPerPage={rowsPerPage}
-        page={page}
-        onPageChange={handleChangePage}
-        onRowsPerPageChange={handleChangeRowsPerPage}
-      />
-    </Paper>
       {/* view modal*/}
       <Dialog open={openView} onClose={CloseView} fullWidth maxWidth="sm">
         <DialogTitle>View Details</DialogTitle>
@@ -577,7 +596,7 @@ useEffect(() => {
                 readOnly: true,
               }}
               />
-              {selectedRequest.request_status === 'Cancelled' || selectedRequest.request_status === 'Disapproved' && (
+              {(selectedRequest.request_status === 'Cancelled' || selectedRequest.request_status === 'Disapproved') && (
               <TextField
               autoFocus
               margin="dense"

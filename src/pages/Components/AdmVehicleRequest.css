@@ -1,0 +1,13 @@
+.rlogs-text {
+    font-size: 23px;
+    color: #1A2458;
+    font-weight: bold;
+    margin-bottom: 2%;
+}
+.requestlog-th {
+    text-transform: uppercase;
+    font-size: 17px;
+    font-weight: 800;
+    padding: 15px;
+    color: #1A2458;
+}

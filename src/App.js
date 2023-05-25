@@ -2,6 +2,7 @@ import * as React from 'react';
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import { FormDataProvider } from './pages/FormDataContext';
 
+//Paths
 import Login from './pages/Auth/Login';
 import AdmDashboard from './pages/AdmDashboard';
 import AdmSchedule from './pages/AdmSchedule';
@@ -22,23 +23,36 @@ function MainContent() {
   }
 
   return (
-    <div className="App" style={{ display: 'flex' }}>
+    <div className="App" style={{ display: 'flex', backgroundColor: '#F4F7FE', minHeight: '100vh' }}>
       <div className="sidebar">
         <Sidebar />
       </div>
-      <div className="main-content" style={{ flex: 1 }}>
-            <Routes>
-                <Route path="/" element={<Login />} />
-                <Route path="/Sidebar" element={<Sidebar />} />
-                <Route path="/AdmDashboard" element={<AdmDashboard />} />
-                <Route path="/AdmSchedule" element={<AdmSchedule />} />
-                <Route path="/AdmVehicleRequest" element={<AdmVehicleRequest />} />
-                <Route path="/AdmVehicles" element={<AdmVehicles />} />
-                <Route path="/AdmDrivers" element={<AdmDrivers />} />
-                <Route path="/AdmEmployee" element={<AdmEmployee />} />
-                <Route path="/Approved" element={<Approved />} />
-                <Route path="/Rejected" element={<Rejected />} />
-            </Routes>
+      <div
+          className="main-content"
+          style={{
+            flex: 1,
+            overflow: 'auto',
+            paddingTop: 75,
+            paddingLeft: 15,
+            paddingRight: 15,
+            paddingBottom: 15,
+            backgroundColor: '#F4F7FE',
+            boxSizing: 'border-box',
+            minHeight: '100%',
+          }}
+        >
+        <Routes>
+            <Route path="/" element={<Login />} />
+            <Route path="/Sidebar" element={<Sidebar />} />
+            <Route path="/AdmDashboard" element={<AdmDashboard />} />
+            <Route path="/AdmSchedule" element={<AdmSchedule />} />
+            <Route path="/AdmVehicleRequest" element={<AdmVehicleRequest />} />
+            <Route path="/AdmVehicles" element={<AdmVehicles />} />
+            <Route path="/AdmDrivers" element={<AdmDrivers />} />
+            <Route path="/AdmEmployee" element={<AdmEmployee />} />
+            <Route path="/Approved" element={<Approved />} />
+            <Route path="/Rejected" element={<Rejected />} />
+        </Routes>
       </div>
     </div>
   );
