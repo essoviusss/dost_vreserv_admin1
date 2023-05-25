@@ -17,6 +17,10 @@ import Paper from '@mui/material/Paper';
 import jwtDecode from 'jwt-decode';
 import useAuth from "../hooks/useAuth";
 import { useNavigate } from "react-router";
+import FormControl from '@mui/joy/FormControl';
+import InputLabel from '@mui/material/InputLabel';
+import MenuItem from '@mui/material/MenuItem';
+import Select from '@mui/material/Select';
 
 
 
@@ -43,6 +47,12 @@ export default function AdmVehicle() {
   const [editDriverName, setEditDriverName] = useState("");
   const [editDriverEmail, setEditDriverEmail] = useState("");
   const [editDriverStatus, setEditDriverStatus] = useState("");
+
+  const STATUSES = [
+    { value: 'Available', label: 'Available' },
+    { value: 'Not Available', label: 'Not Available' },
+
+  ];
 
   //table
   const [page, setPage] = useState(0);
@@ -144,7 +154,7 @@ export default function AdmVehicle() {
   }, [drivers]);
 
   //update
-  function handleUpdate() {
+  async function handleUpdate() {
     const url = "http://localhost/vreserv_admin_api/edit_driver.php";
   
     let fData = new FormData();
@@ -155,16 +165,14 @@ export default function AdmVehicle() {
     fData.append("selected_driver_name", selectedDriver.driver_name);
     fData.append("selected_email", selectedDriver.email);
     fData.append("selected_driver_status", selectedDriver.driver_status);
-  
-    axios
-      .post(url, fData)
-      .then((response) => {
-        alert("Driver updated successfully!!");
-        CloseEdit();
-      })
-      .catch((error) => {
-        alert(error);
-      });
+
+    const response = await axios.post(url, fData);
+    if(response.data.message === "Success"){
+      alert("Updated");
+    } else{
+      alert("Error");
+    }
+    CloseEdit();
   }
   //delete
   function deleteDriver(driver_id){
@@ -357,19 +365,23 @@ export default function AdmVehicle() {
                         variant="standard"
                         defaultValue={selectedDriver.email}
                         onChange={(event) => setEditDriverEmail(event.target.value)}
-                    />
-                    
-                    <TextField
-                        autoFocus
-                        margin="dense"
-                        id="name"
-                        label="Driver Status"
-                        type="text"
-                        fullWidth
-                        variant="standard"
-                        defaultValue={selectedDriver.driver_status}
-                        onChange={(event) => setEditDriverStatus(event.target.value)}
-                    />              
+                    />  
+                    <FormControl fullWidth variant="standard" margin="dense">
+                          <InputLabel id="status-label">Status</InputLabel>
+                          <Select
+                            labelId="status-label"
+                            id="status-select"
+                            value={editDriverStatus}
+                            label="Request Status"
+                            onChange={(event) => setEditDriverStatus(event.target.value)}
+                          >
+                            {STATUSES.map((status) => (
+                              <MenuItem key={status.value} value={status.value}>
+                                {status.label}
+                              </MenuItem>
+                            ))}
+                          </Select>
+                  </FormControl>         
                     </DialogContent>
                     <DialogActions>
                     <Button onClick={CloseEdit}>Close</Button>

@@ -11,6 +11,10 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
+import FormControl from '@mui/joy/FormControl';
+import InputLabel from '@mui/material/InputLabel';
+import MenuItem from '@mui/material/MenuItem';
+import Select from '@mui/material/Select';
 import { Table, TableBody, TableCell, TableContainer, TablePagination, TableRow } from '@mui/material';
 import Paper from '@mui/material/Paper';
 import jwtDecode from 'jwt-decode';
@@ -22,7 +26,6 @@ export default function AdmVehicle() {
   const isLoggedIn = useAuth();
   const navigate = useNavigate();
   //insert
-  const [vehicle_number, setVehicleNumber] = useState("");
   const [vehicle_name, setVehicleName] = useState("");
   
 
@@ -32,8 +35,14 @@ export default function AdmVehicle() {
   
   //update
   const [editVehicleName, setEditVehicleName] = useState("");
-  const [editVehicleNumber, setEditVehicleNumber] = useState("");
   const [editVehicleStatus, setEditVehicleStatus] = useState("");
+
+  const STATUSES = [
+    { value: 'Available', label: 'Available' },
+    { value: 'Not Available', label: 'Not Available' },
+
+  ];
+  
 
   //table
   const [page, setPage] = useState(0);
@@ -70,7 +79,6 @@ export default function AdmVehicle() {
   const handleOpenEdit = (vehicle) => {
     setSelectedVehicle(vehicle);
     setEditVehicleName(vehicle.vehicle_name);
-    setEditVehicleNumber(vehicle.vehicle_number);
     setEditVehicleStatus(vehicle.vehicle_status);
     setOpenEdit(true);
   };
@@ -89,7 +97,6 @@ export default function AdmVehicle() {
 
     let fData = new FormData();
     fData.append("vehicle_id", UID);
-    fData.append("vehicle_number", vehicle_number);
     fData.append("vehicle_name", vehicle_name);
 
     axios.post(url, fData)
@@ -134,27 +141,23 @@ export default function AdmVehicle() {
   }, [vehicles]);
 
   //update
-  function handleUpdate() {
+  async function handleUpdate() {
     const url = "http://localhost/vreserv_admin_api/edit_vehicle.php";
   
     let fData = new FormData();
     fData.append("vehicle_id", selectedVehicle.vehicle_id);
     fData.append("vehicle_name", editVehicleName);
-    fData.append("vehicle_number", editVehicleNumber);
     fData.append("vehicle_status", editVehicleStatus);
     fData.append("selected_vehicle_name", selectedVehicle.vehicle_name);
-    fData.append("selected_vehicle_number", selectedVehicle.vehicle_number);
     fData.append("selected_vehicle_status", selectedVehicle.vehicle_status);
   
-    axios
-      .post(url, fData)
-      .then((response) => {
-        alert("Vehicle updated successfully!!");
-        CloseEdit();
-      })
-      .catch((error) => {
-        alert(error);
-      });
+    const response = await axios.post(url, fData);
+    if(response.data.message === "Success"){
+      alert("Updated");
+    } else{
+      alert("Error");
+    }
+    CloseEdit();
   }
 
   //delete
@@ -188,16 +191,6 @@ export default function AdmVehicle() {
           <TextField
             autoFocus
             margin="dense"
-            id="vehicle_number"
-            label="Plate Number"
-            type="text"
-            fullWidth
-            variant="standard"
-            onChange={e => setVehicleNumber(e.target.value)}
-          />
-          <TextField
-            autoFocus
-            margin="dense"
             id="vehicle_name"
             label="Vehicle Name"
             type="text"
@@ -217,7 +210,6 @@ export default function AdmVehicle() {
         <Table>
           <thead>
             <tr>
-              <th style={{ textAlign: 'center' }}>Vehicle Number</th>
               <th style={{ textAlign: 'center' }}>Vehicle Name</th>
               <th style={{ textAlign: 'center' }}>Vehicle Status</th>
               <th style={{ textAlign: 'center' }}>Action</th>
@@ -226,7 +218,6 @@ export default function AdmVehicle() {
           <TableBody>
             {vehicles.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((vehicle) => (
               <TableRow key={vehicle.vehicle_id}>
-                <TableCell style={{ textAlign: 'center' }}>{vehicle.vehicle_number}</TableCell>
                 <TableCell style={{ textAlign: 'center' }}>{vehicle.vehicle_name}</TableCell>
                 <TableCell style={{ textAlign: 'center' }}>{vehicle.vehicle_status}</TableCell>
                 <TableCell>
@@ -264,19 +255,6 @@ export default function AdmVehicle() {
                 <DialogContentText>
                 {/* To add a new employee account, please enter the details in the designated input field. */}
                 </DialogContentText>
-                <TextField
-                    autoFocus
-                    margin="dense"
-                    id="name"
-                    label="Vehicle Number"
-                    type="text"
-                    fullWidth
-                    variant="filled"
-                    defaultValue={selectedVehicle.vehicle_number}
-                    InputProps={{
-                      readOnly: true,
-                    }}
-                />
                 <TextField
                     autoFocus
                     margin="dense"
@@ -320,17 +298,6 @@ export default function AdmVehicle() {
                         autoFocus
                         margin="dense"
                         id="name"
-                        label="Plate Number"
-                        type="text"
-                        fullWidth
-                        variant="standard"
-                        defaultValue={selectedVehicle.vehicle_number}
-                        onChange={(event) => setEditVehicleNumber(event.target.value)}
-                    />
-                    <TextField
-                        autoFocus
-                        margin="dense"
-                        id="name"
                         label="Vehicle Name"
                         type="text"
                         fullWidth
@@ -338,17 +305,23 @@ export default function AdmVehicle() {
                         defaultValue={selectedVehicle.vehicle_name}
                         onChange={(event) => setEditVehicleName(event.target.value)}
                     />
-                    <TextField
-                        autoFocus
-                        margin="dense"
-                        id="name"
-                        label="Vehicle Status"
-                        type="text"
-                        fullWidth
-                        variant="standard"
-                        defaultValue={selectedVehicle.vehicle_status}
-                        onChange={(event) => setEditVehicleStatus(event.target.value)}
-                    />              
+
+                    <FormControl fullWidth variant="standard" margin="dense">
+                          <InputLabel id="status-label">Status</InputLabel>
+                          <Select
+                            labelId="status-label"
+                            id="status-select"
+                            value={editVehicleStatus}
+                            label="Request Status"
+                            onChange={(event) => setEditVehicleStatus(event.target.value)}
+                          >
+                            {STATUSES.map((status) => (
+                              <MenuItem key={status.value} value={status.value}>
+                                {status.label}
+                              </MenuItem>
+                            ))}
+                          </Select>
+                  </FormControl>
           </DialogContent>
           <DialogActions>
             <Button onClick={CloseEdit}>Close</Button>
