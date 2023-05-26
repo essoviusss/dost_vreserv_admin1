@@ -175,20 +175,19 @@ export default function AdmVehicle() {
     CloseEdit();
   }
   //delete
-  function deleteDriver(driver_id){
+  async function deleteDriver(driver_id){
     const url = "http://localhost/vreserv_admin_api/delete_driver.php";
   
     let fData = new FormData();
     fData.append("driver_id", driver_id);
   
-    axios.post(url, fData)
-      .then(response => {
-        alert("Driver deleted successfully!!");
-      })
-      .catch(error => {
-       alert(error);
-      });
-  }
+    const response = await axios.post(url, fData);
+    if(response.data.message === "Success"){
+      alert("Driver deleted successfully.");
+    } else{
+      alert("Error");
+    }
+}
 
   return (
     <div>
