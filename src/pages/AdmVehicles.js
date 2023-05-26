@@ -161,19 +161,18 @@ export default function AdmVehicle() {
   }
 
   //delete
-  function deleteVehicle(vehicle_id){
+  async function deleteVehicle(vehicle_id){
     const url = "http://localhost/vreserv_admin_api/delete_vehicle.php";
   
     let fData = new FormData();
     fData.append("vehicle_id", vehicle_id);
   
-    axios.post(url, fData)
-      .then(response => {
-        alert("Vehicle deleted successfully!!");
-      })
-      .catch(error => {
-       alert(error);
-      });
+    const response = await axios.post(url, fData);
+    if(response.data.message === "Success"){
+      alert("Vehicle deleted successfully.");
+    } else{
+      alert("Error");
+    }
   }
 
   return (

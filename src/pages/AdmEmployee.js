@@ -163,19 +163,18 @@ async function handleUpdate() {
   }, [employees]);
 
   //delete
-  function deleteEmployee(employee_id){
+  async function deleteEmployee(employee_id){
     const url = "http://localhost/vreserv_admin_api/delete_employee.php";
   
     let fData = new FormData();
     fData.append("employee_id", employee_id);
   
-    axios.post(url, fData)
-      .then(response => {
-        alert("Employee deleted successfully!!");
-      })
-      .catch(error => {
-       alert(error);
-      });
+    const response = await axios.post(url, fData);
+    if(response.data.message === "Success"){
+      alert("Employee deleted successfully.");
+    } else{
+      alert("Error");
+    }
   }
 
   return (
