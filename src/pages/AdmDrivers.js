@@ -39,6 +39,7 @@ export default function AdmVehicle() {
   const [open, setOpen] = React.useState(false);
   const [openView, setOpenView] = React.useState(false);
   const [openEdit, setOpenEdit] = React.useState(false);
+  const [cancel, setCancel] = useState(false);
 
   //defaultValue
   const [selectedDriver, setSelectedDriver] = useState({});
@@ -66,6 +67,9 @@ export default function AdmVehicle() {
     setRowsPerPage(parseInt(event.target.value, 10));
     setPage(0);
   };
+
+  //delete
+  const [selectedRow, setSelectedRow] = useState(null);
 
   //dialog
   const handleOpenView = (driver) => {
@@ -96,6 +100,23 @@ export default function AdmVehicle() {
 
   const handleClose = () => {
     setOpen(false);
+  };
+
+  const handleDelete = (driver) => {
+    setSelectedRow(driver);
+    setCancel(true);
+  };
+  
+  const handleConfirmDelete = () => {
+    if (selectedRow) {
+      deleteDriver(selectedRow.driver_id);
+      setCancel(false);
+    }
+  };
+  
+  const handleCancelDelete = () => {
+    setSelectedRow(null);
+    setCancel(false);
   };
 
   //insert
@@ -265,7 +286,7 @@ export default function AdmVehicle() {
                         <Button variant="contained" onClick={() => handleOpenEdit(driver)}>
                           Edit
                         </Button>
-                        <Button variant="contained" onClick={() => deleteDriver(driver.driver_id)}>
+                        <Button variant="contained" onClick={() => handleDelete(driver)}>
                           Delete
                         </Button>
                       </div>
@@ -337,6 +358,8 @@ export default function AdmVehicle() {
                 {/* <Button onClick={addEmployee}>Save</Button> */}
                 </DialogActions>
             </Dialog>
+            
+            {/* edit modal */}
             <Dialog open={openEdit} onClose={CloseEdit} fullWidth maxWidth="sm">
                 <DialogTitle>Edit Details</DialogTitle>
                   <DialogContent>
@@ -387,6 +410,21 @@ export default function AdmVehicle() {
                     <Button onClick={handleUpdate}>Save</Button>
                     </DialogActions>
                 </Dialog>
+      
+      {/* delete modal */}
+      <Dialog open={cancel} fullWidth maxWidth="sm">
+      <DialogTitle>Confirmation</DialogTitle>
+      <DialogContent>
+        <DialogContentText>
+          Are you sure you want to delete?
+        </DialogContentText>
+      </DialogContent>
+      <DialogActions>
+        <Button onClick={handleCancelDelete}>No</Button>
+        <Button onClick={handleConfirmDelete}>Yes</Button>
+      </DialogActions>
+    </Dialog>
+        
       </div>
     </div>
   );

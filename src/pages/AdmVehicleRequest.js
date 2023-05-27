@@ -197,7 +197,6 @@ useEffect(() => {
       return request.filter(request => request.requested_by.toLowerCase().includes(searchQuery.toLowerCase())
       || request.vehicle_name.toLowerCase().includes(searchQuery.toLowerCase())
       || request.driver_name.toLowerCase().includes(searchQuery.toLowerCase())
-      || request.request_date.toLowerCase().includes(searchQuery.toLowerCase())
       );
     }
     return request;
@@ -496,7 +495,8 @@ useEffect(() => {
               </tr>
               </thead>
               <TableBody>
-                {requests.map((request) => (
+                {filterRequest(requests)
+                .map((request) => (
                   <TableRow key={request.request_id}>
                     <TableCell style={{ fontFamily: 'Poppins, sans-serif', textAlign: 'center', wordBreak: 'break-word', maxWidth: '120px' }}>{request.vehicle_name}</TableCell>
                     <TableCell style={{ fontFamily: 'Poppins, sans-serif', textAlign: 'center', wordBreak: 'break-word', maxWidth: '140px' }}>{request.driver_name}</TableCell>
