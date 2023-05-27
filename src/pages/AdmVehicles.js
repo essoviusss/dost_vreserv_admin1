@@ -25,9 +25,12 @@ export default function AdmVehicle() {
   const UID = uuidv4();
   const isLoggedIn = useAuth();
   const navigate = useNavigate();
+
   //insert
   const [vehicle_name, setVehicleName] = useState("");
   
+  //modal
+  const [cancel, setCancel] = useState(false);
 
   //defaultValue
   const [selectedVehicle, setSelectedVehicle] = useState({});
@@ -42,7 +45,6 @@ export default function AdmVehicle() {
     { value: 'Not Available', label: 'Not Available' },
 
   ];
-  
 
   //table
   const [page, setPage] = useState(0);
@@ -56,6 +58,10 @@ export default function AdmVehicle() {
     setRowsPerPage(parseInt(event.target.value, 10));
     setPage(0);
   };
+
+  //delete
+  const [selectedRow, setSelectedRow] = useState(null);
+
   
   //modal
   const [open, setOpen] = React.useState(false);
@@ -89,7 +95,26 @@ export default function AdmVehicle() {
   
   const CloseEdit = () => {
     setOpenEdit(false);
-  }; 
+  };
+
+  const handleDelete = (vehicle) => {
+    setSelectedRow(vehicle);
+    setCancel(true);
+  };
+  
+  const handleConfirmDelete = () => {
+    if (selectedRow) {
+      deleteVehicle(selectedRow.vehicle_id);
+      setCancel(false);
+    }
+  };
+  
+  const handleCancelDelete = () => {
+    setSelectedRow(null);
+    setCancel(false);
+  };
+  
+  
 
   //insert
   function addVehicle(){
@@ -227,7 +252,7 @@ export default function AdmVehicle() {
                   <Button variant="contained" onClick={() => handleOpenEdit(vehicle)}>
                     Edit
                   </Button>
-                  <Button variant="contained" onClick={() => deleteVehicle(vehicle.vehicle_id)}>
+                  <Button variant="contained" onClick={() => handleDelete(vehicle)}>
                     Delete
                   </Button>
                 </div>
@@ -247,86 +272,102 @@ export default function AdmVehicle() {
         />
       </TableContainer>
       </Paper>
+
       {/* view modal*/}
       <Dialog open={openView} onClose={CloseView} fullWidth maxWidth="sm">
-            <DialogTitle>View Details</DialogTitle>
-              <DialogContent>
-                <DialogContentText>
-                {/* To add a new employee account, please enter the details in the designated input field. */}
-                </DialogContentText>
-                <TextField
-                    autoFocus
-                    margin="dense"
-                    id="name"
-                    label="Vehicle Name"
-                    type="text"
-                    fullWidth
-                    variant="filled"
-                    defaultValue={selectedVehicle.vehicle_name}
-                    InputProps={{
-                      readOnly: true,
-                    }}
-                />
-                <TextField
-                    autoFocus
-                    margin="dense"
-                    id="name"
-                    label="Vehicle Status"
-                    type="text"
-                    fullWidth
-                    variant="filled"
-                    defaultValue={selectedVehicle.vehicle_status}
-                    InputProps={{
-                      readOnly: true,
-                    }}
-                />              
-                </DialogContent>
-                <DialogActions>
-                <Button onClick={CloseView}>Close</Button>
-                </DialogActions>
-            </Dialog>
+        <DialogTitle>View Details</DialogTitle>
+          <DialogContent>
+            <DialogContentText>
+            {/* To add a new employee account, please enter the details in the designated input field. */}
+            </DialogContentText>
+            <TextField
+                autoFocus
+                margin="dense"
+                id="name"
+                label="Vehicle Name"
+                type="text"
+                fullWidth
+                variant="filled"
+                defaultValue={selectedVehicle.vehicle_name}
+                InputProps={{
+                  readOnly: true,
+                }}
+            />
+            <TextField
+                autoFocus
+                margin="dense"
+                id="name"
+                label="Vehicle Status"
+                type="text"
+                fullWidth
+                variant="filled"
+                defaultValue={selectedVehicle.vehicle_status}
+                InputProps={{
+                  readOnly: true,
+                }}
+            />              
+            </DialogContent>
+            <DialogActions>
+            <Button onClick={CloseView}>Close</Button>
+            </DialogActions>
+      </Dialog>
         
         {/* edit modal */}
         <Dialog open={openEdit} onClose={CloseEdit} fullWidth maxWidth="sm">
-                <DialogTitle>Edit Details</DialogTitle>
-                  <DialogContent>
-                    <DialogContentText>
-                    {/* To add a new employee account, please enter the details in the designated input field. */}
-                    </DialogContentText>
-                    <TextField
-                        autoFocus
-                        margin="dense"
-                        id="name"
-                        label="Vehicle Name"
-                        type="text"
-                        fullWidth
-                        variant="standard"
-                        defaultValue={selectedVehicle.vehicle_name}
-                        onChange={(event) => setEditVehicleName(event.target.value)}
-                    />
+          <DialogTitle>Edit Details</DialogTitle>
+            <DialogContent>
+              <DialogContentText>
+              {/* To add a new employee account, please enter the details in the designated input field. */}
+              </DialogContentText>
+              <TextField
+                  autoFocus
+                  margin="dense"
+                  id="name"
+                  label="Vehicle Name"
+                  type="text"
+                  fullWidth
+                  variant="standard"
+                  defaultValue={selectedVehicle.vehicle_name}
+                  onChange={(event) => setEditVehicleName(event.target.value)}
+              />
 
-                    <FormControl fullWidth variant="standard" margin="dense">
-                          <InputLabel id="status-label">Status</InputLabel>
-                          <Select
-                            labelId="status-label"
-                            id="status-select"
-                            value={editVehicleStatus}
-                            label="Request Status"
-                            onChange={(event) => setEditVehicleStatus(event.target.value)}
-                          >
-                            {STATUSES.map((status) => (
-                              <MenuItem key={status.value} value={status.value}>
-                                {status.label}
-                              </MenuItem>
-                            ))}
-                          </Select>
-                  </FormControl>
+              <FormControl fullWidth variant="standard" margin="dense">
+                    <InputLabel id="status-label">Status</InputLabel>
+                    <Select
+                      labelId="status-label"
+                      id="status-select"
+                      value={editVehicleStatus}
+                      label="Request Status"
+                      onChange={(event) => setEditVehicleStatus(event.target.value)}
+                    >
+                      {STATUSES.map((status) => (
+                        <MenuItem key={status.value} value={status.value}>
+                          {status.label}
+                        </MenuItem>
+                      ))}
+                    </Select>
+            </FormControl>
           </DialogContent>
           <DialogActions>
             <Button onClick={CloseEdit}>Close</Button>
             <Button onClick={handleUpdate}>Save</Button>
           </DialogActions>
         </Dialog>
+        
+    {/* delete modal */}
+    <Dialog open={cancel} fullWidth maxWidth="sm">
+    <DialogTitle>Confirmation</DialogTitle>
+    <DialogContent>
+      <DialogContentText>
+        Are you sure you want to delete?
+      </DialogContentText>
+    </DialogContent>
+    <DialogActions>
+      <Button onClick={handleCancelDelete}>No</Button>
+      <Button onClick={handleConfirmDelete}>Yes</Button>
+    </DialogActions>
+  </Dialog>
+        
     </div>
   );
 }

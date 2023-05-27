@@ -27,6 +27,8 @@ export default function AdmEmployee() {
   const [open, setOpen] = React.useState(false);
   const [openView, setOpenView] = React.useState(false);
   const [openEdit, setOpenEdit] = React.useState(false);
+  const [cancel, setCancel] = useState(false);
+
   //inserting employee
   const [employee_name, setEmployeeName] = useState("");
   const [email, setEmployeeEmail] = useState("");
@@ -56,6 +58,9 @@ export default function AdmEmployee() {
     setOpenEdit(true);
   };
 
+  //delete
+  const [selectedRow, setSelectedRow] = useState(null);
+
   //table
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
@@ -69,6 +74,7 @@ export default function AdmEmployee() {
     setPage(0);
   };
 
+  //dialog
   const handleOpen = () => {
     setOpen(true);
   };
@@ -83,7 +89,24 @@ export default function AdmEmployee() {
   
   const CloseEdit = () => {
     setOpenEdit(false);
-  }; 
+  };
+  
+  const handleDelete = (employee) => {
+    setSelectedRow(employee);
+    setCancel(true);
+  };
+  
+  const handleConfirmDelete = () => {
+    if (selectedRow) {
+      deleteEmployee(selectedRow.employee_id);
+      setCancel(false);
+    }
+  };
+  
+  const handleCancelDelete = () => {
+    setSelectedRow(null);
+    setCancel(false);
+  };
 
 
 //update
@@ -263,7 +286,7 @@ async function handleUpdate() {
                         <Button variant="contained" onClick={() => handleOpenEdit(employee)}>
                           Edit
                         </Button>
-                        <Button variant="contained" onClick={() => deleteEmployee(employee.employee_id)}>
+                        <Button variant="contained" onClick={() => handleDelete(employee)}>
                           Delete
                         </Button>
                       </div>
@@ -382,6 +405,20 @@ async function handleUpdate() {
                     <Button onClick={handleUpdate}>Save</Button>
                     </DialogActions>
                 </Dialog>
+        
+        {/* delete modal */}
+        <Dialog open={cancel} fullWidth maxWidth="sm">
+        <DialogTitle>Confirmation</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            Are you sure you want to delete?
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCancelDelete}>No</Button>
+          <Button onClick={handleConfirmDelete}>Yes</Button>
+        </DialogActions>
+      </Dialog>
 
         </div>
     </div>
