@@ -99,9 +99,6 @@ export default function AdmSchedule() {
     setCancel(false);
   };
   
-
-
-  
   //table
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
@@ -114,7 +111,6 @@ export default function AdmSchedule() {
     setRowsPerPage(parseInt(event.target.value, 10));
     setPage(0);
   };
-  
   
   //read vehicles
   useEffect(() => {
