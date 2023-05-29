@@ -94,7 +94,7 @@ export default function AdmVehicleRequest(){
   const STATUSES = [
     role === "Manager" ? { value: 'Pending', label: 'Pending'} : { value: 'For Approval', label: 'For Approval'},
     role === "Manager" ? { value: 'For Approval', label: 'For Approval' } : { value: 'Approved', label: 'Approved' }, 
-    role === "Manager" ? { value: 'Cancelled', label: ''} : { value: 'Disapproved', label: 'Disapproved' },
+    role === "Manager" ? { value: 'Cancelled', label: 'Cancelled'} : { value: 'Disapproved', label: 'Disapproved' },
   ];
 
   //read available vehicle
@@ -135,25 +135,20 @@ useEffect(() => {
     const fetchData = async () => {
       try {
         const admin_role = localStorage.getItem("admin_role");
-        // Define the FormData
+        const url = "http://localhost/vreserv_admin_api/read_request.php";
+
         let formData = new FormData();
         formData.append('admin_role', admin_role);
 
-        const response = await axios.post("http://localhost/vreserv_admin_api/read_request.php", formData);
+        const response = await axios.post(url, formData);
 
-        if (Array.isArray(response.data.data) && response.data.message === "Success") {
-          // Set the requests state
+        if (Array.isArray(response.data.data)) {
           setRequest(response.data.data);
-          console.log("Very Nice");
-        } else {
-          console.log("Madi");
         }
       } catch (error) {
         console.log(error);
       }
     };
-
-    // Call the fetchData function
     fetchData();
   }, [requests]);
 
