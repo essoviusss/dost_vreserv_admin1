@@ -92,9 +92,9 @@ export default function AdmVehicleRequest(){
   
   //update
   const STATUSES = [
-    role === "Manager" ? { value: 'Pending', label: 'Pending' } : { value: 'For Approval', label: 'For Approval' },
+    role === "Manager" ? { value: 'Pending', label: 'Pending'} : { value: 'For Approval', label: 'For Approval'},
     role === "Manager" ? { value: 'For Approval', label: 'For Approval' } : { value: 'Approved', label: 'Approved' }, 
-    role === "Manager" ? { value: 'Cancelled', label: 'Cancelled' } : { value: 'Disapproved', label: 'Disapproved' },
+    role === "Manager" ? { value: 'Cancelled', label: ''} : { value: 'Disapproved', label: 'Disapproved' },
   ];
 
   //read available vehicle
@@ -525,9 +525,10 @@ useEffect(() => {
                         <Button variant="contained" style={{ marginRight: '10px' }} onClick={() => handleOpenView(request)}>
                           View
                         </Button>
+                        {role === "SuperAdmin" ? null : 
                         <Button variant="contained" onClick={() => handleOpenEdit(request)}>
                           Edit
-                        </Button>
+                        </Button>}
                       </div>
                     </TableCell>
                   </TableRow>        
