@@ -3,6 +3,11 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import Header from './Header';
 import { v4 as uuidv4 } from 'uuid';
+import jwtDecode from 'jwt-decode';
+import useAuth from "../hooks/useAuth";
+import { useNavigate } from "react-router";
+import './Components/AdmVehicles.css'
+
 //material ui
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
@@ -17,14 +22,27 @@ import MenuItem from '@mui/material/MenuItem';
 import Select from '@mui/material/Select';
 import { Table, TableBody, TableCell, TableContainer, TablePagination, TableRow } from '@mui/material';
 import Paper from '@mui/material/Paper';
-import jwtDecode from 'jwt-decode';
-import useAuth from "../hooks/useAuth";
-import { useNavigate } from "react-router";
+import DeleteRoundedIcon from '@mui/icons-material/DeleteRounded';
+import EditRoundedIcon from '@mui/icons-material/EditRounded';
+import RemoveRedEyeRoundedIcon from '@mui/icons-material/RemoveRedEyeRounded';
+import InputBase from '@mui/material/InputBase';
+import SearchIcon from '@mui/icons-material/Search';
+
 
 export default function AdmVehicle() {
   const UID = uuidv4();
   const isLoggedIn = useAuth();
   const navigate = useNavigate();
+
+  //Search Bar Icon Focus Color
+  const [isPaperActive, setIsPaperActive] = useState(false);
+  const handlePaperFocus = () => {
+    setIsPaperActive(true);
+  };
+
+  const handlePaperBlur = () => {
+    setIsPaperActive(false);
+  };
 
   //insert
   const [vehicle_name, setVehicleName] = useState("");
@@ -201,16 +219,50 @@ export default function AdmVehicle() {
   }
 
   return (
-    <div>
+    <div className='page-container'>
       <Header />
-      <Button variant="contained" onClick={handleClickOpen}>
-        + Add New Vehicle
-      </Button>
+      <div className="rlogs-text">Vehicles</div>
+
+      {/* --- SEARCH BAR & ADD VEHICLE BUTTON --- */}
+      <Paper
+        component="form"
+        sx={{
+          display: 'flex',
+          alignItems: 'center',
+          flex: '75%',
+          height: '100%',
+        }}
+        onFocus={handlePaperFocus}
+        onBlur={handlePaperBlur}
+      >
+        <SearchIcon style={{ marginLeft: 10, marginRight: 10, color: isPaperActive ? '#025BAD' : 'gray' }} /> {/* Set icon color */}
+        <InputBase
+          style={{ fontFamily: 'Poppins, sans-serif' }}
+          sx={{ flex: 1 }}
+          placeholder="Search"
+        />
+        <Button
+          variant="contained"
+          onClick={handleClickOpen}
+          style={{
+            fontFamily: 'Poppins, sans-serif',
+            backgroundColor: '#025BAD',
+            marginLeft: '1%',
+            padding: '1%',
+            height: '100%',
+            width: '30%',
+          }}
+        >
+          + Add New Vehicle
+        </Button>
+      </Paper>
+
+      {/* --- ADD NEW VEHICLE MODAL --- */}
       <Dialog open={open} onClose={handleClose}>
         <DialogTitle>Add New Vehicle</DialogTitle>
         <DialogContent>
           <DialogContentText>
-          To add a new vehicle, please enter the details in the designated input field.
+            To add a new vehicle, please enter the details in the designated input field.
           </DialogContentText>
           <TextField
             autoFocus
@@ -222,114 +274,141 @@ export default function AdmVehicle() {
             variant="standard"
             onChange={e => setVehicleName(e.target.value)}
           />
-          
         </DialogContent>
         <DialogActions>
           <Button onClick={handleClose}>Cancel</Button>
           <Button onClick={addVehicle}>Save</Button>
         </DialogActions>
       </Dialog>
-      <Paper>
-      <TableContainer>
-        <Table>
-          <thead>
-            <tr>
-              <th style={{ textAlign: 'center' }}>Vehicle Name</th>
-              <th style={{ textAlign: 'center' }}>Vehicle Status</th>
-              <th style={{ textAlign: 'center' }}>Action</th>
-            </tr>
-          </thead>
-          <TableBody>
-            {vehicles.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((vehicle) => (
-              <TableRow key={vehicle.vehicle_id}>
-                <TableCell style={{ textAlign: 'center' }}>{vehicle.vehicle_name}</TableCell>
-                <TableCell style={{ textAlign: 'center' }}>{vehicle.vehicle_status}</TableCell>
-                <TableCell>
-                <div style={{ display: 'flex', justifyContent: 'center', gap: '8px' }}>
-                  <Button variant="contained" onClick={() => handleOpenView(vehicle)}>
-                    View
-                  </Button>
-                  <Button variant="contained" onClick={() => handleOpenEdit(vehicle)}>
-                    Edit
-                  </Button>
-                  <Button variant="contained" onClick={() => handleDelete(vehicle)}>
-                    Delete
-                  </Button>
-                </div>
-              </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-        <TablePagination
-          rowsPerPageOptions={[5, 10, 25]}
-          component="div"
-          count={vehicles.length}
-          rowsPerPage={rowsPerPage}
-          page={page}
-          onPageChange={handleChangePage}
-          onRowsPerPageChange={handleChangeRowsPerPage}
-        />
-      </TableContainer>
-      </Paper>
 
-      {/* view modal*/}
+      {/* --- VEHICLE TABLE --- */}
+      <Paper sx={{ borderRadius: '10px', marginTop: '2%' }}>
+        <TableContainer>
+          <Table>
+            <thead>
+              <tr>
+                <th className='requestlog-th' style={{ textAlign: 'center' }}>Vehicle Name</th>
+                <th className='requestlog-th' style={{ textAlign: 'center' }}>Vehicle Status</th>
+                <th className='requestlog-th' style={{ textAlign: 'center' }}>Actions</th>
+              </tr>
+            </thead>
+            <TableBody>
+              {vehicles.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((vehicle) => (
+                <TableRow key={vehicle.vehicle_id}>
+                  <TableCell style={{ fontFamily: 'Poppins, sans-serif', textAlign: 'center', wordBreak: 'break-word', maxWidth: '120px' }}>{vehicle.vehicle_name}</TableCell>
+                  <TableCell style={{ fontFamily: 'Poppins, sans-serif', textAlign: 'center', padding: 0 }}>
+                    <div
+                      style={{
+                        backgroundColor:
+                          vehicle.vehicle_status === "Available" ? '#006600' :
+                          vehicle.vehicle_status === "Not Available" ? '#b21127' : '',
+                        color: 'white',
+                        padding: '5px 5px',
+                        borderRadius: '50px',
+                        width: '80%',
+                        margin: 'auto',
+                        wordBreak: 'break-word',
+                        maxWidth: '120px'
+                      }}
+                    >
+                      {vehicle.vehicle_status}
+                    </div>
+                  </TableCell>
+                  <TableCell style={{ fontFamily: 'Poppins, sans-serif', textAlign: 'center', wordBreak: 'break-word', maxWidth: '120px' }}>
+                    <div style={{ display: 'flex', justifyContent: 'center', gap: '8px' }}>
+                      <Button
+                        variant="contained"
+                        onClick={() => handleOpenView(vehicle)}
+                        style={{ backgroundColor: '#025BAD' }}
+                      >
+                        <RemoveRedEyeRoundedIcon />
+                      </Button>
+                      <Button
+                        variant="contained"
+                        onClick={() => handleOpenEdit(vehicle)}
+                        style={{ backgroundColor: '#025BAD' }}
+                      >
+                        <EditRoundedIcon />
+                      </Button>
+                      <Button 
+                        variant="contained"
+                        onClick={() => handleDelete(vehicle)}
+                        style={{ backgroundColor: '#025BAD' }}
+                      >
+                        <DeleteRoundedIcon />
+                      </Button>
+                    </div>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+          <TablePagination
+            rowsPerPageOptions={[5, 10, 25]}
+            component="div"
+            count={vehicles.length}
+            rowsPerPage={rowsPerPage}
+            page={page}
+            onPageChange={handleChangePage}
+            onRowsPerPageChange={handleChangeRowsPerPage}
+          />
+        </TableContainer>
+      </Paper>
+      
+      {/* --- VIEW MODAL --- */}
       <Dialog open={openView} onClose={CloseView} fullWidth maxWidth="sm">
         <DialogTitle>View Details</DialogTitle>
-          <DialogContent>
-            <DialogContentText>
-            {/* To add a new employee account, please enter the details in the designated input field. */}
-            </DialogContentText>
-            <TextField
-                autoFocus
-                margin="dense"
-                id="name"
-                label="Vehicle Name"
-                type="text"
-                fullWidth
-                variant="filled"
-                defaultValue={selectedVehicle.vehicle_name}
-                InputProps={{
-                  readOnly: true,
-                }}
-            />
-            <TextField
-                autoFocus
-                margin="dense"
-                id="name"
-                label="Vehicle Status"
-                type="text"
-                fullWidth
-                variant="filled"
-                defaultValue={selectedVehicle.vehicle_status}
-                InputProps={{
-                  readOnly: true,
-                }}
-            />              
-            </DialogContent>
-            <DialogActions>
-            <Button onClick={CloseView}>Close</Button>
-            </DialogActions>
+        <DialogContent>
+          <DialogContentText>
+          </DialogContentText>
+          <TextField
+            autoFocus
+            margin="dense"
+            id="name"
+            label="Vehicle Name"
+            type="text"
+            fullWidth
+            variant="filled"
+            defaultValue={selectedVehicle.vehicle_name}
+            InputProps={{
+              readOnly: true,
+            }}
+          />
+          <TextField
+            autoFocus
+            margin="dense"
+            id="name"
+            label="Vehicle Status"
+            type="text"
+            fullWidth
+            variant="filled"
+            defaultValue={selectedVehicle.vehicle_status}
+            InputProps={{
+              readOnly: true,
+            }}
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={CloseView}>Close</Button>
+        </DialogActions>
       </Dialog>
         
-        {/* edit modal */}
-        <Dialog open={openEdit} onClose={CloseEdit} fullWidth maxWidth="sm">
-          <DialogTitle>Edit Details</DialogTitle>
-            <DialogContent>
-              <DialogContentText>
-              {/* To add a new employee account, please enter the details in the designated input field. */}
-              </DialogContentText>
-              <TextField
-                  autoFocus
-                  margin="dense"
-                  id="name"
-                  label="Vehicle Name"
-                  type="text"
-                  fullWidth
-                  variant="standard"
-                  defaultValue={selectedVehicle.vehicle_name}
-                  onChange={(event) => setEditVehicleName(event.target.value)}
-              />
+      {/* --- EDIT MODAL --- */}
+      <Dialog open={openEdit} onClose={CloseEdit} fullWidth maxWidth="sm">
+        <DialogTitle>Edit Details</DialogTitle>
+        <DialogContent>
+          <DialogContentText></DialogContentText>
+          <TextField
+            autoFocus
+            margin="dense"
+            id="name"
+            label="Vehicle Name"
+            type="text"
+            fullWidth
+            variant="standard"
+            defaultValue={selectedVehicle.vehicle_name}
+            onChange={(event) => setEditVehicleName(event.target.value)}
+          />
 
               <FormControl fullWidth variant="standard" margin="dense">
                     <InputLabel id="status-label">Status</InputLabel>

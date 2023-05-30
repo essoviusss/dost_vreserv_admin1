@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import Header from "./Header";
 import './Components/AdmVehicleRequest.css'
+import styles from './Components/AdmVehicleRequest.css'
 
 //material ui
 import Button from '@mui/material/Button';
@@ -23,6 +24,7 @@ import FormLabel from '@mui/joy/FormLabel';
 import Textarea from '@mui/joy/Textarea';
 import { Table, TableBody, TableCell, TableContainer, TablePagination, TableRow } from '@mui/material';
 import jsPDF from 'jspdf';
+import CloseRoundedIcon from '@mui/icons-material/CloseRounded';
 
 export default function AdmVehicleRequest(){
   //defaultValue
@@ -461,6 +463,8 @@ useEffect(() => {
       <div className="page-container">
         <Header/>
         <div className="rlogs-text">Requests</div>
+
+        {/* --- SEARCH BAR --- */}
         <Paper
           component="form"
           sx={{ p: '2px 4px', display: 'flex', alignItems: 'center', width: '100%' }}
@@ -476,18 +480,20 @@ useEffect(() => {
           <IconButton type="button" sx={{ p: '10px' }} aria-label="search">
             <SearchIcon />
           </IconButton>
-      </Paper>
-      <Paper sx={{ borderRadius: '10px', marginTop: '2%' }}>
-        <TableContainer>
-          <Table>
-            <thead>
-              <tr>
-                <th className='requestlog-th' style={{ textAlign: 'center' }}>Vehicle Name</th>
-                <th className='requestlog-th' style={{ textAlign: 'center' }}>Driver Name</th>
-                <th className='requestlog-th' style={{ textAlign: 'center' }}>Requested By</th>
-                <th className='requestlog-th' style={{ textAlign: 'center' }}>Request Status</th>
-                <th className='requestlog-th' style={{ textAlign: 'center' }}>Action</th>
-              </tr>
+        </Paper>
+
+        {/* --- VEHICLE REQUEST TABLE --- */}
+        <Paper sx={{ borderRadius: '10px', marginTop: '2%' }}>
+          <TableContainer>
+            <Table>
+              <thead>
+                <tr>
+                  <th className='requestlog-th' style={{ textAlign: 'center' }}>Vehicle Name</th>
+                  <th className='requestlog-th' style={{ textAlign: 'center' }}>Driver Name</th>
+                  <th className='requestlog-th' style={{ textAlign: 'center' }}>Requested By</th>
+                  <th className='requestlog-th' style={{ textAlign: 'center' }}>Request Status</th>
+                  <th className='requestlog-th' style={{ textAlign: 'center' }}>Action</th>
+                </tr>
               </thead>
               <TableBody>
                 {filterRequest(requests)
@@ -500,17 +506,17 @@ useEffect(() => {
                       <div style={{ 
                         backgroundColor: 
                           request.request_status === "Pending" ? '#FDC858' :
-                          request.request_status === "Approved" ? 'green' :
+                          request.request_status === "Approved" ? '#006600' :
                           request.request_status === "Disapproved" ? '#b21127' :
                           request.request_status === "Cancelled" ? '#6e6e6e' :
                           request.request_status === "For Approval" ? '#025BAD' : 'inherit', 
                         color: 'white',
                         padding: '5px 5px',
                         borderRadius: '50px',
-                        width: '80%', // Adjust as needed
+                        width: '80%',
                         margin: 'auto',
                         wordBreak: 'break-word',
-                        maxWidth: '120px' // Adjust the width as needed
+                        maxWidth: '120px'
                       }}>
                         {request.request_status}
                       </div>
@@ -527,300 +533,373 @@ useEffect(() => {
                       </div>
                     </TableCell>
                   </TableRow>        
-                  ))}
-                </TableBody>
-              </Table>
-              </TableContainer>
-        <TablePagination
-          rowsPerPageOptions={[5, 7, 25]}
-          component="div"
-          count={requests.length}
-          rowsPerPage={rowsPerPage}
-          page={page}
-          onPageChange={handleChangePage}
-          onRowsPerPageChange={handleChangeRowsPerPage}
-        />
-          </Paper>
-      {/* view modal*/}
-      <Dialog open={openView} onClose={CloseView} fullWidth maxWidth="sm">
-        <DialogTitle>View Details</DialogTitle>
-          <DialogContent>
-            <DialogContentText>
-              {/* To add a new employee account, please enter the details in the designated input field. */}
-            </DialogContentText>
-            <div> 
-              <TextField
-               autoFocus
-               margin="dense"
-               id="name"
-               label="Vehicle to be Requested"
-               type="text"
-               fullWidth
-               variant="filled"
-               defaultValue={selectedRequest.vehicle_name}
-               InputProps={{
-                  readOnly: true,
-                }}
-              />
-            </div>
-            <div>
-              <TextField
-              autoFocus
-              margin="dense"
-              id="name"
-              label="Driver Name"
-              type="text"
-              fullWidth
-              variant="filled"
-              defaultValue={selectedRequest.driver_name}
-              InputProps={{
-                readOnly: true,
-              }}
-              />           
-            </div>
-            <div>
-              <TextField
-              autoFocus
-              margin="dense"
-              id="name"
-              label="Status"
-              type="text"
-              fullWidth
-              variant="filled"
-              defaultValue={selectedRequest.request_status}
-              InputProps={{
-                readOnly: true,
-              }}
-              />
-              {(selectedRequest.request_status === 'Cancelled' || selectedRequest.request_status === 'Disapproved') && (
-              <TextField
-              autoFocus
-              margin="dense"
-              id="name"
-              label="Reason"
-              type="text"
-              fullWidth
-              variant="filled"
-              defaultValue={selectedRequest.reason}
-              InputProps={{
-                readOnly: true,
-              }}
-              />
-              )}
-            </div>
-            <div>
-            <TextField
-            autoFocus
-            margin="dense"
-            id="name"
-            label="Preventive Maintenance Officer"
-            type="text"
-            fullWidth
-            variant="filled"
-            defaultValue={selectedRequest.pm_officer}
-            InputProps={{
-              readOnly: true,
-            }}
-            />
-            </div>
-            <div>
-            <TextField
-            autoFocus
-            margin="dense"
-            id="name"
-            label="Approved By"
-            type="text"
-            fullWidth
-            variant="filled"
-            defaultValue={selectedRequest.approved_by}
-            InputProps={{
-              readOnly: true,
-            }}
-            />
-            </div>
-            <div>
-              <h6>Schedule of Travel</h6>
-            </div>
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
+          <TablePagination
+            rowsPerPageOptions={[5, 7, 25]}
+            component="div"
+            count={requests.length}
+            rowsPerPage={rowsPerPage}
+            page={page}
+            onPageChange={handleChangePage}
+            onRowsPerPageChange={handleChangeRowsPerPage}
+          />
+        </Paper>
 
-            <div>
-              <label>Date: {selectedRequest.request_date}</label>
+      {/* --- VIEW MODAL --- */}
+      <Dialog open={openView} onClose={CloseView} fullWidth maxWidth="md">
+      <Button onClick={CloseView} style={{ color: 'gray', position: 'absolute', top: 10, right: 0, paddingLeft: 0, paddingRight: 0 }}>
+        <CloseRoundedIcon />
+      </Button>
+      <DialogContent>
+          <DialogContentText>
+          </DialogContentText>
+          <div className="div-admreq">
+              <div className="div1-admreq">
+                <div className="div1-admreq">
+                  <img className="summary-logo" src="/images/summary_logo.png"/>
+                </div>
+              </div>
+              <div className="div2-admreq">
+                <p className="header-admreq">{selectedRequest.vehicle_name}</p>
+                <p className="header-label-admreq">Vehicle to be requested</p>
+              </div>
+              <div className="div3-admreq">
+                <p className="header-admreq">{selectedRequest.driver_name}</p>
+                <p className="header-label-admreq">Name of the driver</p>
+              </div>
+              <div className="status-button-container">
+                {selectedRequest && selectedRequest.request_status && (
+                  <button className={`status-button ${selectedRequest.request_status.replace(/\s+/g, '')}`}>
+                    {selectedRequest.request_status}
+                  </button>
+                )}
+              </div>
+              <div className="div5-admreq">
+                <hr class="admreq-hr"/>
+              </div>
+              <div className="div55-admreq">
+                <div className="div55table-admreq">
+                  <table>
+                    <tbody>
+                      <tr>
+                        <td className="table-label-admreq">
+                          <p className="header-label-admreq">Preventive Maintenance Officer:</p>
+                        </td>
+                        <td>
+                          <p className="admreq-details">
+                          {selectedRequest.pm_officer}</p>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td className="table-label-admreq">
+                          <p className="header-label-admreq">Approved By:</p>
+                        </td>
+                        <td>
+                        <p className="admreq-details">
+                          {selectedRequest.approved_by}</p>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+              <div className="div6-admreq">
+                <p className="schedlabel-admreq">SCHEDULE OF TRAVEL</p>
+              </div>
+              <div className="div7-admreq">
+                <div className="div7table-admreq">
+                  <table>
+                    <tbody>
+                      <tr>
+                        <td className="table-label-admreq">
+                          <p className="header-label-admreq">Departure Date and Time:</p>
+                        </td>
+                        <td>
+                          <p className="admreq-details">
+                          {selectedRequest.departure_time}</p>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td className="table-label-admreq">
+                          <p className="header-label-admreq">Arrival Date and Time:</p>
+                        </td>
+                        <td>
+                        <p className="admreq-details">
+                          {selectedRequest.arrival_time}</p>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td className="table-label-admreq">
+                          <p className="header-label-admreq">Destination:</p>
+                        </td>
+                        <td>
+                        <p className="admreq-details">
+                        {selectedRequest.destination}</p>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+              <div className="div9-admreq">
+                <p className="schedlabel-admreq">OTHER DETAILS</p>
+              </div>
+              <div className="div10-admreq">
+              <div className="div10table-admreq">
+                <table>
+                  <tbody>
+                    <tr>
+                      <td className="table-label-admreq">
+                        <p className="header-label-admreq">Total No. of Passenger/s:</p>
+                      </td>
+                      <td>
+                        <p className="admreq-details">
+                          {selectedRequest.passenger_count}</p>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td className="table-label-admreq">
+                        <p className="header-label-admreq">Name of Passenger/s:</p>
+                      </td>
+                      <td>
+                        <p className="admreq-details">
+                          {selectedRequest.passenger_names}
+                        </p>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td className="table-label-admreq">
+                        <p className="header-label-admreq">Purpose:</p>
+                      </td>
+                      <td>
+                      <p className="admreq-details">
+                        {selectedRequest.purpose}</p>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td className="table-label-admreq">
+                        <p className="header-label-admreq">Requested By:</p>
+                      </td>
+                      <td>
+                      <p className="admreq-details">
+                      {selectedRequest.requested_by}</p>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+                </div>
+              </div>
+              <div className="div11-admreq">
+                <Button onClick={generatePDF} variant="contained" color="primary" style={{ fontFamily: 'Poppins, sans-serif', textTransform: 'none', backgroundColor: '#025BAD' }}>
+                  Generate Request Form
+                </Button>
+              </div>
             </div>
-            <div>
-              <label>Time of Departure: {selectedRequest.departure_time}</label>
-            </div>
-            <div>
-              <label>Time of Return to Garage: {selectedRequest.arrival_time}</label>
-            </div>
-            <div>
-              <label>Destination: {selectedRequest.destination}</label>
-            </div>
-            <div>
-              <h6>Other Details</h6>
-            </div>
-            <div>
-              <label>Total No. of Passenger/s : {selectedRequest.passenger_count}</label>
-            </div>
-            <div>
-              <label>Name of Passenger/s: {selectedRequest.passenger_names}</label>
-            </div>
-            <div>
-              <label>Purpose: {selectedRequest.purpose}</label>
-            </div>
-            <div>
-              <label>Requested by: {selectedRequest.requested_by}</label>
-            </div>   
-          </DialogContent>
-          <DialogActions>
-            <Button onClick={generatePDF}>Download PDF</Button>
-            <Button onClick={CloseView}>Close</Button>
-          </DialogActions>
+        </DialogContent>
       </Dialog>
 
-      {/* edit modal */}
+      {/* --- EDIT MODAL --- */}
       <Dialog open={openEdit} onClose={CloseEdit} fullWidth maxWidth="sm">
-        <DialogTitle>Edit Details</DialogTitle>
-            <DialogContent>
-              <DialogContentText>
-                {/* To add a new employee account, please enter the details in the designated input field. */}
-              </DialogContentText>
-
-              <div>
-              <FormControl fullWidth variant="standard" margin="dense">
-                <InputLabel id="vehicle-select-label">Vehicle</InputLabel>
-                        <Select
-                            labelId="vehicle-select-label"
-                            id="vehicle-select"
-                            value={editVehicleName}
-                            onChange={(event) => setEditVehicleName(event.target.value)}
-                        >
-                            <MenuItem value="">Select Vehicle</MenuItem>
-                            {vehicle.map((vehicle) => (
-                                <MenuItem key={vehicle.vehicle_id} value={vehicle.vehicle_name}>
-                                    {vehicle.vehicle_name}
-                                </MenuItem>
-                            ))}
-                        </Select>
-                    </FormControl>
-                </div>
-                    <div>
-                    <FormControl fullWidth variant="standard" margin="dense">
-                        <InputLabel id="driver-select-label">Driver</InputLabel>
-                        <Select
-                            labelId="driver-select-label"
-                            id="driver-select"
-                            value={editDriverName}
-                            onChange={(event) => setEditDriverName(event.target.value)}
-                        >
-                            <MenuItem value="">Select Driver</MenuItem>
-                            {drivers.map((driver) => (
-                                <MenuItem key={driver.driver_id} value={driver.driver_name}>
-                                    {driver.driver_name}
-                                </MenuItem>
-                            ))}
-                        </Select>
-                    </FormControl>
-                </div>
-                     <div>
-                      <FormControl fullWidth variant="standard" margin="dense">
-                          <InputLabel id="request-status-label">Request Status</InputLabel>
-                          <Select
-                            labelId="request-status-label"
-                            id="request-status-select"
-                            value={editRequestStatus}
-                            label="Request Status"
-                            onChange={(event) => setEditRequestStatus(event.target.value)}
-                          >
-                            {STATUSES.map((status) => (
-                              <MenuItem key={status.value} value={status.value}>
-                                {status.label}
-                              </MenuItem>
-                            ))}
-                          </Select>
-                        </FormControl>
-                        {(editRequestStatus === 'Cancelled' || editRequestStatus === 'Disapproved') && (
-                          <>
-                            <FormLabel>
-                              {editRequestStatus === 'Cancelled' ? 'Reason for Cancellation' : 'Reason for Disapproval'}
-                            </FormLabel>
-                            <Textarea 
-                              minRows={2} 
-                              value={editReason}
-                              onChange={(event) => setEditReason(event.target.value)}
-                            />
-                          </>
-                        )}
-
-                      </div>
-                    <div>
-                      <TextField
-                        autoFocus
-                        margin="dense"
-                        id="name"
-                        label="Preventive Maintenance Officer"
-                        type="text"
-                        fullWidth
-                        variant="standard"
-                        defaultValue={selectedRequest.pm_officer}
-                        onChange={(event) => setEditPMOfficer(event.target.value)}
-                      />
-                    </div>
-
-                    <div>
-                      <TextField
-                        autoFocus
-                        margin="dense"
-                        id="name"
-                        label="Approved by"
-                        type="text"
-                        fullWidth
-                        variant="standard"
-                        defaultValue={selectedRequest.approved_by}
-                        onChange={(event) => setEditApprovedBy(event.target.value)}
-                      />
-                    </div>
-
-                    <div>
-                      <h6>Schedule of Travel</h6>
-                    </div>   
-
-                    <div>
-                      <label>Date: {selectedRequest.request_date}</label>
-                    </div>
-                    
-                    <div>
-                      <label>Time of Departure: {selectedRequest.departure_time}</label>
-                    </div>
-                    <div>
-                      <label>Time of Return to Garage: {selectedRequest.arrival_time}</label>
-                    </div>
-                    <div>
-                      <label>Destination: {selectedRequest.destination}</label>
-                    </div>
-                    <div>
-                      <h6>Other Details</h6>
-                    </div>
-                    <div>
-                      <label>Total No. of Passenger/s : {selectedRequest.passenger_count}</label>
-                    </div>
-                    <div>
-                      <label>Name of Passenger/s: </label>
-                        {selectedRequest.passenger_names && Array.isArray(selectedRequest.passenger_names) && selectedRequest.passenger_names.map((passenger, index) => (
-                      <div key={index}>{passenger}</div>
-                        ))}
-                    </div>
-                    <div>
-                      <label>Purpose: {selectedRequest.purpose}</label>
-                    </div>
-                    <div>
-                      <label>Requested by: {selectedRequest.requested_by}</label>
-                    </div>              
-          </DialogContent>
-          <DialogActions>
-            <Button onClick={CloseEdit}>Close</Button>
-            <Button onClick={handleUpdate}>Save</Button>
-          </DialogActions>
-        </Dialog>
-
+      <DialogTitle className="dialog-title">
+        <img className="edit-logo" src="/images/edit_logo.png" />
+        <div className="dialog-title-content">
+          <h1>Edit Details</h1>
+          <p>Update the necessary changes to the request</p>
         </div>
-    );
+        <hr className="dtitle-hr" />
+        <Button onClick={CloseView} style={{ color: 'gray', position: 'absolute', top: 10, right: 0, paddingLeft: 0, paddingRight: 0 }}>
+          <CloseRoundedIcon />
+        </Button>
+      </DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+          </DialogContentText>
+          <div className="edit-fields">
+            <FormControl fullWidth variant="standard" margin="dense" style={{ fontFamily: 'Poppins' }}>
+              <InputLabel id="vehicle-select-label" style={{ lineHeight: '2' }}>VEHICLE</InputLabel>
+              <Select
+                labelId="vehicle-select-label"
+                id="vehicle-select"
+                value={editVehicleName}
+                onChange={(event) => setEditVehicleName(event.target.value)}
+                style={{ height: '40px', fontFamily: 'Poppins', fontSize: '14px' }}
+                MenuProps={{ PaperProps: { style: { maxHeight: '200px' } } }}
+              >
+                <MenuItem value="">Select Vehicle</MenuItem>
+                {vehicle.map((vehicle) => (
+                  <MenuItem key={vehicle.vehicle_id} value={vehicle.vehicle_name}>
+                    {vehicle.vehicle_name}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+          </div>
+          <div className="edit-fields">
+            <FormControl fullWidth variant="standard" margin="dense" style={{ fontFamily: 'Poppins' }}>
+              <InputLabel id="driver-select-label" style={{ lineHeight: '2' }}>DRIVER</InputLabel>
+              <Select
+                labelId="driver-select-label"
+                id="driver-select"
+                value={editDriverName}
+                onChange={(event) => setEditDriverName(event.target.value)}
+                style={{ height: '40px', fontFamily: 'Poppins', fontSize: '14px' }}
+                MenuProps={{ PaperProps: { style: { maxHeight: '200px' } } }}
+              >
+                <MenuItem value="">Select Driver</MenuItem>
+                {drivers.map((driver) => (
+                  <MenuItem key={driver.driver_id} value={driver.driver_name}>
+                    {driver.driver_name}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+          </div>
+          <div className="edit-fields">
+            <FormControl fullWidth variant="standard" margin="dense" style={{ fontFamily: 'Poppins' }}>
+              <InputLabel id="request-status-label" style={{ lineHeight: '2' }}>REQUEST STATUS</InputLabel>
+              <Select
+                labelId="request-status-label"
+                id="request-status-select"
+                value={editRequestStatus}
+                label="Request Status"
+                onChange={(event) => setEditRequestStatus(event.target.value)}
+                style={{ height: '40px', fontFamily: 'Poppins', fontSize: '14px' }}
+                MenuProps={{ PaperProps: { style: { maxHeight: '200px' } } }}
+              >
+                {STATUSES.map((status) => (
+                  <MenuItem key={status.value} value={status.value}>
+                    {status.label}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+            {(editRequestStatus === 'Cancelled' || editRequestStatus === 'Disapproved') && (
+              <>
+                <FormLabel>
+                  {editRequestStatus === 'Cancelled' ? 'Reason for Cancellation' : 'Reason for Disapproval'}
+                </FormLabel>
+                <Textarea 
+                  minRows={2} 
+                  value={editReason}
+                  onChange={(event) => setEditReason(event.target.value)}
+                />
+              </>
+            )}
+          </div>
+          <div className="edit-fields">
+            <TextField
+              autoFocus
+              margin="dense"
+              id="name"
+              label="Preventive Maintenance Officer"
+              type="text"
+              fullWidth
+              variant="standard"
+              defaultValue={selectedRequest.pm_officer}
+              InputLabelProps={{
+                style: {
+                  fontFamily: 'Poppins, sans-serif',
+                  color: 'black',
+                  fontSize: '120%',
+                  fontWeight: '600',
+                  textTransform: 'uppercase',
+                },
+              }}
+              InputProps={{
+                style: {
+                  fontFamily: 'Poppins, sans-serif',
+                  fontSize: '14px'
+                },
+              }}
+            />
+          </div>
+          <div className="edit-fields">
+            <TextField
+              autoFocus
+              margin="dense"
+              id="name"
+              label="APPROVED BY"
+              type="text"
+              fullWidth
+              variant="standard"
+              defaultValue={selectedRequest.approved_by}
+              onChange={(event) => setEditApprovedBy(event.target.value)}
+              InputLabelProps={{
+                style: {
+                  fontFamily: 'Poppins, sans-serif',
+                  color: 'black',
+                  fontSize: '120%',
+                  fontWeight: '600',
+                },
+              }}
+              InputProps={{
+                style: {
+                  fontFamily: 'Poppins, sans-serif',
+                  fontSize: '14px'
+                },
+              }}
+            />
+          </div>
+          <div className="edit-tablemain">
+            <div className="edit-tabletitle">
+              Schedule of Travel
+            </div>
+            <div>
+              <table className="edit-tablecontent">
+                <tbody>
+                  <tr>
+                    <td>Departure Date and Time:</td>
+                    <td>{selectedRequest.departure_time}</td>
+                  </tr>
+                  <tr>
+                    <td>Arrival Date and Time:</td>
+                    <td>{selectedRequest.arrival_time}</td>
+                  </tr>
+                  <tr>
+                    <td>Destination:</td>
+                    <td>{selectedRequest.destination}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>   
+          </div>
+          <div className="edit-tablemain">
+            <div className="edit-tabletitle">
+              Other Details
+            </div>
+            <div>
+              <table className="edit-tablecontent">
+                <tbody>
+                  <tr>
+                    <td>Total No. of Passenger/s:</td>
+                    <td>{selectedRequest.passenger_count}</td>
+                  </tr>
+                  <tr>
+                    <td>Name of Passenger/s:</td>
+                    <td>{selectedRequest.passenger_names}
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>Purpose:</td>
+                    <td>{selectedRequest.purpose}</td>
+                  </tr>
+                  <tr>
+                    <td>Requested by:</td>
+                    <td>{selectedRequest.requested_by}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div> 
+          </div>              
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={CloseEdit}>Close</Button>
+          <Button onClick={handleUpdate}>Save</Button>
+        </DialogActions>
+      </Dialog>
+    </div>
+  );
 }
