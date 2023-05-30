@@ -21,13 +21,28 @@ import FormControl from '@mui/joy/FormControl';
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import Select from '@mui/material/Select';
-
+import InputBase from '@mui/material/InputBase';
+import SearchIcon from '@mui/icons-material/Search';
+import DeleteRoundedIcon from '@mui/icons-material/DeleteRounded';
+import EditRoundedIcon from '@mui/icons-material/EditRounded';
+import RemoveRedEyeRoundedIcon from '@mui/icons-material/RemoveRedEyeRounded';
 
 
 export default function AdmVehicle() {
   const UID = uuidv4();
   const isLoggedIn = useAuth();
   const navigate = useNavigate();
+
+  //Search Bar Icon Focus Color
+  const [isPaperActive, setIsPaperActive] = useState(false);
+  const handlePaperFocus = () => {
+    setIsPaperActive(true);
+  };
+
+  const handlePaperBlur = () => {
+    setIsPaperActive(false);
+  };
+
   //insert
   const [driver_name, setDriverName] = useState("");
   const [email, setDriverEmail] = useState("");
@@ -211,11 +226,45 @@ export default function AdmVehicle() {
 }
 
   return (
-    <div>
+    <div className='page-container'>
       <Header/>
-      <Button variant="contained" onClick={handleClickOpen}>
-        + Add New Driver
-      </Button>
+      <div className="rlogs-text">Drivers</div>
+
+      {/* --- SEARCH BAR & ADD DRIVER BUTTON --- */}
+      <Paper
+        component="form"
+        sx={{
+          display: 'flex',
+          alignItems: 'center',
+          flex: '75%',
+          height: '100%',
+        }}
+        onFocus={handlePaperFocus}
+        onBlur={handlePaperBlur}
+      >
+        <SearchIcon style={{ marginLeft: 10, marginRight: 10, color: isPaperActive ? '#025BAD' : 'gray' }} /> {/* Set icon color */}
+        <InputBase
+          style={{ fontFamily: 'Poppins, sans-serif' }}
+          sx={{ flex: 1 }}
+          placeholder="Search"
+        />
+        <Button
+          variant="contained"
+          onClick={handleClickOpen}
+          style={{
+            fontFamily: 'Poppins, sans-serif',
+            backgroundColor: '#025BAD',
+            marginLeft: '1%',
+            padding: '1%',
+            height: '100%',
+            width: '30%',
+          }}
+        >
+          + Add New Driver
+        </Button>
+      </Paper>
+
+      {/* --- ADD DRIVER MODAL --- */}
       <Dialog open={open} onClose={handleClose}>
         <DialogTitle>Add New Driver</DialogTitle>
         <DialogContent>
@@ -260,52 +309,82 @@ export default function AdmVehicle() {
           <Button onClick={addDriver}>Save</Button>
         </DialogActions>
       </Dialog>
-      <div>
-        <Paper>
-          <TableContainer>
-            <Table>
-              <thead>
-                <tr>
-                  <th style={{ textAlign: 'center' }}>Driver Name</th>
-                  <th style={{ textAlign: 'center' }}>Driver Email</th>
-                  <th style={{ textAlign: 'center' }}>Status</th>
-                  <th style={{ textAlign: 'center' }}>Action</th>
-                </tr>
-              </thead>
-              <TableBody>
-                {drivers.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((driver) => (
-                  <TableRow key={driver.driver_id}>
-                    <TableCell style={{ textAlign: 'center' }}>{driver.driver_name}</TableCell>
-                    <TableCell style={{ textAlign: 'center' }}>{driver.email}</TableCell>
-                    <TableCell style={{ textAlign: 'center' }}>{driver.driver_status}</TableCell>
-                    <TableCell style={{ textAlign: 'center' }}>
-                      <div style={{ display: 'flex', gap: '8px', justifyContent: 'center' }}>
-                        <Button variant="contained" onClick={() => handleOpenView(driver)}>
-                          View
-                        </Button>
-                        <Button variant="contained" onClick={() => handleOpenEdit(driver)}>
-                          Edit
-                        </Button>
-                        <Button variant="contained" onClick={() => handleDelete(driver)}>
-                          Delete
-                        </Button>
-                      </div>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          <TablePagination
-          rowsPerPageOptions={[5, 10, 25]}
-          component="div"
-          count={drivers.length}
-          rowsPerPage={rowsPerPage}
-          page={page}
-          onPageChange={handleChangePage}
-          onRowsPerPageChange={handleChangeRowsPerPage}
-        />
-      </TableContainer>
-        </Paper>
+
+      {/* --- DRIVER TABLE --- */}
+      <Paper sx={{ borderRadius: '10px', marginTop: '2%' }}>
+        <TableContainer>
+          <Table>
+            <thead>
+              <tr>
+                <th className='requestlog-th' style={{ textAlign: 'center' }}>Driver Name</th>
+                <th className='requestlog-th' style={{ textAlign: 'center' }}>Driver Email</th>
+                <th className='requestlog-th' style={{ textAlign: 'center' }}>Status</th>
+                <th className='requestlog-th' style={{ textAlign: 'center' }}>Action</th>
+              </tr>
+            </thead>
+            <TableBody>
+              {drivers.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((driver) => (
+                <TableRow key={driver.driver_id}>
+                  <TableCell style={{ fontFamily: 'Poppins, sans-serif', textAlign: 'center', wordBreak: 'break-word', maxWidth: '120px' }}>{driver.driver_name}</TableCell>
+                  <TableCell style={{ fontFamily: 'Poppins, sans-serif', textAlign: 'center', wordBreak: 'break-word', maxWidth: '120px' }}>{driver.email}</TableCell>
+                  <TableCell style={{ fontFamily: 'Poppins, sans-serif', textAlign: 'center', wordBreak: 'break-word', maxWidth: '120px' }}>
+                    <div
+                      style={{
+                        backgroundColor:
+                          driver.driver_status === "Available" ? '#006600' :
+                          driver.driver_status === "Not Available" ? '#b21127' : '',
+                        color: 'white',
+                        padding: '5px 5px',
+                        borderRadius: '50px',
+                        width: '80%',
+                        margin: 'auto',
+                        wordBreak: 'break-word',
+                        maxWidth: '120px'
+                      }}
+                    >
+                      {driver.driver_status}
+                    </div>
+                  </TableCell>
+                  <TableCell style={{ fontFamily: 'Poppins, sans-serif', textAlign: 'center', wordBreak: 'break-word', maxWidth: '150px' }}>
+                    <div style={{ display: 'flex', justifyContent: 'center', gap: '8px' }}>
+                      <Button
+                        variant="contained"
+                        onClick={() => handleOpenView(driver)}
+                        style={{ backgroundColor: '#025BAD' }}
+                      >
+                        <RemoveRedEyeRoundedIcon />
+                      </Button>
+                      <Button
+                        variant="contained"
+                        onClick={() => handleOpenEdit(driver)}
+                        style={{ backgroundColor: '#025BAD' }}
+                      >
+                        <EditRoundedIcon />
+                      </Button>
+                      <Button 
+                        variant="contained"
+                        onClick={() => handleDelete(driver)}
+                        style={{ backgroundColor: '#025BAD' }}
+                      >
+                        <DeleteRoundedIcon />
+                      </Button>
+                    </div>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        <TablePagination
+        rowsPerPageOptions={[5, 10, 25]}
+        component="div"
+        count={drivers.length}
+        rowsPerPage={rowsPerPage}
+        page={page}
+        onPageChange={handleChangePage}
+        onRowsPerPageChange={handleChangeRowsPerPage}
+      />
+    </TableContainer>
+      </Paper>
         <Dialog open={openView} onClose={CloseView} fullWidth maxWidth="sm">
             <DialogTitle>View Details</DialogTitle>
               <DialogContent>
@@ -426,6 +505,5 @@ export default function AdmVehicle() {
     </Dialog>
         
       </div>
-    </div>
   );
 }

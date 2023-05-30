@@ -4,7 +4,9 @@ import { useEffect } from 'react';
 import axios from "axios";
 import { v4 as uuidv4 } from 'uuid';
 import Header from './Header';
+// import  './Components/ViewModal.css'
 // import '../pages/Components/EmployeeTable.css'
+
 //material UI
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
@@ -18,11 +20,26 @@ import Paper from '@mui/material/Paper';
 import jwtDecode from 'jwt-decode';
 import useAuth from "../hooks/useAuth";
 import { useNavigate } from "react-router";
+import InputBase from '@mui/material/InputBase';
+import SearchIcon from '@mui/icons-material/Search';
+import DeleteRoundedIcon from '@mui/icons-material/DeleteRounded';
+import EditRoundedIcon from '@mui/icons-material/EditRounded';
+import RemoveRedEyeRoundedIcon from '@mui/icons-material/RemoveRedEyeRounded';
 
 export default function AdmEmployee() {
   const UID = uuidv4();
   const isLoggedIn = useAuth();
   const navigate = useNavigate();
+
+  //Search Bar Icon Focus Color
+  const [isPaperActive, setIsPaperActive] = useState(false);
+  const handlePaperFocus = () => {
+    setIsPaperActive(true);
+  };
+  const handlePaperBlur = () => {
+    setIsPaperActive(false);
+  };
+
   //modal
   const [open, setOpen] = React.useState(false);
   const [openView, setOpenView] = React.useState(false);
@@ -201,163 +218,210 @@ async function handleUpdate() {
   }
 
   return (
-    <div>
+    <div className='page-container'>
       <Header/>
-        <div>
-            <Button variant="contained" onClick={handleOpen}>
-                + Add New Employee
-            </Button>
-            <Dialog open={open} onClose={handleClose}>
-                <DialogTitle>Add New Employee</DialogTitle>
-                <DialogContent>
-                <DialogContentText>
-                To add a new employee account, please enter the details in the designated input field.
-                </DialogContentText>
-                <TextField
-                    autoFocus
-                    margin="dense"
-                    id="name"
-                    label="Fullname"
-                    type="text"
-                    fullWidth
-                    variant="standard"
-                    onChange={e => setEmployeeName(e.target.value)}
-                />
-                <TextField
-                    autoFocus
-                    margin="dense"
-                    id="name"
-                    label="Email"
-                    type="email"
-                    fullWidth
-                    variant="standard"
-                    onChange={e => setEmployeeEmail(e.target.value)}
-                />
-                <TextField
-                    autoFocus
-                    margin="dense"
-                    id="name"
-                    label="Password"
-                    type="password"
-                    fullWidth
-                    variant="standard"
-                    onChange={e => setEmployeePassword(e.target.value)}
-                />
-                <TextField
-                    autoFocus
-                    margin="dense"
-                    id="name"
-                    label="Employee Unit"
-                    type="text"
-                    fullWidth
-                    variant="standard"
-                    onChange={e => setEmployeeUnit(e.target.value)}
-                />             
-                </DialogContent>
-                <DialogActions>
-                <Button onClick={handleClose}>Cancel</Button>
-                <Button onClick={addEmployee}>Save</Button>
-                </DialogActions>
-            </Dialog>
-        </div>
-        <div className='employee-tbl'>
-        <Paper>
-          <TableContainer>
-            <Table>
-              <thead>
-                <tr>
-                  <th style={{ textAlign: 'center' }}>Employee Name</th>
-                  <th style={{ textAlign: 'center' }}>Employee Email</th>
-                  <th style={{ textAlign: 'center' }}>Employee Unit</th>
-                  <th style={{ textAlign: 'center' }}>Action</th>
-                </tr>
-              </thead>
-              <TableBody>
-                {employees.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((employee) => (
-                  <TableRow key={employee.employee_id}>
-                    <TableCell style={{ textAlign: 'center' }}>{employee.employee_name}</TableCell>
-                    <TableCell style={{ textAlign: 'center' }}>{employee.email}</TableCell>
-                    <TableCell style={{ textAlign: 'center' }}>{employee.employee_unit}</TableCell>
-                    <TableCell style={{ textAlign: 'center' }}>
-                      <div style={{ display: 'flex', gap: '8px', justifyContent: 'center' }}>
-                        <Button variant="contained" onClick={() => handleOpenView(employee)}>
-                          View
-                        </Button>
-                        <Button variant="contained" onClick={() => handleOpenEdit(employee)}>
-                          Edit
-                        </Button>
-                        <Button variant="contained" onClick={() => handleDelete(employee)}>
-                          Delete
-                        </Button>
-                      </div>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-            <TablePagination
-              rowsPerPageOptions={[5, 10, 25]}
-              component="div"
-              count={employees.length}
-              rowsPerPage={rowsPerPage}
-              page={page}
-              onPageChange={handleChangePage}
-              onRowsPerPageChange={handleChangeRowsPerPage}
-            />
-          </TableContainer>
-        </Paper>
+      <div className="rlogs-text">Employees</div>
+
+      {/* --- SEARCH BAR & ADD DRIVER BUTTON --- */}
+      <Paper
+        component="form"
+        sx={{
+          display: 'flex',
+          alignItems: 'center',
+          flex: '75%',
+          height: '100%',
+        }}
+        onFocus={handlePaperFocus}
+        onBlur={handlePaperBlur}
+      >
+        <SearchIcon style={{ marginLeft: 10, marginRight: 10, color: isPaperActive ? '#025BAD' : 'gray' }} /> {/* Set icon color */}
+        <InputBase
+          style={{ fontFamily: 'Poppins, sans-serif' }}
+          sx={{ flex: 1 }}
+          placeholder="Search"
+        />
+        <Button
+          variant="contained"
+          onClick={handleOpen}
+          style={{
+            fontFamily: 'Poppins, sans-serif',
+            backgroundColor: '#025BAD',
+            marginLeft: '1%',
+            padding: '1%',
+            height: '100%',
+            width: '30%',
+          }}
+        >
+          + Add New Employee
+        </Button>
+      </Paper>
+
+      {/* --- ADD EMPLOYEE MODAL --- */}
+      <Dialog open={open} onClose={handleClose}>
+        <DialogTitle>Add New Employee</DialogTitle>
+        <DialogContent>
+        <DialogContentText>
+        To add a new employee account, please enter the details in the designated input field.
+        </DialogContentText>
+        <TextField
+            autoFocus
+            margin="dense"
+            id="name"
+            label="Fullname"
+            type="text"
+            fullWidth
+            variant="standard"
+            onChange={e => setEmployeeName(e.target.value)}
+        />
+        <TextField
+            autoFocus
+            margin="dense"
+            id="name"
+            label="Email"
+            type="email"
+            fullWidth
+            variant="standard"
+            onChange={e => setEmployeeEmail(e.target.value)}
+        />
+        <TextField
+            autoFocus
+            margin="dense"
+            id="name"
+            label="Password"
+            type="password"
+            fullWidth
+            variant="standard"
+            onChange={e => setEmployeePassword(e.target.value)}
+        />
+        <TextField
+            autoFocus
+            margin="dense"
+            id="name"
+            label="Employee Unit"
+            type="text"
+            fullWidth
+            variant="standard"
+            onChange={e => setEmployeeUnit(e.target.value)}
+        />             
+        </DialogContent>
+        <DialogActions>
+        <Button onClick={handleClose}>Cancel</Button>
+        <Button onClick={addEmployee}>Save</Button>
+        </DialogActions>
+      </Dialog>
+      
+      {/* --- EMPLOYEE TABLE --- */}
+      <Paper sx={{ borderRadius: '10px', marginTop: '2%' }}>
+        <TableContainer>
+          <Table>
+            <thead>
+              <tr>
+                <th className='requestlog-th' style={{ textAlign: 'center' }}>Employee Name</th>
+                <th className='requestlog-th' style={{ textAlign: 'center' }}>Employee Email</th>
+                <th className='requestlog-th' style={{ textAlign: 'center' }}>Employee Unit</th>
+                <th className='requestlog-th' style={{ textAlign: 'center' }}>Action</th>
+              </tr>
+            </thead>
+            <TableBody>
+              {employees.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((employee) => (
+                <TableRow key={employee.employee_id}>
+                  <TableCell style={{ fontFamily: 'Poppins, sans-serif', textAlign: 'center', wordBreak: 'break-word', maxWidth: '120px' }}>{employee.employee_name}</TableCell>
+                  <TableCell style={{ fontFamily: 'Poppins, sans-serif', textAlign: 'center', wordBreak: 'break-word', maxWidth: '120px' }}>{employee.email}</TableCell>
+                  <TableCell style={{ fontFamily: 'Poppins, sans-serif', textAlign: 'center', wordBreak: 'break-word', maxWidth: '120px' }}>{employee.employee_unit}</TableCell>
+                  <TableCell style={{ fontFamily: 'Poppins, sans-serif', textAlign: 'center', wordBreak: 'break-word', maxWidth: '180px' }}>
+                    <div style={{ display: 'flex', justifyContent: 'center', gap: '8px' }}>
+                      <Button
+                        variant="contained"
+                        onClick={() => handleOpenView(employee)}
+                        style={{ backgroundColor: '#025BAD' }}
+                      >
+                        <RemoveRedEyeRoundedIcon />
+                      </Button>
+                      <Button
+                        variant="contained"
+                        onClick={() => handleOpenEdit(employee)}
+                        style={{ backgroundColor: '#025BAD' }}
+                      >
+                        <EditRoundedIcon />
+                      </Button>
+                      <Button 
+                        variant="contained"
+                        onClick={() => handleDelete(employee)}
+                        style={{ backgroundColor: '#025BAD' }}
+                      >
+                        <DeleteRoundedIcon />
+                      </Button>
+                    </div>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+          <TablePagination
+            rowsPerPageOptions={[5, 10, 25]}
+            component="div"
+            count={employees.length}
+            rowsPerPage={rowsPerPage}
+            page={page}
+            onPageChange={handleChangePage}
+            onRowsPerPageChange={handleChangeRowsPerPage}
+          />
+        </TableContainer>
+      </Paper>
+
+      {/* --- VIEW MODAL --- */}
       <Dialog open={openView} onClose={CloseView}>
-                <DialogTitle>View Details</DialogTitle>
-                <DialogContent>
-                <DialogContentText>
-                {/* To add a new employee account, please enter the details in the designated input field. */}
-                </DialogContentText>
-                <TextField
-                    autoFocus
-                    margin="dense"
-                    id="name"
-                    label="Fullname"
-                    type="text"
-                    fullWidth
-                    variant="filled"
-                    defaultValue={selectedEmployee.employee_name}
-                    InputProps={{
-                      readOnly: true,
-                    }}
-                />
-                <TextField
-                    autoFocus
-                    margin="dense"
-                    id="name"
-                    label="Email"
-                    type="email"
-                    fullWidth
-                    variant="filled"
-                    defaultValue={selectedEmployee.email}
-                    InputProps={{
-                      readOnly: true,
-                    }}
-                />
-               
-                <TextField
-                    autoFocus
-                    margin="dense"
-                    id="name"
-                    label="Employee Unit"
-                    type="text"
-                    fullWidth
-                    variant="filled"
-                    defaultValue={selectedEmployee.employee_unit}
-                    InputProps={{
-                      readOnly: true,
-                    }}
-                />              
-                </DialogContent>
-                <DialogActions>
-                <Button onClick={CloseView}>Close</Button>
-                {/* <Button onClick={addEmployee}>Save</Button> */}
-                </DialogActions>
-            </Dialog>
+        <DialogTitle>View Details</DialogTitle>
+        <DialogContent>
+        <DialogContentText>
+        {/* To add a new employee account, please enter the details in the designated input field. */}
+        </DialogContentText>
+        <TextField
+            autoFocus
+            margin="dense"
+            id="name"
+            label="Fullname"
+            type="text"
+            fullWidth
+            variant="filled"
+            defaultValue={selectedEmployee.employee_name}
+            InputProps={{
+              readOnly: true,
+            }}
+        />
+        <TextField
+            autoFocus
+            margin="dense"
+            id="name"
+            label="Email"
+            type="email"
+            fullWidth
+            variant="filled"
+            defaultValue={selectedEmployee.email}
+            InputProps={{
+              readOnly: true,
+            }}
+        />
+        
+        <TextField
+            autoFocus
+            margin="dense"
+            id="name"
+            label="Employee Unit"
+            type="text"
+            fullWidth
+            variant="filled"
+            defaultValue={selectedEmployee.employee_unit}
+            InputProps={{
+              readOnly: true,
+            }}
+        />              
+        </DialogContent>
+        <DialogActions>
+        <Button onClick={CloseView}>Close</Button>
+        {/* <Button onClick={addEmployee}>Save</Button> */}
+        </DialogActions>
+    </Dialog>
             {/* edit modal */}
             <Dialog open={openEdit} onClose={CloseEdit}>
                     <DialogTitle>Edit Details</DialogTitle>
@@ -419,8 +483,6 @@ async function handleUpdate() {
           <Button onClick={handleConfirmDelete}>Yes</Button>
         </DialogActions>
       </Dialog>
-
-        </div>
     </div>
   );
 }
