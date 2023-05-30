@@ -2,7 +2,6 @@ import * as React from 'react';
 import { useState, useEffect } from "react";
 import axios from 'axios';
 import Header from "./Header";
-
 import { v4 as uuidv4 } from 'uuid';
 //materialUI
 import Button from '@mui/material/Button';
@@ -20,9 +19,6 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { StaticDateTimePicker } from '@mui/x-date-pickers/StaticDateTimePicker';
 import dayjs from 'dayjs';
-import DeleteRoundedIcon from '@mui/icons-material/DeleteRounded';
-import EditRoundedIcon from '@mui/icons-material/EditRounded';
-import RemoveRedEyeRoundedIcon from '@mui/icons-material/RemoveRedEyeRounded';
 
 
 import jwtDecode from 'jwt-decode';
@@ -275,11 +271,11 @@ export default function AdmSchedule() {
     }
     
   return (
-    <div className='page-container'>
+    <div>
       <Header/>
-      <div className="rlogs-text">PMS Schedule</div>
-
-      {/* --- SEARCH BAR & ADD DRIVER BUTTON --- */}
+      <Button variant="contained" onClick={handleClickOpen}>
+        + Add Vehicle PMS
+      </Button>  
       <Paper
       component="form"
       sx={{ p: '2px 4px', display: 'flex', alignItems: 'center', width: 400 }}
