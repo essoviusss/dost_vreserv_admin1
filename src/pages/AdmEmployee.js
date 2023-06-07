@@ -20,7 +20,11 @@ import Paper from '@mui/material/Paper';
 import jwtDecode from 'jwt-decode';
 import useAuth from "../hooks/useAuth";
 import { useNavigate } from "react-router";
+import FormControl from '@mui/joy/FormControl';
 import InputBase from '@mui/material/InputBase';
+import InputLabel from '@mui/material/InputLabel';
+import MenuItem from '@mui/material/MenuItem';
+import Select from '@mui/material/Select';
 import SearchIcon from '@mui/icons-material/Search';
 import DeleteRoundedIcon from '@mui/icons-material/DeleteRounded';
 import EditRoundedIcon from '@mui/icons-material/EditRounded';
@@ -39,6 +43,9 @@ export default function AdmEmployee() {
   const handlePaperBlur = () => {
     setIsPaperActive(false);
   };
+
+  //search
+  const [searchQuery, setSearchQuery] = useState('');
 
   //modal
   const [open, setOpen] = React.useState(false);
@@ -172,6 +179,22 @@ async function handleUpdate() {
       });
   }
 
+  //insert-employee-unit
+  const UNIT = [
+    { value: 'ORD/Records', label: 'ORD/Records' },
+    { value: 'FAS', label: 'FAS' },
+    { value: 'Reg. Director', label: 'Reg. Director' },
+    { value: 'FO', label: 'FO' },
+    { value: 'TSD', label: 'TSD' },
+    { value: 'ITSM', label: 'ITSM' },
+    { value: 'STLRC', label: 'STLRC' },
+    { value: 'Supply', label: 'Supply' },
+    { value: 'Chem Lab', label: 'Chem Lab' },
+    { value: 'COA', label: 'COA' },
+    { value: 'RSTL', label: 'RSTL' },
+    { value: 'Micro Lab', label: 'Micro Lab' },
+  ];
+
   //token expiry
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -217,6 +240,17 @@ async function handleUpdate() {
     }
   }
 
+  //search
+  function filterEmployee(employee) {
+    if(searchQuery) {
+      return employee.filter(employee => employee.employee_name.toLowerCase().includes(searchQuery.toLowerCase())
+      || employee.email.toLowerCase().includes(searchQuery.toLowerCase())
+      || employee.employee_unit.toLowerCase().includes(searchQuery.toLowerCase())
+      );
+    }
+    return employee;
+  }
+
   return (
     <div className='page-container'>
       <Header/>
@@ -239,6 +273,8 @@ async function handleUpdate() {
           style={{ fontFamily: 'Poppins, sans-serif' }}
           sx={{ flex: 1 }}
           placeholder="Search"
+          value={searchQuery}
+          onChange={e => setSearchQuery(e.target.value)}
         />
         <Button
           variant="contained"
@@ -293,16 +329,21 @@ async function handleUpdate() {
             variant="standard"
             onChange={e => setEmployeePassword(e.target.value)}
         />
-        <TextField
-            autoFocus
-            margin="dense"
-            id="name"
+        <FormControl fullWidth variant="standard" margin="dense">
+          <InputLabel id="unit-label">Employee Unit</InputLabel>
+          <Select
+            labelId="unit-label"
+            id="unit-select"
             label="Employee Unit"
-            type="text"
-            fullWidth
-            variant="standard"
             onChange={e => setEmployeeUnit(e.target.value)}
-        />             
+          >
+            {UNIT.map((unit) => (
+              <MenuItem key={unit.value} value={unit.value}>
+                {unit.label}
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>         
         </DialogContent>
         <DialogActions>
         <Button onClick={handleClose}>Cancel</Button>
@@ -323,7 +364,7 @@ async function handleUpdate() {
               </tr>
             </thead>
             <TableBody>
-              {employees.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((employee) => (
+              {filterEmployee(employees).slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((employee) => (
                 <TableRow key={employee.employee_id}>
                   <TableCell style={{ fontFamily: 'Poppins, sans-serif', textAlign: 'center', wordBreak: 'break-word', maxWidth: '120px' }}>{employee.employee_name}</TableCell>
                   <TableCell style={{ fontFamily: 'Poppins, sans-serif', textAlign: 'center', wordBreak: 'break-word', maxWidth: '120px' }}>{employee.email}</TableCell>
@@ -419,56 +460,61 @@ async function handleUpdate() {
         </DialogContent>
         <DialogActions>
         <Button onClick={CloseView}>Close</Button>
-        {/* <Button onClick={addEmployee}>Save</Button> */}
         </DialogActions>
     </Dialog>
-            {/* edit modal */}
-            <Dialog open={openEdit} onClose={CloseEdit}>
-                    <DialogTitle>Edit Details</DialogTitle>
-                    <DialogContent>
-                    <DialogContentText>
-                    {/* To add a new employee account, please enter the details in the designated input field. */}
-                    </DialogContentText>
-                    <TextField
-                        autoFocus
-                        margin="dense"
-                        id="name"
-                        label="Fullname"
-                        type="text"
-                        fullWidth
-                        variant="standard"
-                        defaultValue={selectedEmployee.employee_name}
-                        onChange={(event) => setEditEmployeeName(event.target.value)}
-                    />
-                    <TextField
-                        autoFocus
-                        margin="dense"
-                        id="name"
-                        label="Email"
-                        type="email"
-                        fullWidth
-                        variant="standard"
-                        defaultValue={selectedEmployee.email}
-                        onChange={(event) => setEditEmployeeEmail(event.target.value)}
-                    />
-                    
-                    <TextField
-                        autoFocus
-                        margin="dense"
-                        id="name"
-                        label="Employee Unit"
-                        type="text"
-                        fullWidth
-                        variant="standard"
-                        defaultValue={selectedEmployee.employee_unit}
-                        onChange={(event) => setEditEmployeeUnit(event.target.value)}
-                    />              
-                    </DialogContent>
-                    <DialogActions>
-                    <Button onClick={CloseEdit}>Close</Button>
-                    <Button onClick={handleUpdate}>Save</Button>
-                    </DialogActions>
-                </Dialog>
+
+    {/* edit modal */}
+    <Dialog open={openEdit} onClose={CloseEdit}>
+            <DialogTitle>Edit Details</DialogTitle>
+            <DialogContent>
+            <DialogContentText>
+            {/* To add a new employee account, please enter the details in the designated input field. */}
+            </DialogContentText>
+            <TextField
+                autoFocus
+                margin="dense"
+                id="name"
+                label="Fullname"
+                type="text"
+                fullWidth
+                variant="standard"
+                defaultValue={selectedEmployee.employee_name}
+                onChange={(event) => setEditEmployeeName(event.target.value)}
+            />
+            <TextField
+                autoFocus
+                margin="dense"
+                id="name"
+                label="Email"
+                type="email"
+                fullWidth
+                variant="standard"
+                defaultValue={selectedEmployee.email}
+                onChange={(event) => setEditEmployeeEmail(event.target.value)}
+            />
+            
+            <FormControl fullWidth variant="standard" margin="dense">
+              <InputLabel id="unit-label">Employee Unit</InputLabel>
+              <Select
+                labelId="unit-label"
+                id="unit-select"
+                value={editEmployeeUnit}
+                label="Employee Unit"
+                onChange={(event) => setEditEmployeeUnit(event.target.value)}
+              >
+                {UNIT.map((unit) => (
+                  <MenuItem key={unit.value} value={unit.value}>
+                    {unit.label}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+            </DialogContent>
+            <DialogActions>
+            <Button onClick={CloseEdit}>Close</Button>
+            <Button onClick={handleUpdate}>Save</Button>
+            </DialogActions>
+        </Dialog>
         
         {/* delete modal */}
         <Dialog open={cancel} fullWidth maxWidth="sm">
