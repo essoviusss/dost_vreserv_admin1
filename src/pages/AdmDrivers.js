@@ -43,6 +43,9 @@ export default function AdmVehicle() {
     setIsPaperActive(false);
   };
 
+  //search
+  const [searchQuery, setSearchQuery] = useState('');
+
   //insert
   const [driver_name, setDriverName] = useState("");
   const [email, setDriverEmail] = useState("");
@@ -224,6 +227,15 @@ export default function AdmVehicle() {
       alert("Error");
     }
 }
+//search
+function filterDriver(driver) {
+  if(searchQuery) {
+    return driver.filter(driver => driver.driver_name.toLowerCase().includes(searchQuery.toLowerCase())
+    || driver.email.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+  }
+  return driver;
+}
 
   return (
     <div className='page-container'>
@@ -247,6 +259,8 @@ export default function AdmVehicle() {
           style={{ fontFamily: 'Poppins, sans-serif' }}
           sx={{ flex: 1 }}
           placeholder="Search"
+          value={searchQuery}
+          onChange={e => setSearchQuery(e.target.value)}
         />
         <Button
           variant="contained"
@@ -323,7 +337,7 @@ export default function AdmVehicle() {
               </tr>
             </thead>
             <TableBody>
-              {drivers.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((driver) => (
+              {filterDriver(drivers).slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((driver) => (
                 <TableRow key={driver.driver_id}>
                   <TableCell style={{ fontFamily: 'Poppins, sans-serif', textAlign: 'center', wordBreak: 'break-word', maxWidth: '120px' }}>{driver.driver_name}</TableCell>
                   <TableCell style={{ fontFamily: 'Poppins, sans-serif', textAlign: 'center', wordBreak: 'break-word', maxWidth: '120px' }}>{driver.email}</TableCell>

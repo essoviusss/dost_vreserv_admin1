@@ -45,6 +45,7 @@ export default function AdmVehicleRequest(){
   const [editReason, setEditReason] = useState("");
   const [editPMOfficer, setEditPMOfficer] = useState("");
   const [editApprovedBy, setEditApprovedBy] = useState("");
+  const [editCAOfficer, setEditCAOfficer] = useState("");
 
   //search
   const [searchQuery, setSearchQuery] = useState('');
@@ -80,6 +81,7 @@ export default function AdmVehicleRequest(){
     setEditRequestStatus(request.request_status);
     setEditPMOfficer(request.pm_officer);
     setEditApprovedBy(request.approved_by);
+    setEditCAOfficer(request.ca_officer);
     setEditReason(request.reason);
     setOpenEdit(true);
   };
@@ -167,12 +169,14 @@ useEffect(() => {
     fData.append("driver_name", editDriverName);
     fData.append("pm_officer", editPMOfficer);
     fData.append("approved_by", editApprovedBy);
+    fData.append("ca_officer", editCAOfficer);
     fData.append("request_status", editRequestStatus);
     fData.append("selected_vehicle_name", selectedRequest.vehicle_name);
     fData.append("selected_driver_name", selectedRequest.driver_name);
     fData.append("selected_request_status", selectedRequest.request_status);
     fData.append("selected_PMOfficer", selectedRequest.pm_officer);
     fData.append("selected_ApprovedBy", selectedRequest.approved_by);
+    fData.append("selected_CAOfficer", selectedRequest.ca_officer);
     if(editRequestStatus === 'Cancelled' || editRequestStatus === 'Disapproved' ) {
       fData.append("reason", editReason);
     } else {
@@ -602,6 +606,15 @@ useEffect(() => {
                           {selectedRequest.approved_by}</p>
                         </td>
                       </tr>
+                      <tr>
+                        <td className="table-label-admreq">
+                          <p className="header-label-admreq">Chief Administrative Officer:</p>
+                        </td>
+                        <td>
+                        <p className="admreq-details">
+                          {selectedRequest.ca_officer}</p>
+                        </td>
+                      </tr>
                     </tbody>
                   </table>
                 </div>
@@ -827,6 +840,33 @@ useEffect(() => {
               variant="standard"
               defaultValue={selectedRequest.approved_by}
               onChange={(event) => setEditApprovedBy(event.target.value)}
+              InputLabelProps={{
+                style: {
+                  fontFamily: 'Poppins, sans-serif',
+                  color: 'black',
+                  fontSize: '120%',
+                  fontWeight: '600',
+                },
+              }}
+              InputProps={{
+                style: {
+                  fontFamily: 'Poppins, sans-serif',
+                  fontSize: '14px'
+                },
+              }}
+            />
+          </div>
+          <div className="edit-fields">
+            <TextField
+              autoFocus
+              margin="dense"
+              id="name"
+              label="CHIEF ADMINISTRATIVE OFFICER"
+              type="text"
+              fullWidth
+              variant="standard"
+              defaultValue={selectedRequest.ca_officer}
+              onChange={(event) => setEditCAOfficer(event.target.value)}
               InputLabelProps={{
                 style: {
                   fontFamily: 'Poppins, sans-serif',

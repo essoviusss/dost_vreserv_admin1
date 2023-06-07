@@ -18,6 +18,8 @@ import { Table, TableBody, TableCell, TableContainer, TablePagination, TableRow 
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { StaticDateTimePicker } from '@mui/x-date-pickers/StaticDateTimePicker';
+import { DemoContainer } from '@mui/x-date-pickers/internals/demo';
+import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
 import dayjs from 'dayjs';
 
 
@@ -414,6 +416,12 @@ export default function AdmSchedule() {
           }}
         />
       </LocalizationProvider>
+
+      {/* <LocalizationProvider dateAdapter={AdapterDayjs}>
+      <DemoContainer components={['DateTimePicker']}>
+        <DateTimePicker label="Basic date time picker" />
+      </DemoContainer>
+    </LocalizationProvider> */}
         </div>
 
       </div>
