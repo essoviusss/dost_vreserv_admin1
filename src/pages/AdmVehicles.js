@@ -27,6 +27,8 @@ import EditRoundedIcon from '@mui/icons-material/EditRounded';
 import RemoveRedEyeRoundedIcon from '@mui/icons-material/RemoveRedEyeRounded';
 import InputBase from '@mui/material/InputBase';
 import SearchIcon from '@mui/icons-material/Search';
+import CloseRoundedIcon from '@mui/icons-material/CloseRounded';
+
 
 
 export default function AdmVehicle() {
@@ -259,11 +261,18 @@ export default function AdmVehicle() {
 
       {/* --- ADD NEW VEHICLE MODAL --- */}
       <Dialog open={open} onClose={handleClose}>
-        <DialogTitle>Add New Vehicle</DialogTitle>
+        <DialogTitle className="addvehicle-title">
+          <img className="addvehicle-logo" src="/images/addvehicle_logo.png" />
+          <div className="addvehicle-title-content">
+            <h1>Add New Vehicle</h1>
+            <p>To add a new vehicle, please enter the details in the designated input field.</p>         
+          </div>
+          <Button onClick={handleClose} style={{ color: 'gray', position: 'absolute', top: 10, right: 0, paddingLeft: 0, paddingRight: 0 }}>
+            <CloseRoundedIcon />
+          </Button>
+        </DialogTitle>
+        <hr className="addvehicle-hr" /> 
         <DialogContent>
-          <DialogContentText>
-            To add a new vehicle, please enter the details in the designated input field.
-          </DialogContentText>
           <TextField
             autoFocus
             margin="dense"
@@ -273,6 +282,18 @@ export default function AdmVehicle() {
             fullWidth
             variant="standard"
             onChange={e => setVehicleName(e.target.value)}
+            style={{ marginTop: 0 }}
+            InputLabelProps={{
+              style: {
+                fontFamily: 'Poppins, sans-serif',
+              },
+            }}
+            InputProps={{
+              style: {
+                fontFamily: 'Poppins, sans-serif',
+                fontSize: '14px'
+              },
+            }}
           />
         </DialogContent>
         <DialogActions>
@@ -357,96 +378,146 @@ export default function AdmVehicle() {
       
       {/* --- VIEW MODAL --- */}
       <Dialog open={openView} onClose={CloseView} fullWidth maxWidth="sm">
-        <DialogTitle>View Details</DialogTitle>
+        <Button onClick={CloseView} style={{ color: 'gray', position: 'absolute', top: 10, right: 0, paddingLeft: 0, paddingRight: 0 }}>
+          <CloseRoundedIcon />
+        </Button>
         <DialogContent>
-          <DialogContentText>
-          </DialogContentText>
-          <TextField
-            autoFocus
-            margin="dense"
-            id="name"
-            label="Vehicle Name"
-            type="text"
-            fullWidth
-            variant="filled"
-            defaultValue={selectedVehicle.vehicle_name}
-            InputProps={{
-              readOnly: true,
-            }}
-          />
-          <TextField
-            autoFocus
-            margin="dense"
-            id="name"
-            label="Vehicle Status"
-            type="text"
-            fullWidth
-            variant="filled"
-            defaultValue={selectedVehicle.vehicle_status}
-            InputProps={{
-              readOnly: true,
-            }}
-          />
+          <div className="view-vehicle">
+            <div className="div1-viewvehicle">
+              <img className="viewvehicle-logo" src="/images/viewvehicle_logo.png"/>
+            </div>
+            <div className="div2-viewvehicle">
+              <p className="header-viewvehicle">{selectedVehicle.vehicle_name}</p>
+              <p className="header-label-viewvehicle">Vehicle Name</p>
+            </div>
+            <div className="div3-viewvehicle">
+              <div className="status-viewvehicle">
+                <button className={`status-viewvehicle ${selectedVehicle.vehicle_status === 'Not Available' ? 'not-available' : 'available'}`}>
+                  {selectedVehicle.vehicle_status}
+                </button>
+              </div>
+            </div>
+          </div>
         </DialogContent>
-        <DialogActions>
-          <Button onClick={CloseView}>Close</Button>
-        </DialogActions>
       </Dialog>
-        
+
       {/* --- EDIT MODAL --- */}
       <Dialog open={openEdit} onClose={CloseEdit} fullWidth maxWidth="sm">
-        <DialogTitle>Edit Details</DialogTitle>
+        <DialogTitle className="editvehicle-title">
+          <img className="editvehicle-logo" src="/images/editvehicle_logo.png" />
+          <div className="editvehicle-title-content">
+            <h1>Edit Vehicle Details</h1>
+            <p>Update the necessary changes to the vehicle details</p>         
+          </div>
+          <Button onClick={CloseEdit} style={{ color: 'gray', position: 'absolute', top: 10, right: 0, paddingLeft: 0, paddingRight: 0 }}>
+            <CloseRoundedIcon />
+          </Button>
+        </DialogTitle>
+        <hr className="editvehicle-hr" /> 
         <DialogContent>
-          <DialogContentText></DialogContentText>
-          <TextField
-            autoFocus
-            margin="dense"
-            id="name"
-            label="Vehicle Name"
-            type="text"
-            fullWidth
-            variant="standard"
-            defaultValue={selectedVehicle.vehicle_name}
-            onChange={(event) => setEditVehicleName(event.target.value)}
-          />
-
-              <FormControl fullWidth variant="standard" margin="dense">
-                    <InputLabel id="status-label">Status</InputLabel>
-                    <Select
-                      labelId="status-label"
-                      id="status-select"
-                      value={editVehicleStatus}
-                      label="Request Status"
-                      onChange={(event) => setEditVehicleStatus(event.target.value)}
-                    >
-                      {STATUSES.map((status) => (
-                        <MenuItem key={status.value} value={status.value}>
-                          {status.label}
-                        </MenuItem>
-                      ))}
-                    </Select>
+          <div className="edit-fields">
+            <TextField
+              autoFocus
+              margin="dense"
+              id="name"
+              label="Vehicle Name"
+              type="text"
+              fullWidth
+              variant="standard"
+              defaultValue={selectedVehicle.vehicle_name}
+              onChange={(event) => setEditVehicleName(event.target.value)}
+              style={{ marginTop: 0 }}
+              InputLabelProps={{
+                style: {
+                  fontFamily: 'Poppins, sans-serif',
+                  fontSize: '110%',
+                  color: 'black',    
+                  fontWeight: '600',
+                },
+              }}
+              InputProps={{
+                style: {
+                  fontFamily: 'Poppins, sans-serif',
+                  fontSize: '14px'
+                },
+              }}
+            />
+          </div>
+          <div className="edit-fields">
+            <FormControl fullWidth variant="standard" margin="dense">
+              <InputLabel id="status-label">Status</InputLabel>
+              <Select
+                labelId="status-label"
+                id="status-select"
+                value={editVehicleStatus}
+                label="Request Status"
+                onChange={(event) => setEditVehicleStatus(event.target.value)}
+                style={{ height: '40px', fontFamily: 'Poppins', fontSize: '14px' }}
+                MenuProps={{ PaperProps: { style: { maxHeight: '200px' } } }}
+              >
+                {STATUSES.map((status) => (
+                  <MenuItem key={status.value} value={status.value}>
+                    {status.label}
+                  </MenuItem>
+                ))}
+              </Select>
             </FormControl>
-          </DialogContent>
+          </div>
+        </DialogContent>
           <DialogActions>
             <Button onClick={CloseEdit}>Close</Button>
             <Button onClick={handleUpdate}>Save</Button>
           </DialogActions>
-        </Dialog>
+      </Dialog>
         
-    {/* delete modal */}
-    <Dialog open={cancel} fullWidth maxWidth="sm">
-    <DialogTitle>Confirmation</DialogTitle>
-    <DialogContent>
-      <DialogContentText>
-        Are you sure you want to delete?
-      </DialogContentText>
-    </DialogContent>
-    <DialogActions>
-      <Button onClick={handleCancelDelete}>No</Button>
-      <Button onClick={handleConfirmDelete}>Yes</Button>
-    </DialogActions>
-  </Dialog>
-        
+      {/* --- DELETE MODAL --- */}
+      <Dialog open={cancel} fullWidth maxWidth="xs">
+        <DialogContent>
+          <div className='delete-icon'>
+            <img className="delete-svg" src="/svg/delete_icon.svg" />
+          </div>
+          <DialogContentText>
+            <div className='delete-title'>Are you sure?</div>
+            <div className='delete-subtitle'>Do you really want to delete this vehicle? This process cannot be undone.</div>
+          </DialogContentText>
+        </DialogContent>
+          <div class="button-container">
+            <Button
+              onClick={handleCancelDelete}
+              style={{
+                backgroundColor: 'rgb(92, 92, 92)',
+                borderRadius: '3px',
+                color: 'white',
+                margin: '0 7px 40px 0',
+                textTransform: 'none',
+                width: '120px',
+                fontFamily: 'Poppins, sans-serif',
+                transition: 'background-color 0.3s',
+              }}
+              onMouseEnter={e => e.target.style.backgroundColor = '#474747'}
+              onMouseLeave={e => e.target.style.backgroundColor = 'rgb(92, 92, 92)'}
+            >
+              No
+            </Button>
+            <Button
+              className="confirm-delete"
+              onClick={handleConfirmDelete}
+              style={{
+                backgroundColor: '#cf0a0a',
+                borderRadius: '3px',
+                color: 'white',
+                margin: '0 0 40px 7px',
+                textTransform: 'none',
+                width: '120px',
+                fontFamily: 'Poppins, sans-serif',transition: 'background-color 0.3s',
+              }}
+              onMouseEnter={e => e.target.style.backgroundColor = '#b00909'}
+              onMouseLeave={e => e.target.style.backgroundColor = '#cf0a0a'}
+            >
+              Yes
+            </Button>
+          </div>
+      </Dialog>
     </div>
   );
 }

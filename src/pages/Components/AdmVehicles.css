@@ -1,0 +1,191 @@
+/* ADD VEHICLE MODAL */
+.addvehicle-title {
+    display: flex;
+    align-items: center;
+}
+
+.addvehicle-logo {
+    width: 12%;
+    height: auto;
+    margin-right: 10px;
+}
+
+.addvehicle-title-content {
+    display: flex;
+    flex-direction: column;
+}
+
+.addvehicle-title h1 {
+    font-size: 100%;
+    font-weight: bold;
+    margin: 0;
+    /* color: #025BAD; */
+}
+  
+.addvehicle-title p {
+    font-size: 60%;
+    color: #777777;
+    margin: 0;
+}
+
+.addvehicle-hr {
+    border-top: 1px solid gray;
+    margin: 0% 4% 0% 4%;
+}
+
+
+/* VIEW VEHICLE MODAL */
+.view-vehicle {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+}
+  
+.div1-viewvehicle {
+    width: 20%;
+}
+
+.viewvehicle-logo {
+    width: 70%;
+    height: auto;
+}
+
+.div2-viewvehicle {
+    width: 50%;
+}
+
+.header-viewvehicle {
+    text-transform: uppercase;
+    font-weight: 600;
+    font-size: 130%;
+    color: black;
+    margin-bottom: 0;
+}
+  
+.header-label-viewvehicle {
+    font-weight: 200;
+    font-size: 85%;
+    margin-top: 0;
+    margin-bottom: 0 !important;
+}
+
+.div3-viewvehicle {
+    width: 30%;
+}
+
+.status-viewvehicle {
+    color: white;
+    font-weight: 500;
+    font-size: 12px;
+    padding: 5px 20px;
+    border-radius: 50px;
+    border: none;
+    transition: background-color 0.2s;
+    cursor: auto;
+}
+
+.status-viewvehicle.not-available {
+    background-color: #b21127; /* RGB: 178, 17, 39 */
+}
+
+.status-viewvehicle.available {
+    background-color: #006600; /* RGB: 0, 102, 0 */
+}
+
+
+/* EDIT VEHICLE MODAL */
+.editvehicle-title {
+    display: flex;
+    align-items: center;
+}
+
+.editvehicle-logo {
+    width: 12%;
+    height: auto;
+    margin-right: 10px;
+}
+
+.editvehicle-title-content {
+    display: flex;
+    flex-direction: column;
+}
+
+.editvehicle-title h1 {
+    font-size: 100%;
+    font-weight: bold;
+    margin: 0;
+    /* color: #025BAD; */
+}
+  
+.editvehicle-title p {
+    font-size: 60%;
+    color: #777777;
+    margin: 0;
+}
+
+.editvehicle-hr {
+    border-top: 1px solid gray;
+    margin: 0% 4% 0% 4%;
+}
+#status-label{
+    font-family: 'Poppins', sans-serif;
+    font-size: 80%;
+    color: black;    
+    font-weight: 600;
+}
+#vehicle-name-label{
+    font-family: 'Poppins', sans-serif;
+    font-size: 80%;
+    color: black;    
+    font-weight: 600;
+}
+
+
+/* DELETE VEHICLE MODAL */
+.delete-icon {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 16px;
+    margin-top: 5%;
+  }
+  .delete-icon .delete-svg {
+    width: 100px;
+  }
+  .delete-title {
+    font-size: 20px;
+    color: rgb(69, 69, 69);
+    font-weight: 600;
+    text-align: center;
+    padding-bottom: 2%;
+  }
+  
+  .delete-subtitle {
+    font-size: 14px; 
+    text-align: center;
+    padding: 2%;
+  }
+  .button-container {
+    display: flex;
+    justify-content: center;
+  }
+  .button {
+    margin: 0 10px;
+    color: white;
+  }
+  .cancel-delete {
+    background-color: rgb(92, 92, 92); /* Set the desired background color */
+    border-radius: 5px; /* Set the border radius */
+  }
+  
+  .confirm-delete {
+    background-color: #cf0a0a; /* Set the desired background color */
+    border-radius: 5px; /* Set the border radius */
+  }
+  
+  .cancel-delete:hover,
+  .confirm-delete:hover {
+    background-color: yellow; /* Set the desired background color on hover */
+  }
+  
+  

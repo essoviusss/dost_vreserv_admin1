@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import Header from './Header';
 import { v4 as uuidv4 } from 'uuid';
+import './Components/AdmDrivers.css'
 
 //material ui
 import TextField from '@mui/material/TextField';
@@ -26,7 +27,7 @@ import SearchIcon from '@mui/icons-material/Search';
 import DeleteRoundedIcon from '@mui/icons-material/DeleteRounded';
 import EditRoundedIcon from '@mui/icons-material/EditRounded';
 import RemoveRedEyeRoundedIcon from '@mui/icons-material/RemoveRedEyeRounded';
-
+import CloseRoundedIcon from '@mui/icons-material/CloseRounded';
 
 export default function AdmVehicle() {
   const UID = uuidv4();
@@ -136,6 +137,16 @@ export default function AdmVehicle() {
     setSelectedRow(null);
     setCancel(false);
   };
+
+  //viewdriver status button
+  function getDriverStatusClass(driverStatus) {
+    if (driverStatus === 'Available') {
+      return 'available';
+    } else if (driverStatus === 'Not Available') {
+      return 'not-available';
+    }
+    return '';
+  }
 
   //insert
   async function addDriver() {
@@ -280,21 +291,42 @@ function filterDriver(driver) {
 
       {/* --- ADD DRIVER MODAL --- */}
       <Dialog open={open} onClose={handleClose}>
-        <DialogTitle>Add New Driver</DialogTitle>
+      <DialogTitle className="adddriver-title">
+          <img className="adddriver-logo" src="/images/adddriver_logo.png" />
+          <div className="adddriver-title-content">
+            <h1>Add New Driver</h1>
+            <p>To add a new driver, please enter the details in the designated input field.</p>         
+          </div>
+          <Button onClick={handleClose} style={{ color: 'gray', position: 'absolute', top: 10, right: 0, paddingLeft: 0, paddingRight: 0 }}>
+            <CloseRoundedIcon />
+          </Button>
+        </DialogTitle>
+        <hr className="adddriver-hr" /> 
         <DialogContent>
-          <DialogContentText>
-          To add a new driver, please enter the details in the designated input field.
-          </DialogContentText>
-          <TextField
-            autoFocus
-            margin="dense"
-            id="name"
-            label="Fullname"
-            type="text"
-            fullWidth
-            variant="standard"
-            onChange={e => setDriverName(e.target.value)}
-          />
+          <div className='add-fields'>
+            <TextField
+              autoFocus
+              margin="dense"
+              id="name"
+              label="Fullname"
+              type="text"
+              fullWidth
+              variant="standard"
+              onChange={e => setDriverName(e.target.value)}
+              style={{ marginTop: '-2' }}
+              InputLabelProps={{
+                style: {
+                  fontFamily: 'Poppins, sans-serif',
+                },
+              }}
+              InputProps={{
+                style: {
+                  fontFamily: 'Poppins, sans-serif',
+                  fontSize: '14px'
+                },
+              }}
+            />
+          </div>
           <TextField
             autoFocus
             margin="dense"
@@ -304,8 +336,19 @@ function filterDriver(driver) {
             fullWidth
             variant="standard"
             onChange={e => setDriverEmail(e.target.value)}
+            style={{ marginTop: 5 }}
+            InputLabelProps={{
+              style: {
+                fontFamily: 'Poppins, sans-serif',
+              },
+            }}
+            InputProps={{
+              style: {
+                fontFamily: 'Poppins, sans-serif',
+                fontSize: '14px'
+              },
+            }}
           />
-          
           <TextField
             autoFocus
             margin="dense"
@@ -315,8 +358,19 @@ function filterDriver(driver) {
             fullWidth
             variant="standard"
             onChange={e => setDriverPassword(e.target.value)}
-          />    
-                  
+            style={{ marginTop: 5 }}
+            InputLabelProps={{
+              style: {
+                fontFamily: 'Poppins, sans-serif',
+              },
+            }}
+            InputProps={{
+              style: {
+                fontFamily: 'Poppins, sans-serif',
+                fontSize: '14px'
+              },
+            }}
+          />       
         </DialogContent>
         <DialogActions>
           <Button onClick={handleClose}>Cancel</Button>
@@ -387,137 +441,254 @@ function filterDriver(driver) {
                 </TableRow>
               ))}
             </TableBody>
-          </Table>
-        <TablePagination
-        rowsPerPageOptions={[5, 10, 25]}
-        component="div"
-        count={drivers.length}
-        rowsPerPage={rowsPerPage}
-        page={page}
-        onPageChange={handleChangePage}
-        onRowsPerPageChange={handleChangeRowsPerPage}
-      />
-    </TableContainer>
+            </Table>
+            <TablePagination
+            rowsPerPageOptions={[5, 10, 25]}
+            component="div"
+            count={drivers.length}
+            rowsPerPage={rowsPerPage}
+            page={page}
+            onPageChange={handleChangePage}
+            onRowsPerPageChange={handleChangeRowsPerPage}
+          />
+        </TableContainer>
       </Paper>
-        <Dialog open={openView} onClose={CloseView} fullWidth maxWidth="sm">
-            <DialogTitle>View Details</DialogTitle>
-              <DialogContent>
-                <DialogContentText>
-                {/* To add a new employee account, please enter the details in the designated input field. */}
-                </DialogContentText>
-                <TextField
-                    autoFocus
-                    margin="dense"
-                    id="name"
-                    label="Fullname"
-                    type="text"
-                    fullWidth
-                    variant="filled"
-                    defaultValue={selectedDriver.driver_name}
-                    InputProps={{
-                      readOnly: true,
-                    }}
-                />
-                <TextField
-                    autoFocus
-                    margin="dense"
-                    id="name"
-                    label="Email"
-                    type="email"
-                    fullWidth
-                    variant="filled"
-                    defaultValue={selectedDriver.email}
-                    InputProps={{
-                      readOnly: true,
-                    }}
-                />
-                
-                <TextField
-                    autoFocus
-                    margin="dense"
-                    id="name"
-                    label="Driver Status"
-                    type="text"
-                    fullWidth
-                    variant="filled"
-                    defaultValue={selectedDriver.driver_status}
-                    InputProps={{
-                      readOnly: true,
-                    }}
-                />              
-                </DialogContent>
-                <DialogActions>
-                <Button onClick={CloseView}>Close</Button>
-                {/* <Button onClick={addEmployee}>Save</Button> */}
-                </DialogActions>
-            </Dialog>
+
+      {/* --- VIEW MODAL --- */}
+      <Dialog open={openView} onClose={CloseView} fullWidth maxWidth="sm">
+        <DialogTitle className="viewdriver-title">
+          <img className="viewdriver-logo" src="/images/viewdriver_logo.png" />
+          <div className="viewdriver-title-content">
+            <h1>View Vehicle Details</h1>
+            <p>Review the driver's details below</p>         
+          </div>
+          <Button onClick={CloseView} style={{ color: 'gray', position: 'absolute', top: 10, right: 0, paddingLeft: 0, paddingRight: 0 }}>
+            <CloseRoundedIcon />
+          </Button>
+        </DialogTitle>
+        <hr className="viewdriver-hr" /> 
+        <DialogContent>
+          <div className='viewdriver-fields'>
+            <TextField
+              autoFocus
+              margin="dense"
+              id="name"
+              label="Fullname"
+              type="text"
+              fullWidth
+              variant="standard"
+              defaultValue={selectedDriver.driver_name}
+              InputLabelProps={{
+                style: {
+                  fontFamily: 'Poppins, sans-serif',
+                  color: 'black',
+                  fontSize: '120%',
+                  fontWeight: '600',
+                  textTransform: 'uppercase',
+                },
+              }}
+              InputProps={{
+                readOnly: true,
+                style: {
+                  fontFamily: 'Poppins, sans-serif',
+                  fontSize: '14px'
+                },
+              }}
+            />
+          </div>
+          <div className='viewdriver-fields'>
+            <TextField
+              autoFocus
+              margin="dense"
+              id="name"
+              label="Email"
+              type="email"
+              fullWidth
+              variant="standard" 
+              // filled - if want gray background
+              defaultValue={selectedDriver.email}
+              InputLabelProps={{
+                style: {
+                  fontFamily: 'Poppins, sans-serif',
+                  color: 'black',
+                  fontSize: '120%',
+                  fontWeight: '600',
+                  textTransform: 'uppercase',
+                },
+              }}
+              InputProps={{
+                readOnly: true,
+                style: {
+                  fontFamily: 'Poppins, sans-serif',
+                  fontSize: '14px'
+                },
+              }}
+            />
+          </div>
+          <div className='viedriver-fields'>
+            <div className='viewdriver-label'>
+              DRIVER'S STATUS
+            </div>
+            <div className="status-viewdriver">
+              {selectedDriver && (
+                <button className={`status-button ${getDriverStatusClass(selectedDriver.driver_status)}`}>
+                  {selectedDriver.driver_status}
+                </button>
+              )}
+            </div>
+          </div>             
+        </DialogContent>
+        <DialogActions>
+        <Button onClick={CloseView}>Close</Button>
+        {/* <Button onClick={addEmployee}>Save</Button> */}
+        </DialogActions>
+      </Dialog>
             
-            {/* edit modal */}
-            <Dialog open={openEdit} onClose={CloseEdit} fullWidth maxWidth="sm">
-                <DialogTitle>Edit Details</DialogTitle>
-                  <DialogContent>
-                    <DialogContentText>
-                    {/* To add a new employee account, please enter the details in the designated input field. */}
-                    </DialogContentText>
-                    <TextField
-                        autoFocus
-                        margin="dense"
-                        id="name"
-                        label="Fullname"
-                        type="text"
-                        fullWidth
-                        variant="standard"
-                        defaultValue={selectedDriver.driver_name}
-                        onChange={(event) => setEditDriverName(event.target.value)}
-                    />
-                    <TextField
-                        autoFocus
-                        margin="dense"
-                        id="name"
-                        label="Email"
-                        type="email"
-                        fullWidth
-                        variant="standard"
-                        defaultValue={selectedDriver.email}
-                        onChange={(event) => setEditDriverEmail(event.target.value)}
-                    />  
-                    <FormControl fullWidth variant="standard" margin="dense">
-                          <InputLabel id="status-label">Status</InputLabel>
-                          <Select
-                            labelId="status-label"
-                            id="status-select"
-                            value={editDriverStatus}
-                            label="Request Status"
-                            onChange={(event) => setEditDriverStatus(event.target.value)}
-                          >
-                            {STATUSES.map((status) => (
-                              <MenuItem key={status.value} value={status.value}>
-                                {status.label}
-                              </MenuItem>
-                            ))}
-                          </Select>
-                  </FormControl>         
-                    </DialogContent>
-                    <DialogActions>
-                    <Button onClick={CloseEdit}>Close</Button>
-                    <Button onClick={handleUpdate}>Save</Button>
-                    </DialogActions>
-                </Dialog>
-      
-      {/* delete modal */}
-      <Dialog open={cancel} fullWidth maxWidth="sm">
-      <DialogTitle>Confirmation</DialogTitle>
-      <DialogContent>
-        <DialogContentText>
-          Are you sure you want to delete?
-        </DialogContentText>
-      </DialogContent>
-      <DialogActions>
-        <Button onClick={handleCancelDelete}>No</Button>
-        <Button onClick={handleConfirmDelete}>Yes</Button>
-      </DialogActions>
-    </Dialog>
-        
-      </div>
+      {/* --- EDIT DRIVER MODAL --- */}
+      <Dialog open={openEdit} onClose={CloseEdit} fullWidth maxWidth="sm">
+        <DialogTitle className="editdriver-title">
+          <img className="editdriver-logo" src="/images/editdriver_logo.png" />
+          <div className="editdriver-title-content">
+            <h1>Edit Driver Details</h1>
+            <p>Update the necessary changes to the driver's details</p>         
+          </div>
+          <Button onClick={CloseEdit} style={{ color: 'gray', position: 'absolute', top: 10, right: 0, paddingLeft: 0, paddingRight: 0 }}>
+            <CloseRoundedIcon />
+          </Button>
+        </DialogTitle>
+        <hr className="editdriver-hr" /> 
+        <DialogContent>
+          <div className='edit-fields'>
+            <TextField
+              autoFocus
+              margin="dense"
+              id="name"
+              label="Fullname"
+              type="text"
+              fullWidth
+              variant="standard"
+              defaultValue={selectedDriver.driver_name}
+              onChange={(event) => setEditDriverName(event.target.value)}
+              style={{ marginTop: 0 }}
+              InputLabelProps={{
+                style: {
+                  fontFamily: 'Poppins, sans-serif',
+                  fontSize: '110%',
+                  color: 'black',    
+                  fontWeight: '600',
+                },
+              }}
+              InputProps={{
+                style: {
+                  fontFamily: 'Poppins, sans-serif',
+                  fontSize: '14px'
+                },
+              }}
+            />
+          </div>
+          <div className='edit-fields'>
+            <TextField
+              autoFocus
+              margin="dense"
+              id="name"
+              label="Email"
+              type="email"
+              fullWidth
+              variant="standard"
+              defaultValue={selectedDriver.email}
+              onChange={(event) => setEditDriverEmail(event.target.value)}
+              style={{ marginTop: 0 }}
+              InputLabelProps={{
+                style: {
+                  fontFamily: 'Poppins, sans-serif',
+                  fontSize: '110%',
+                  color: 'black',    
+                  fontWeight: '600',
+                },
+              }}
+              InputProps={{
+                style: {
+                  fontFamily: 'Poppins, sans-serif',
+                  fontSize: '14px'
+                },
+              }}
+            />  
+          </div>
+          <div className='edit-fields'>
+            <FormControl fullWidth variant="standard" margin="dense">
+              <InputLabel id="status-label">Status</InputLabel>
+              <Select
+                labelId="status-label"
+                id="status-select"
+                value={editDriverStatus}
+                label="Request Status"
+                onChange={(event) => setEditDriverStatus(event.target.value)}
+                style={{ height: '40px', fontFamily: 'Poppins', fontSize: '14px' }}
+                MenuProps={{ PaperProps: { style: { maxHeight: '200px' } } }}
+              >
+                {STATUSES.map((status) => (
+                  <MenuItem key={status.value} value={status.value}>
+                    {status.label}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>         
+          </div>
+        </DialogContent>
+        <DialogActions>
+        <Button onClick={CloseEdit}>Close</Button>
+        <Button onClick={handleUpdate}>Save</Button>
+        </DialogActions>
+      </Dialog>
+    
+      {/* --- DELETE MODAL --- */}
+      <Dialog open={cancel} fullWidth maxWidth="xs">
+        <DialogContent>
+          <div className='delete-icon'>
+            <img className="delete-svg" src="/svg/delete_icon.svg" />
+          </div>
+          <DialogContentText>
+            <div className='delete-title'>Are you sure?</div>
+            <div className='delete-subtitle'>Do you really want to delete this vehicle? This process cannot be undone.</div>
+          </DialogContentText>
+        </DialogContent>
+        <div class="button-container">
+          <Button
+            onClick={handleCancelDelete}
+            style={{
+              backgroundColor: 'rgb(92, 92, 92)',
+              borderRadius: '3px',
+              color: 'white',
+              margin: '0 7px 40px 0',
+              textTransform: 'none',
+              width: '120px',
+              fontFamily: 'Poppins, sans-serif',
+              transition: 'background-color 0.3s',
+            }}
+            onMouseEnter={e => e.target.style.backgroundColor = '#474747'}
+            onMouseLeave={e => e.target.style.backgroundColor = 'rgb(92, 92, 92)'}
+          >
+            No
+          </Button>
+          <Button
+            className="confirm-delete"
+            onClick={handleConfirmDelete}
+            style={{
+              backgroundColor: '#cf0a0a',
+              borderRadius: '3px',
+              color: 'white',
+              margin: '0 0 40px 7px',
+              textTransform: 'none',
+              width: '120px',
+              fontFamily: 'Poppins, sans-serif',transition: 'background-color 0.3s',
+            }}
+            onMouseEnter={e => e.target.style.backgroundColor = '#b00909'}
+            onMouseLeave={e => e.target.style.backgroundColor = '#cf0a0a'}
+          >
+            Yes
+          </Button>
+        </div>
+      </Dialog>
+    </div>
   );
 }

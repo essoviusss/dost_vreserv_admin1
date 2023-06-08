@@ -1,0 +1,49 @@
+/* ADD MODAL */
+.addpms-title {
+    display: flex;
+    align-items: center;
+}
+
+.addpms-logo {
+    width: 12%;
+    height: auto;
+    margin-right: 10px;
+}
+
+.addpms-title-content {
+    display: flex;
+    flex-direction: column;
+}
+
+.addpms-title h1 {
+    font-size: 100%;
+    font-weight: bold;
+    margin: 0;
+    /* color: #025BAD; */
+}
+  
+.addpms-title p {
+    font-size: 55%;
+    color: #777777;
+    margin: 0;
+}
+
+.addpms-hr {
+    border-top: 1px solid gray;
+    margin: 0% 4% 0% 4%;
+}
+
+.addpms-label{
+    font-size: 100%;
+    font-weight: 600;
+}
+
+.addpms-field{
+    margin-bottom: 2%;
+}
+#month-label{
+    font-family: 'Poppins', sans-serif;
+    font-size: 80%;
+    color: black;    
+    font-weight: 600;
+}
