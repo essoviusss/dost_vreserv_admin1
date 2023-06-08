@@ -175,7 +175,9 @@ export default function AdmSchedule() {
   //search
   function filterPMS(pms) {
     if(searchQuery) {
-      return pms.filter(pms => pms.vehicle_name.toLowerCase().includes(searchQuery.toLowerCase()));
+      return pms.filter(pms => pms.vehicle_name.toLowerCase().includes(searchQuery.toLowerCase())
+      || pms.initial_pms.toLowerCase().includes(searchQuery.toLowerCase())
+      );
     }
     return pms;
   }
@@ -307,6 +309,8 @@ export default function AdmSchedule() {
           style={{ fontFamily: 'Poppins, sans-serif' }}
           sx={{ flex: 1 }}
           placeholder="Search"
+          value={searchQuery}
+          onChange={e => setSearchQuery(e.target.value)}
         />
         <Button
           variant="contained"
