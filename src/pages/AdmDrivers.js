@@ -28,6 +28,7 @@ import DeleteRoundedIcon from '@mui/icons-material/DeleteRounded';
 import EditRoundedIcon from '@mui/icons-material/EditRounded';
 import RemoveRedEyeRoundedIcon from '@mui/icons-material/RemoveRedEyeRounded';
 import CloseRoundedIcon from '@mui/icons-material/CloseRounded';
+import CustomButton from './StyledComponents/CustomButton';
 
 export default function AdmVehicle() {
   const UID = uuidv4();
@@ -373,8 +374,8 @@ function filterDriver(driver) {
           />       
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleClose}>Cancel</Button>
-          <Button onClick={addDriver}>Save</Button>
+          <Button onClick={handleClose} style={{ color: '#025BAD', fontFamily: 'Poppins' }}>Cancel</Button>
+          <CustomButton variant="save_button" text="Save" color="primary" onClick={addDriver} />
         </DialogActions>
       </Dialog>
 
@@ -539,7 +540,7 @@ function filterDriver(driver) {
           </div>             
         </DialogContent>
         <DialogActions>
-        <Button onClick={CloseView}>Close</Button>
+        <Button onClick={CloseView} style={{ color: '#025BAD', fontFamily: 'Poppins' }}>Close</Button>
         {/* <Button onClick={addEmployee}>Save</Button> */}
         </DialogActions>
       </Dialog>
@@ -636,8 +637,8 @@ function filterDriver(driver) {
           </div>
         </DialogContent>
         <DialogActions>
-        <Button onClick={CloseEdit}>Close</Button>
-        <Button onClick={handleUpdate}>Save</Button>
+        <Button onClick={CloseEdit} style={{ color: '#025BAD', fontFamily: 'Poppins' }}>Cancel</Button>
+        <CustomButton variant="save_button" text="Save" color="primary" onClick={handleUpdate} />
         </DialogActions>
       </Dialog>
     

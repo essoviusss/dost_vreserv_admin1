@@ -30,6 +30,7 @@ import DeleteRoundedIcon from '@mui/icons-material/DeleteRounded';
 import EditRoundedIcon from '@mui/icons-material/EditRounded';
 import RemoveRedEyeRoundedIcon from '@mui/icons-material/RemoveRedEyeRounded';
 import CloseRoundedIcon from '@mui/icons-material/CloseRounded';
+import CustomButton from './StyledComponents/CustomButton';
 
 export default function AdmEmployee() {
   const UID = uuidv4();
@@ -371,37 +372,46 @@ async function handleUpdate() {
                 fontSize: '14px'
               },
             }}
-         />
-          <FormControl fullWidth variant="standard" margin="dense">
-          <InputLabel id="unit-label">Employee Unit</InputLabel>
-          <Select
-            labelId="unit-label"
-            id="unit-select"
-            label="Employee Unit"
-            onChange={e => setEmployeeUnit(e.target.value)}
-            InputLabelProps={{
-              style: {
+          />
+          <FormControl fullWidth variant="standard" margin="dense" style={{ marginTop: '16px' }}>
+            <InputLabel
+              id="unit-label"
+              style={{
                 fontFamily: 'Poppins, sans-serif',
-              },
-            }}
-            InputProps={{
-              style: {
-                fontFamily: 'Poppins, sans-serif',
-                fontSize: '14px'
-              },
-            }}
+              }}
             >
-            {UNIT.map((unit) => (
-              <MenuItem key={unit.value} value={unit.value}>
-                {unit.label}
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>         
+              Employee Unit
+            </InputLabel>
+            <Select
+              labelId="unit-label"
+              id="unit-select"
+              label="Employee Unit"
+              onChange={e => setEmployeeUnit(e.target.value)}
+              InputLabelProps={{
+                style: {
+                  fontFamily: 'Poppins, sans-serif',
+                },
+              }}
+              InputProps={{
+                style: {
+                  fontFamily: 'Poppins, sans-serif',
+                  fontSize: '14px'
+                },
+              }}
+              style={{ height: '40px', fontFamily: 'Poppins', fontSize: '14px' }}
+                MenuProps={{ PaperProps: { style: { maxHeight: '200px' } } }}
+            >
+              {UNIT.map((unit) => (
+                <MenuItem key={unit.value} value={unit.value}>
+                  {unit.label}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>         
         </DialogContent>
         <DialogActions>
-        <Button onClick={handleClose}>Cancel</Button>
-        <Button onClick={addEmployee}>Save</Button>
+        <Button onClick={handleClose} style={{ color: '#025BAD', fontFamily: 'Poppins' }}>Cancel</Button>
+        <CustomButton variant="save_button" text="Save" color="primary" onClick={addEmployee} />
         </DialogActions>
       </Dialog>
       
@@ -564,7 +574,7 @@ async function handleUpdate() {
           </div>              
         </DialogContent>
         <DialogActions>
-        <Button onClick={CloseView}>Close</Button>
+          <Button onClick={CloseView} style={{ color: '#025BAD', fontFamily: 'Poppins' }}>Close</Button>
         </DialogActions>
       </Dialog>
 
@@ -640,26 +650,38 @@ async function handleUpdate() {
           </div>
           <div className='editemp-fields'>
             <FormControl fullWidth variant="standard" margin="dense">
-                <InputLabel id="unit-label">Employee Unit</InputLabel>
-                <Select
-                  labelId="unit-label"
-                  id="unit-select"
-                  value={editEmployeeUnit}
-                  label="Employee Unit"
-                  onChange={(event) => setEditEmployeeUnit(event.target.value)}
-                >
-                  {UNIT.map((unit) => (
-                    <MenuItem key={unit.value} value={unit.value}>
-                      {unit.label}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
+              <InputLabel
+                id="unit-label"
+                style={{
+                  fontFamily: 'Poppins, sans-serif',
+                  fontSize: '83%',
+                  color: 'black',    
+                  fontWeight: '600',
+                }}
+              >
+                Employee Unit
+              </InputLabel>
+              <Select
+                labelId="unit-label"
+                id="unit-select"
+                value={editEmployeeUnit}
+                label="Employee Unit"
+                onChange={(event) => setEditEmployeeUnit(event.target.value)}
+                style={{ height: '40px', fontFamily: 'Poppins', fontSize: '14px' }}
+                MenuProps={{ PaperProps: { style: { maxHeight: '200px' } } }}
+              >
+                {UNIT.map((unit) => (
+                  <MenuItem key={unit.value} value={unit.value}>
+                    {unit.label}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
           </div>            
         </DialogContent>
         <DialogActions>
-        <Button onClick={CloseEdit}>Close</Button>
-        <Button onClick={handleUpdate}>Save</Button>
+        <Button onClick={CloseEdit} style={{ color: '#025BAD', fontFamily: 'Poppins' }}>Cancel</Button>
+        <CustomButton variant="save_button" text="Save" color="primary" onClick={handleUpdate} />
         </DialogActions>
       </Dialog>
         

@@ -23,7 +23,9 @@ import { DemoContainer } from '@mui/x-date-pickers/internals/demo';
 import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
 import dayjs from 'dayjs';
 import CloseRoundedIcon from '@mui/icons-material/CloseRounded';
-
+import CustomButton from './StyledComponents/CustomButton';
+import DeleteRoundedIcon from '@mui/icons-material/DeleteRounded';
+import EditRoundedIcon from '@mui/icons-material/EditRounded';
 
 import jwtDecode from 'jwt-decode';
 import useAuth from "../hooks/useAuth";
@@ -345,13 +347,21 @@ export default function AdmSchedule() {
                   <TableCell style={{ fontFamily: 'Poppins, sans-serif', textAlign: 'center', wordBreak: 'break-word', maxWidth: '120px' }}>{data.initial_pms}</TableCell>
                   <TableCell style={{ fontFamily: 'Poppins, sans-serif', textAlign: 'center', wordBreak: 'break-word', maxWidth: '120px' }}>{data.pms_startdate === "0000-00-00 00:00:00" ? "Not Set": data.pms_startdate}</TableCell>
                   <TableCell style={{ fontFamily: 'Poppins, sans-serif', textAlign: 'center', wordBreak: 'break-word', maxWidth: '120px' }}>{data.pms_enddate === "0000-00-00 00:00:00" ? "Not Set": data.pms_enddate}</TableCell>
-                  <TableCell style={{ textAlign: 'center' }}>
-                    <div style={{ display: 'flex', gap: '8px', justifyContent: 'center' }}>
-                      <Button variant="contained" onClick={() => handleOpenEdit(data)}>
-                        UPDATE
+                  <TableCell style={{ fontFamily: 'Poppins, sans-serif', textAlign: 'center', wordBreak: 'break-word', maxWidth: '180px' }}>
+                    <div style={{ display: 'flex', justifyContent: 'center', gap: '8px' }}>
+                      <Button
+                        variant="contained"
+                        onClick={() => handleOpenEdit(data)}
+                        style={{ backgroundColor: '#025BAD' }}
+                      >
+                        <EditRoundedIcon />
                       </Button>
-                      <Button variant="contained" onClick={() => handleDelete(data)}>
-                        CANCEL
+                      <Button 
+                        variant="contained"
+                        onClick={() => handleDelete(data)}
+                        style={{ backgroundColor: '#025BAD' }}
+                      >
+                        <DeleteRoundedIcon />
                       </Button>
                     </div>
                   </TableCell>
@@ -422,71 +432,118 @@ export default function AdmSchedule() {
             </select>
           </div>
         </div>
-      </DialogContent>
-      <DialogActions>
-        <Button onClick={handleClose}>Cancel</Button>
-        <Button onClick={() => addPms(selectedVehicle)}>Save</Button>
-      </DialogActions>
-    </Dialog>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleClose} style={{ color: '#025BAD', fontFamily: 'Poppins' }}>Cancel</Button>
+          <CustomButton variant="save_button" text="Save" color="primary" onClick={() => addPms(selectedVehicle)} />
+        </DialogActions>
+      </Dialog>
   
-  {/* edit modal */}
-  <Dialog open={openEdit} onClose={CloseEdit} fullWidth maxWidth="sm">
-    <DialogTitle>Edit PMS</DialogTitle>
-    <DialogContent>
-      <div>
-        <div>
-          <h6>PMS Start Date</h6>
-        </div>
-        <div> 
-        <LocalizationProvider dateAdapter={AdapterDayjs}>
-        <StaticDateTimePicker 
-          orientation="landscape"
-          value={editPmsStartdate || dayjs()} 
-          onChange={(newValue) => {
-            setEditPmsStartdate(newValue);
-          }}
-        />
-      </LocalizationProvider>
-
-      <LocalizationProvider dateAdapter={AdapterDayjs}>
-        <StaticDateTimePicker
-          orientation="landscape"
-          label="PMS End Date"
-          value={editPmsEnddate || dayjs()} 
-          onChange={(newValue) => {
-            setEditPmsEnddate(newValue);
-          }}
-        />
-      </LocalizationProvider>
-
-      {/* <LocalizationProvider dateAdapter={AdapterDayjs}>
-      <DemoContainer components={['DateTimePicker']}>
-        <DateTimePicker label="Basic date time picker" />
-      </DemoContainer>
-    </LocalizationProvider> */}
-        </div>
-      </div>
-    </DialogContent>
-    <DialogActions>
-      <Button onClick={CloseEdit}>Cancel</Button>
-      <Button onClick={handleUpdate}>Save</Button>
-    </DialogActions>
-  </Dialog>
+      {/* --- EDIT PMS MODAL --- */}
+      <Dialog open={openEdit} onClose={CloseEdit} fullWidth maxWidth="sm">
+        <DialogTitle className="editpms-title">
+          <img className="editpms-logo" src="/images/updatepms_logo.png" />
+          <div className="editpms-title-content">
+            <h1>Update PMS Schedule</h1>
+            <p>Change the PMS Schedule below</p>         
+          </div>
+          <Button onClick={CloseEdit} style={{ color: 'gray', position: 'absolute', top: 10, right: 0, paddingLeft: 0, paddingRight: 0 }}>
+            <CloseRoundedIcon />
+          </Button>
+        </DialogTitle>
+        <hr className="editpms-hr" /> 
+        <DialogContent>
+          <div>
+            <div className='pmsstart-label'>
+              PMS Start Date
+            </div>
+            <div className='pmsstart-container'> 
+              <LocalizationProvider dateAdapter={AdapterDayjs}>
+              <StaticDateTimePicker 
+                orientation="landscape"
+                value={editPmsStartdate || dayjs()} 
+                onChange={(newValue) => {
+                  setEditPmsStartdate(newValue);
+                }}
+              />
+              </LocalizationProvider>
+            </div>
+            <div className='pmsend-label'>
+              PMS End Date
+            </div>
+            <div className='pmsend-container'>
+              <LocalizationProvider dateAdapter={AdapterDayjs}>
+                <StaticDateTimePicker
+                  orientation="landscape"
+                  label="PMS End Date"
+                  value={editPmsEnddate || dayjs()} 
+                  onChange={(newValue) => {
+                    setEditPmsEnddate(newValue);
+                  }}
+                />
+              </LocalizationProvider>
+            </div>
+                {/* <LocalizationProvider dateAdapter={AdapterDayjs}>
+                <DemoContainer components={['DateTimePicker']}>
+                  <DateTimePicker label="Basic date time picker" />
+                </DemoContainer>
+              </LocalizationProvider> */}
+          </div>
+        </DialogContent>
+        <DialogActions>
+        <Button onClick={CloseEdit} style={{ color: '#025BAD', fontFamily: 'Poppins' }}>Cancel</Button>
+          <CustomButton variant="save_button" text="Save" color="primary" onClick={handleUpdate} />
+        </DialogActions>
+      </Dialog>
   
-  {/* cancel modal */}
-  <Dialog open={cancel}>
-  <DialogTitle>Confirmation</DialogTitle>
-  <DialogContent>
-    <DialogContentText>
-      Are you sure you want to cancel?
-    </DialogContentText>
-  </DialogContent>
-  <DialogActions>
-    <Button onClick={handleCancelDelete}>No</Button>
-    <Button onClick={handleConfirmDelete}>Yes</Button>
-  </DialogActions>
-</Dialog>
+      {/* --- CANCEL PMS MODAL --- */}
+      <Dialog open={cancel} fullWidth maxWidth="xs">
+        <DialogContent>
+          <div className='delete-icon'>
+            <img className="delete-svg" src="/svg/delete_icon.svg" />
+          </div>
+          <DialogContentText>
+            <div className='delete-title'>Are you sure?</div>
+            <div className='delete-subtitle'>Do you really want to cancel this PMS? This process cannot be undone.</div>
+          </DialogContentText>
+        </DialogContent>
+        <div class="button-container">
+          <Button
+            onClick={handleCancelDelete}
+            style={{
+              backgroundColor: 'rgb(92, 92, 92)',
+              borderRadius: '3px',
+              color: 'white',
+              margin: '0 7px 40px 0',
+              textTransform: 'none',
+              width: '120px',
+              fontFamily: 'Poppins, sans-serif',
+              transition: 'background-color 0.3s',
+            }}
+            onMouseEnter={e => e.target.style.backgroundColor = '#474747'}
+            onMouseLeave={e => e.target.style.backgroundColor = 'rgb(92, 92, 92)'}
+          >
+            No
+          </Button>
+          <Button
+            className="confirm-delete"
+            onClick={handleConfirmDelete}
+            style={{
+              backgroundColor: '#cf0a0a',
+              borderRadius: '3px',
+              color: 'white',
+              margin: '0 0 40px 7px',
+              textTransform: 'none',
+              width: '120px',
+              fontFamily: 'Poppins, sans-serif',transition: 'background-color 0.3s',
+            }}
+            onMouseEnter={e => e.target.style.backgroundColor = '#b00909'}
+            onMouseLeave={e => e.target.style.backgroundColor = '#cf0a0a'}
+          >
+            Yes
+          </Button>
+        </div>
+      </Dialog>
     </div>
-
   );
 }
