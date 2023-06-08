@@ -28,7 +28,7 @@ import RemoveRedEyeRoundedIcon from '@mui/icons-material/RemoveRedEyeRounded';
 import InputBase from '@mui/material/InputBase';
 import SearchIcon from '@mui/icons-material/Search';
 import CloseRoundedIcon from '@mui/icons-material/CloseRounded';
-
+import CustomButton from './StyledComponents/CustomButton';
 
 
 export default function AdmVehicle() {
@@ -297,8 +297,8 @@ export default function AdmVehicle() {
           />
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleClose}>Cancel</Button>
-          <Button onClick={addVehicle}>Save</Button>
+          <Button onClick={handleClose} style={{ color: '#025BAD', fontFamily: 'Poppins' }}>Cancel</Button>
+          <CustomButton variant="save_button" text="Save" color="primary" onClick={addVehicle} />
         </DialogActions>
       </Dialog>
 
@@ -465,8 +465,8 @@ export default function AdmVehicle() {
           </div>
         </DialogContent>
           <DialogActions>
-            <Button onClick={CloseEdit}>Close</Button>
-            <Button onClick={handleUpdate}>Save</Button>
+            <Button onClick={CloseEdit} style={{ color: '#025BAD', fontFamily: 'Poppins' }}>Cancel</Button>
+            <CustomButton variant="save_button" text="Save" color="primary" onClick={handleUpdate} />
           </DialogActions>
       </Dialog>
         

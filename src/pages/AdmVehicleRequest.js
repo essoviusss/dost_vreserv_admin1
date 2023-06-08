@@ -25,6 +25,10 @@ import Textarea from '@mui/joy/Textarea';
 import { Table, TableBody, TableCell, TableContainer, TablePagination, TableRow } from '@mui/material';
 import jsPDF from 'jspdf';
 import CloseRoundedIcon from '@mui/icons-material/CloseRounded';
+import EditRoundedIcon from '@mui/icons-material/EditRounded';
+import RemoveRedEyeRoundedIcon from '@mui/icons-material/RemoveRedEyeRounded';
+import CustomButton from './StyledComponents/CustomButton';
+
 
 export default function AdmVehicleRequest(){
   //defaultValue
@@ -525,17 +529,25 @@ useEffect(() => {
                         {request.request_status}
                       </div>
                     </TableCell>
-                    <TableCell style={{ fontFamily: 'Poppins, sans-serif', textAlign: 'center', wordBreak: 'break-word', maxWidth: '140px' }}>
-                      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', width: '150px' }}>
-                        <Button variant="contained" style={{ marginRight: '10px' }} onClick={() => handleOpenView(request)}>
-                          View
-                        </Button>
-                        {role === "SuperAdmin" ? null : 
-                        <Button variant="contained" onClick={() => handleOpenEdit(request)}>
-                          Edit
-                        </Button>}
-                      </div>
-                    </TableCell>
+                    <TableCell style={{ fontFamily: 'Poppins, sans-serif', textAlign: 'center', wordBreak: 'break-word', maxWidth: '180px' }}>
+                    <div style={{ display: 'flex', justifyContent: 'center', gap: '8px' }}>
+                      <Button
+                        variant="contained"
+                        onClick={() => handleOpenView(request)}
+                        style={{ backgroundColor: '#025BAD' }}
+                      >
+                        <RemoveRedEyeRoundedIcon />
+                      </Button>
+                      {role === "SuperAdmin" ? null : 
+                      <Button
+                        variant="contained"
+                        onClick={() => handleOpenEdit(request)}
+                        style={{ backgroundColor: '#025BAD' }}
+                      >
+                        <EditRoundedIcon />
+                      </Button>}
+                    </div>
+                  </TableCell>
                   </TableRow>        
                 ))}
               </TableBody>
@@ -936,8 +948,8 @@ useEffect(() => {
           </div>              
         </DialogContent>
         <DialogActions>
-          <Button onClick={CloseEdit}>Cancel</Button>
-          <Button onClick={handleUpdate}>Save</Button>
+          <Button onClick={CloseEdit} style={{ color: '#025BAD', fontFamily: 'Poppins' }}>Cancel</Button>
+          <CustomButton variant="save_button" text="Save" color="primary" onClick={handleUpdate} />
         </DialogActions>
       </Dialog>
     </div>
