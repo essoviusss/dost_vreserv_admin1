@@ -82,6 +82,9 @@ export default function AdmVehicle() {
   //delete
   const [selectedRow, setSelectedRow] = useState(null);
 
+  //search
+  const [searchQuery, setSearchQuery] = useState('');
+
   
   //modal
   const [open, setOpen] = React.useState(false);
@@ -220,6 +223,15 @@ export default function AdmVehicle() {
     }
   }
 
+  //search
+  function filterVehicle(vehicle) {
+    if(searchQuery) {
+      return vehicle.filter(vehicle => vehicle.vehicle_name.toLowerCase().includes(searchQuery.toLowerCase())
+      );
+    }
+    return vehicle;
+  }
+
   return (
     <div className='page-container'>
       <Header />
@@ -242,6 +254,8 @@ export default function AdmVehicle() {
           style={{ fontFamily: 'Poppins, sans-serif' }}
           sx={{ flex: 1 }}
           placeholder="Search"
+          value={searchQuery}
+          onChange={e => setSearchQuery(e.target.value)}
         />
         <Button
           variant="contained"
@@ -314,7 +328,7 @@ export default function AdmVehicle() {
               </tr>
             </thead>
             <TableBody>
-              {vehicles.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((vehicle) => (
+              {filterVehicle(vehicles).slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((vehicle) => (
                 <TableRow key={vehicle.vehicle_id}>
                   <TableCell style={{ fontFamily: 'Poppins, sans-serif', textAlign: 'center', wordBreak: 'break-word', maxWidth: '120px' }}>{vehicle.vehicle_name}</TableCell>
                   <TableCell style={{ fontFamily: 'Poppins, sans-serif', textAlign: 'center', padding: 0 }}>
