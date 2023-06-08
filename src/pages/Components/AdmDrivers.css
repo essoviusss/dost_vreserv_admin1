@@ -1,0 +1,148 @@
+/* ADD DRIVER MODAL */
+.adddriver-title {
+    display: flex;
+    align-items: center;
+}
+
+.adddriver-logo {
+    width: 12%;
+    height: auto;
+    margin-right: 10px;
+}
+
+.adddriver-title-content {
+    display: flex;
+    flex-direction: column;
+}
+
+.adddriver-title h1 {
+    font-size: 100%;
+    font-weight: bold;
+    margin: 0;
+    /* color: #025BAD; */
+}
+  
+.adddriver-title p {
+    font-size: 60%;
+    color: #777777;
+    margin: 0;
+}
+
+.adddriver-hr {
+    border-top: 1px solid gray;
+    margin: 0% 4% 0% 4%;
+}
+.add-fields{
+    margin-top: -3%;
+}
+
+/* VIEW DRIVER MODAL */
+.viewdriver-title {
+    display: flex;
+    align-items: center;
+}
+
+.viewdriver-logo {
+    width: 12%;
+    height: auto;
+    margin-right: 10px;
+}
+
+.viewdriver-title-content {
+    display: flex;
+    flex-direction: column;
+}
+
+.viewdriver-title h1 {
+    font-size: 100%;
+    font-weight: bold;
+    margin: 0;
+    /* color: #025BAD; */
+}
+  
+.viewdriver-title p {
+    font-size: 60%;
+    color: #777777;
+    margin: 0;
+}
+
+.viewdriver-hr {
+    border-top: 1px solid gray;
+    margin: 0% 4% 0% 4%;
+}
+
+.viewdriver-fields {
+    padding-bottom: 2%;
+  }
+
+.viewdriver-label {
+    font-family: 'Poppins', sans-serif;
+    color: black;
+    font-size: 90%;
+    font-weight: 600;
+  }
+  .status-button {
+    color: white;
+    font-weight: 500;
+    font-size: 14px;
+    padding: 5px 20px;
+    border-radius: 50px;
+    border: none;
+    transition: background-color 0.2s;
+    cursor: auto;
+  }
+  .available {
+    background-color: green;
+  }
+  
+  .not-available {
+    background-color: #b21127;
+  }
+
+
+/* EDIT DRIVER MODAL */
+.editdriver-title {
+    display: flex;
+    align-items: center;
+}
+
+.editdriver-logo {
+    width: 12%;
+    height: auto;
+    margin-right: 10px;
+}
+
+.editdriver-title-content {
+    display: flex;
+    flex-direction: column;
+}
+
+.editdriver-title h1 {
+    font-size: 100%;
+    font-weight: bold;
+    margin: 0;
+    /* color: #025BAD; */
+}
+  
+.editdriver-title p {
+    font-size: 60%;
+    color: #777777;
+    margin: 0;
+}
+
+.editdriver-hr {
+    border-top: 1px solid gray;
+    margin: 0% 4% 0% 4%;
+}
+#status-label{
+    font-family: 'Poppins', sans-serif;
+    font-size: 80%;
+    color: black;    
+    font-weight: 600;
+}
+#vehicle-name-label{
+    font-family: 'Poppins', sans-serif;
+    font-size: 80%;
+    color: black;    
+    font-weight: 600;
+}

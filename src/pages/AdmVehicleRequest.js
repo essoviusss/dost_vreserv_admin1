@@ -720,13 +720,13 @@ useEffect(() => {
         <img className="edit-logo" src="/images/edit_logo.png" />
         <div className="dialog-title-content">
           <h1>Edit Details</h1>
-          <p>Update the necessary changes to the request</p>
+          <p>Update the necessary changes to the request</p>         
         </div>
-        <hr className="dtitle-hr" />
         <Button onClick={CloseView} style={{ color: 'gray', position: 'absolute', top: 10, right: 0, paddingLeft: 0, paddingRight: 0 }}>
           <CloseRoundedIcon />
         </Button>
       </DialogTitle>
+      <hr className="dtitle-hr" /> 
         <DialogContent>
           <DialogContentText>
           </DialogContentText>
@@ -936,7 +936,7 @@ useEffect(() => {
           </div>              
         </DialogContent>
         <DialogActions>
-          <Button onClick={CloseEdit}>Close</Button>
+          <Button onClick={CloseEdit}>Cancel</Button>
           <Button onClick={handleUpdate}>Save</Button>
         </DialogActions>
       </Dialog>

@@ -4,8 +4,8 @@ import { useEffect } from 'react';
 import axios from "axios";
 import { v4 as uuidv4 } from 'uuid';
 import Header from './Header';
+import './Components/AdmEmployee.css'
 // import  './Components/ViewModal.css'
-// import '../pages/Components/EmployeeTable.css'
 
 //material UI
 import Button from '@mui/material/Button';
@@ -29,6 +29,7 @@ import SearchIcon from '@mui/icons-material/Search';
 import DeleteRoundedIcon from '@mui/icons-material/DeleteRounded';
 import EditRoundedIcon from '@mui/icons-material/EditRounded';
 import RemoveRedEyeRoundedIcon from '@mui/icons-material/RemoveRedEyeRounded';
+import CloseRoundedIcon from '@mui/icons-material/CloseRounded';
 
 export default function AdmEmployee() {
   const UID = uuidv4();
@@ -294,22 +295,42 @@ async function handleUpdate() {
 
       {/* --- ADD EMPLOYEE MODAL --- */}
       <Dialog open={open} onClose={handleClose}>
-        <DialogTitle>Add New Employee</DialogTitle>
+        <DialogTitle className="addemp-title">
+          <img className="addemp-logo" src="/images/addemp_logo.png" />
+          <div className="addemp-title-content">
+            <h1>Add New Employee</h1>
+            <p>To add a new employee, please enter the details in the designated input field.</p>         
+          </div>
+          <Button onClick={handleClose} style={{ color: 'gray', position: 'absolute', top: 10, right: 0, paddingLeft: 0, paddingRight: 0 }}>
+            <CloseRoundedIcon />
+          </Button>
+        </DialogTitle>
+        <hr className="addemp-hr" /> 
         <DialogContent>
-        <DialogContentText>
-        To add a new employee account, please enter the details in the designated input field.
-        </DialogContentText>
-        <TextField
-            autoFocus
-            margin="dense"
-            id="name"
-            label="Fullname"
-            type="text"
-            fullWidth
-            variant="standard"
-            onChange={e => setEmployeeName(e.target.value)}
-        />
-        <TextField
+          <div className='add-fields'>
+            <TextField
+              autoFocus
+              margin="dense"
+              id="name"
+              label="Fullname"
+              type="text"
+              fullWidth
+              variant="standard"
+              onChange={e => setEmployeeName(e.target.value)}
+              InputLabelProps={{
+                style: {
+                  fontFamily: 'Poppins, sans-serif',
+                },
+              }}
+              InputProps={{
+                style: {
+                  fontFamily: 'Poppins, sans-serif',
+                  fontSize: '14px'
+                },
+              }}
+            />
+          </div>
+          <TextField
             autoFocus
             margin="dense"
             id="name"
@@ -318,8 +339,19 @@ async function handleUpdate() {
             fullWidth
             variant="standard"
             onChange={e => setEmployeeEmail(e.target.value)}
-        />
-        <TextField
+            InputLabelProps={{
+              style: {
+                fontFamily: 'Poppins, sans-serif',
+              },
+            }}
+            InputProps={{
+              style: {
+                fontFamily: 'Poppins, sans-serif',
+                fontSize: '14px'
+              },
+            }}
+          />
+          <TextField
             autoFocus
             margin="dense"
             id="name"
@@ -328,15 +360,37 @@ async function handleUpdate() {
             fullWidth
             variant="standard"
             onChange={e => setEmployeePassword(e.target.value)}
-        />
-        <FormControl fullWidth variant="standard" margin="dense">
+            InputLabelProps={{
+              style: {
+                fontFamily: 'Poppins, sans-serif',
+              },
+            }}
+            InputProps={{
+              style: {
+                fontFamily: 'Poppins, sans-serif',
+                fontSize: '14px'
+              },
+            }}
+         />
+          <FormControl fullWidth variant="standard" margin="dense">
           <InputLabel id="unit-label">Employee Unit</InputLabel>
           <Select
             labelId="unit-label"
             id="unit-select"
             label="Employee Unit"
             onChange={e => setEmployeeUnit(e.target.value)}
-          >
+            InputLabelProps={{
+              style: {
+                fontFamily: 'Poppins, sans-serif',
+              },
+            }}
+            InputProps={{
+              style: {
+                fontFamily: 'Poppins, sans-serif',
+                fontSize: '14px'
+              },
+            }}
+            >
             {UNIT.map((unit) => (
               <MenuItem key={unit.value} value={unit.value}>
                 {unit.label}
@@ -411,123 +465,251 @@ async function handleUpdate() {
       </Paper>
 
       {/* --- VIEW MODAL --- */}
-      <Dialog open={openView} onClose={CloseView}>
-        <DialogTitle>View Details</DialogTitle>
+      <Dialog open={openView} onClose={CloseView} fullWidth maxWidth="sm">
+        <DialogTitle className="viewemp-title">
+          <img className="viewemp-logo" src="/images/viewemp_logo.png" />
+          <div className="viewdemp-title-content">
+            <h1>View Employee Details</h1>
+            <p>Review the employee's details below</p>         
+          </div>
+          <Button onClick={CloseView} style={{ color: 'gray', position: 'absolute', top: 10, right: 0, paddingLeft: 0, paddingRight: 0 }}>
+            <CloseRoundedIcon />
+          </Button>
+        </DialogTitle>
+        <hr className="viewemp-hr" /> 
         <DialogContent>
-        <DialogContentText>
-        {/* To add a new employee account, please enter the details in the designated input field. */}
-        </DialogContentText>
-        <TextField
-            autoFocus
-            margin="dense"
-            id="name"
-            label="Fullname"
-            type="text"
-            fullWidth
-            variant="filled"
-            defaultValue={selectedEmployee.employee_name}
-            InputProps={{
-              readOnly: true,
-            }}
-        />
-        <TextField
-            autoFocus
-            margin="dense"
-            id="name"
-            label="Email"
-            type="email"
-            fullWidth
-            variant="filled"
-            defaultValue={selectedEmployee.email}
-            InputProps={{
-              readOnly: true,
-            }}
-        />
-        
-        <TextField
-            autoFocus
-            margin="dense"
-            id="name"
-            label="Employee Unit"
-            type="text"
-            fullWidth
-            variant="filled"
-            defaultValue={selectedEmployee.employee_unit}
-            InputProps={{
-              readOnly: true,
-            }}
-        />              
+          <div className='viewemp-fields'>
+            <TextField
+              autoFocus
+              margin="dense"
+              id="name"
+              label="Fullname"
+              type="text"
+              fullWidth
+              variant="standard"
+              defaultValue={selectedEmployee.employee_name}
+              InputLabelProps={{
+                style: {
+                  fontFamily: 'Poppins, sans-serif',
+                  color: 'black',
+                  fontSize: '120%',
+                  fontWeight: '600',
+                  textTransform: 'uppercase',
+                },
+              }}
+              InputProps={{
+                readOnly: true,
+                style: {
+                  fontFamily: 'Poppins, sans-serif',
+                  fontSize: '14px'
+                },
+              }}
+            />
+          </div>
+          <div className='viewemp-fields'>
+            <TextField
+              autoFocus
+              margin="dense"
+              id="name"
+              label="Email"
+              type="email"
+              fullWidth
+              variant="standard"
+              defaultValue={selectedEmployee.email}
+              InputLabelProps={{
+                style: {
+                  fontFamily: 'Poppins, sans-serif',
+                  color: 'black',
+                  fontSize: '120%',
+                  fontWeight: '600',
+                  textTransform: 'uppercase',
+                },
+              }}
+              InputProps={{
+                readOnly: true,
+                style: {
+                  fontFamily: 'Poppins, sans-serif',
+                  fontSize: '14px'
+                },
+              }}
+            />
+          </div>
+          <div className='viewemp-fields'>
+            <TextField
+              autoFocus
+              margin="dense"
+              id="name"
+              label="Employee Unit"
+              type="text"
+              fullWidth
+              variant="standard"
+              defaultValue={selectedEmployee.employee_unit}
+              InputLabelProps={{
+                style: {
+                  fontFamily: 'Poppins, sans-serif',
+                  color: 'black',
+                  fontSize: '120%',
+                  fontWeight: '600',
+                  textTransform: 'uppercase',
+                },
+              }}
+              InputProps={{
+                readOnly: true,
+                style: {
+                  fontFamily: 'Poppins, sans-serif',
+                  fontSize: '14px'
+                },
+              }}
+            />
+          </div>              
         </DialogContent>
         <DialogActions>
         <Button onClick={CloseView}>Close</Button>
         </DialogActions>
-    </Dialog>
+      </Dialog>
 
-    {/* edit modal */}
-    <Dialog open={openEdit} onClose={CloseEdit}>
-            <DialogTitle>Edit Details</DialogTitle>
-            <DialogContent>
-            <DialogContentText>
-            {/* To add a new employee account, please enter the details in the designated input field. */}
-            </DialogContentText>
-            <TextField
-                autoFocus
-                margin="dense"
-                id="name"
-                label="Fullname"
-                type="text"
-                fullWidth
-                variant="standard"
-                defaultValue={selectedEmployee.employee_name}
-                onChange={(event) => setEditEmployeeName(event.target.value)}
-            />
-            <TextField
-                autoFocus
-                margin="dense"
-                id="name"
-                label="Email"
-                type="email"
-                fullWidth
-                variant="standard"
-                defaultValue={selectedEmployee.email}
-                onChange={(event) => setEditEmployeeEmail(event.target.value)}
-            />
-            
-            <FormControl fullWidth variant="standard" margin="dense">
-              <InputLabel id="unit-label">Employee Unit</InputLabel>
-              <Select
-                labelId="unit-label"
-                id="unit-select"
-                value={editEmployeeUnit}
-                label="Employee Unit"
-                onChange={(event) => setEditEmployeeUnit(event.target.value)}
-              >
-                {UNIT.map((unit) => (
-                  <MenuItem key={unit.value} value={unit.value}>
-                    {unit.label}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-            </DialogContent>
-            <DialogActions>
-            <Button onClick={CloseEdit}>Close</Button>
-            <Button onClick={handleUpdate}>Save</Button>
-            </DialogActions>
-        </Dialog>
-        
-        {/* delete modal */}
-        <Dialog open={cancel} fullWidth maxWidth="sm">
-        <DialogTitle>Confirmation</DialogTitle>
+      {/* --- EDIT MODAL --- */}
+      <Dialog open={openEdit} onClose={CloseEdit} fullWidth maxWidth="sm">
+        <DialogTitle className="editemp-title">
+          <img className="editemp-logo" src="/images/editemp_logo.png" />
+          <div className="editemp-title-content">
+            <h1>Edit Employee Details</h1>
+            <p>Update the necessary changes to the employee's details</p>         
+          </div>
+          <Button onClick={CloseEdit} style={{ color: 'gray', position: 'absolute', top: 10, right: 0, paddingLeft: 0, paddingRight: 0 }}>
+            <CloseRoundedIcon />
+          </Button>
+        </DialogTitle>
+        <hr className="editemp-hr" /> 
         <DialogContent>
-          <DialogContentText>
-            Are you sure you want to delete?
-          </DialogContentText>
+          <div className='editemp-fields'>
+            <TextField
+              autoFocus
+              margin="dense"
+              id="name"
+              label="Fullname"
+              type="text"
+              fullWidth
+              variant="standard"
+              defaultValue={selectedEmployee.employee_name}
+              onChange={(event) => setEditEmployeeName(event.target.value)}
+              style={{ marginTop: 0 }}
+              InputLabelProps={{
+                style: {
+                  fontFamily: 'Poppins, sans-serif',
+                  fontSize: '110%',
+                  color: 'black',    
+                  fontWeight: '600',
+                },
+              }}
+              InputProps={{
+                style: {
+                  fontFamily: 'Poppins, sans-serif',
+                  fontSize: '14px'
+                },
+              }}
+            />
+          </div>
+          <div className='editemp-fields'>
+            <TextField
+              autoFocus
+              margin="dense"
+              id="name"
+              label="Email"
+              type="email"
+              fullWidth
+              variant="standard"
+              defaultValue={selectedEmployee.email}
+              onChange={(event) => setEditEmployeeEmail(event.target.value)}
+              style={{ marginTop: 0 }}
+              InputLabelProps={{
+                style: {
+                  fontFamily: 'Poppins, sans-serif',
+                  fontSize: '110%',
+                  color: 'black',    
+                  fontWeight: '600',
+                },
+              }}
+              InputProps={{
+                style: {
+                  fontFamily: 'Poppins, sans-serif',
+                  fontSize: '14px'
+                },
+              }}
+            />
+          </div>
+          <div className='editemp-fields'>
+            <FormControl fullWidth variant="standard" margin="dense">
+                <InputLabel id="unit-label">Employee Unit</InputLabel>
+                <Select
+                  labelId="unit-label"
+                  id="unit-select"
+                  value={editEmployeeUnit}
+                  label="Employee Unit"
+                  onChange={(event) => setEditEmployeeUnit(event.target.value)}
+                >
+                  {UNIT.map((unit) => (
+                    <MenuItem key={unit.value} value={unit.value}>
+                      {unit.label}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+          </div>            
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleCancelDelete}>No</Button>
-          <Button onClick={handleConfirmDelete}>Yes</Button>
+        <Button onClick={CloseEdit}>Close</Button>
+        <Button onClick={handleUpdate}>Save</Button>
         </DialogActions>
+      </Dialog>
+        
+      {/* --- DELETE MODAL --- */}
+      <Dialog open={cancel} fullWidth maxWidth="xs">
+        <DialogContent>
+          <div className='delete-icon'>
+            <img className="delete-svg" src="/svg/delete_icon.svg" />
+          </div>
+          <DialogContentText>
+            <div className='delete-title'>Are you sure?</div>
+            <div className='delete-subtitle'>Do you really want to delete this vehicle? This process cannot be undone.</div>
+          </DialogContentText>
+        </DialogContent>
+        <div class="button-container">
+          <Button
+            onClick={handleCancelDelete}
+            style={{
+              backgroundColor: 'rgb(92, 92, 92)',
+              borderRadius: '3px',
+              color: 'white',
+              margin: '0 7px 40px 0',
+              textTransform: 'none',
+              width: '120px',
+              fontFamily: 'Poppins, sans-serif',
+              transition: 'background-color 0.3s',
+            }}
+            onMouseEnter={e => e.target.style.backgroundColor = '#474747'}
+            onMouseLeave={e => e.target.style.backgroundColor = 'rgb(92, 92, 92)'}
+          >
+            No
+          </Button>
+          <Button
+            className="confirm-delete"
+            onClick={handleConfirmDelete}
+            style={{
+              backgroundColor: '#cf0a0a',
+              borderRadius: '3px',
+              color: 'white',
+              margin: '0 0 40px 7px',
+              textTransform: 'none',
+              width: '120px',
+              fontFamily: 'Poppins, sans-serif',transition: 'background-color 0.3s',
+            }}
+            onMouseEnter={e => e.target.style.backgroundColor = '#b00909'}
+            onMouseLeave={e => e.target.style.backgroundColor = '#cf0a0a'}
+          >
+            Yes
+          </Button>
+        </div>
       </Dialog>
     </div>
   );
