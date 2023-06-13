@@ -258,8 +258,8 @@ export default function AdmSchedule() {
       fData.append("pms_id", selectedPMS.pms_id); // Use selectedPMS.id instead of selectedPMS.pms_id
     
       // Format date and time values
-      const formattedStartDate = editPmsStartdate.format("YYYY-MM-DD HH:mm:ss");
-      const formattedEndDate = editPmsEnddate.format("YYYY-MM-DD HH:mm:ss");
+      const formattedStartDate = editPmsStartdate.format("YYYY-MM-DD HH:mm");
+      const formattedEndDate = editPmsEnddate.format("YYYY-MM-DD HH:mm");
     
       fData.append("pms_startdate", formattedStartDate);
       fData.append("pms_enddate", formattedEndDate);
@@ -349,8 +349,8 @@ export default function AdmSchedule() {
                 <TableRow key={data.id}>
                   <TableCell style={{ fontFamily: 'Poppins, sans-serif', textAlign: 'center', wordBreak: 'break-word', maxWidth: '120px' }}>{data.vehicle_name}</TableCell>
                   <TableCell style={{ fontFamily: 'Poppins, sans-serif', textAlign: 'center', wordBreak: 'break-word', maxWidth: '120px' }}>{data.initial_pms}</TableCell>
-                  <TableCell style={{ fontFamily: 'Poppins, sans-serif', textAlign: 'center', wordBreak: 'break-word', maxWidth: '120px' }}>{data.pms_startdate === "0000-00-00 00:00:00" ? "Not Set": data.pms_startdate}</TableCell>
-                  <TableCell style={{ fontFamily: 'Poppins, sans-serif', textAlign: 'center', wordBreak: 'break-word', maxWidth: '120px' }}>{data.pms_enddate === "0000-00-00 00:00:00" ? "Not Set": data.pms_enddate}</TableCell>
+                  <TableCell style={{ fontFamily: 'Poppins, sans-serif', textAlign: 'center', wordBreak: 'break-word', maxWidth: '120px' }}>{data.pms_startdate === "0000-00-00 00:00:00" ? "Not Set": dayjs(data.pms_startdate).format("MMMM D, YYYY, h:mm A")}</TableCell>
+                  <TableCell style={{ fontFamily: 'Poppins, sans-serif', textAlign: 'center', wordBreak: 'break-word', maxWidth: '120px' }}>{data.pms_enddate === "0000-00-00 00:00:00" ? "Not Set": dayjs(data.pms_enddate).format("MMMM D, YYYY, h:mm A")}</TableCell>
                   <TableCell style={{ fontFamily: 'Poppins, sans-serif', textAlign: 'center', wordBreak: 'break-word', maxWidth: '180px' }}>
                     <div style={{ display: 'flex', justifyContent: 'center', gap: '8px' }}>
                       <Button

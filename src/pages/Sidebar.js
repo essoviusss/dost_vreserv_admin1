@@ -10,6 +10,7 @@ import {
 import { NavLink, useLocation } from 'react-router-dom';
 
 const Sidebar = () => {
+  // eslint-disable-next-line
   const [showLogo, setShowLogo] = useState(true);
   const [isToggled, setIsToggled] = useState(false);
   const location = useLocation();
@@ -60,10 +61,13 @@ const Sidebar = () => {
         <CDBSidebarContent className="sidebar-content">
           <CDBSidebarMenu>
             <NavLink exact to="/AdmDashboard" activeClassName="activeClicked">
-              <CDBSidebarMenuItem style={location.pathname === '/AdmDashboard' ? { backgroundColor: '#EBF1FF', borderRadius: '15px', padding: '5px' } : { borderRadius: '10px', padding: '5px' }} className={location.pathname === '/AdmDashboard' ? 'text-primary' : 'text-gray'} icon="columns" iconClassName={`fa-columns ${location.pathname === '/AdmDashboard' ? 'active-icon' : ''}`}><span>Dashboard</span></CDBSidebarMenuItem>
+              <CDBSidebarMenuItem style={location.pathname === '/AdmDashboard' ? { backgroundColor: '#EBF1FF', borderRadius: '15px', padding: '5px' } : { borderRadius: '10px', padding: '5px' }} className={location.pathname === '/AdmDashboard' ? 'text-primary' : 'text-gray'} icon="home" iconClassName={`fa-home ${location.pathname === '/AdmDashboard' ? 'active-icon' : ''}`}><span>Dashboard</span></CDBSidebarMenuItem>
             </NavLink>
             <NavLink exact to="/AdmVehicleRequest" activeClassName="activeClicked">
             <CDBSidebarMenuItem style={location.pathname === '/AdmVehicleRequest' ? { backgroundColor: '#EBF1FF', borderRadius: '15px', padding: '5px' } : { borderRadius: '10px', padding: '5px' }} className={location.pathname === '/AdmVehicleRequest' ? 'text-primary' : 'text-gray'} icon="table" iconClassName={`fa-table ${location.pathname === '/AdmVehicleRequest' ? 'active-icon' : ''}`}><span>Request Logs</span></CDBSidebarMenuItem>
+            </NavLink>
+            <NavLink exact to="/AdmOnTravel" activeClassName="activeClicked">
+            <CDBSidebarMenuItem style={location.pathname === '/AdmOnTravel' ? { backgroundColor: '#EBF1FF', borderRadius: '15px', padding: '5px' } : { borderRadius: '10px', padding: '5px' }} className={location.pathname === '/AdmOnTravel' ? 'text-primary' : 'text-gray'} icon="road" iconClassName={`fa-road ${location.pathname === '/AdmOnTravel' ? 'active-icon' : ''}`}><span>On-Travel/Approved</span></CDBSidebarMenuItem>
             </NavLink>
             <NavLink exact to="/AdmVehicles" activeClassName="activeClicked">
               <CDBSidebarMenuItem style={location.pathname === '/AdmVehicles' ? { backgroundColor: '#EBF1FF', borderRadius: '15px', padding: '5px' } : { borderRadius: '10px', padding: '5px' }} className={location.pathname === '/AdmVehicles' ? 'text-primary' : 'text-gray'} icon="car" iconClassName={`fa-car ${location.pathname === '/AdmVehicles' ? 'active-icon' : ''}`}>Vehicles</CDBSidebarMenuItem>

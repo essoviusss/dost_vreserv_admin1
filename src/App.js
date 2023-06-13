@@ -13,6 +13,7 @@ import AdmDrivers from './pages/AdmDrivers';
 import AdmEmployee from './pages/AdmEmployee';
 import Approved from './pages/AdmComponents/Approved';
 import Rejected from './pages/AdmComponents/Rejected';
+import AdmOnTravel from './pages/AdmOnTravel';
 
 
 function MainContent() {
@@ -47,6 +48,7 @@ function MainContent() {
             <Route path="/AdmDashboard" element={<AdmDashboard />} />
             <Route path="/AdmSchedule" element={<AdmSchedule />} />
             <Route path="/AdmVehicleRequest" element={<AdmVehicleRequest />} />
+            <Route path="/AdmOnTravel" element={<AdmOnTravel />} />
             <Route path="/AdmVehicles" element={<AdmVehicles />} />
             <Route path="/AdmDrivers" element={<AdmDrivers />} />
             <Route path="/AdmEmployee" element={<AdmEmployee />} />
