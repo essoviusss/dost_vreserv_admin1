@@ -1,0 +1,207 @@
+/* top */
+.dash-container{
+    background-color: aliceblue;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    width: 100%;
+}
+.upper{
+    display: flex;
+    flex-direction: row;
+    height: 30vh;
+}
+.top1Left{
+    display: flex;
+    flex-direction: column;
+    flex: 2;
+    margin-right: 2%;
+}
+.top2Right{
+    display: flex;
+    flex: 1;
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 12px 14px 28px -16px rgba(0,0,0,0.75);
+    -webkit-box-shadow: 12px 14px 28px -16px rgba(0,0,0,0.75);
+    -moz-box-shadow: 12px 14px 28px -16px rgba(0,0,0,0.75);
+}
+.top1Above{
+    display: flex;
+    flex-direction: row;
+    height: 50%;
+    margin-bottom: 2%;
+    justify-content: space-between;
+}
+.above-child{
+    background-color: white;
+    width: 32%;
+    border-radius: 10px;
+    box-shadow: 12px 14px 28px -16px rgba(0,0,0,0.75);
+    -webkit-box-shadow: 12px 14px 28px -16px rgba(0,0,0,0.75);
+    -moz-box-shadow: 12px 14px 28px -16px rgba(0,0,0,0.75);
+}
+.top1Below{
+    display: flex;
+    flex-direction: row;
+    height: 50%;
+    justify-content: space-between;
+}
+.below-child{
+    background-color: white;
+    width: 32%;
+    border-radius: 10px;
+    box-shadow: 12px 14px 28px -16px rgba(0,0,0,0.75);
+    -webkit-box-shadow: 12px 14px 28px -16px rgba(0,0,0,0.75);
+    -moz-box-shadow: 12px 14px 28px -16px rgba(0,0,0,0.75);
+}
+
+/* middle */
+.middle{
+    display: flex;
+    flex-direction: row;
+    height: 50vh;
+    margin-top: 2%;
+    width: 100%;
+}
+.below1Left{
+    background-color: white;
+    display: flex;
+    flex: 2;
+    border-radius: 10px;
+    margin-right: 2%;
+    box-shadow: 12px 14px 28px -16px rgba(0,0,0,0.75);
+    -webkit-box-shadow: 12px 14px 28px -16px rgba(0,0,0,0.75);
+    -moz-box-shadow: 12px 14px 28px -16px rgba(0,0,0,0.75);
+}
+.below2Right{
+    background-color: white;
+    display: flex;
+    flex: 1;
+    border-radius: 10px;
+    box-shadow: 12px 14px 28px -16px rgba(0,0,0,0.75);
+    -webkit-box-shadow: 12px 14px 28px -16px rgba(0,0,0,0.75);
+    -moz-box-shadow: 12px 14px 28px -16px rgba(0,0,0,0.75);
+}
+
+/* sample */
+.drv-dashboard-wrapper {
+    display: flex;
+    flex-direction: column;
+    padding: 2%;
+  }
+  
+  .top-container-drvdash {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    height: 200px;
+  }
+  
+  .bottom-container-drvdash {
+    display: flex;
+    justify-content: space-between;
+    height: 410px;
+  }
+  
+  /* child 1 */
+  .drv-child1 {
+    flex: 2;
+    background-color: #ffffff;
+    border-radius: 10px;
+    box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.1);
+    margin-right: 2%;
+    display: flex;
+    align-items: top;
+    justify-content: left;
+  }
+  
+  .custom-donut-chart {
+    margin-top: 18%;
+    max-width: 100%;
+    max-height: 140%;
+    overflow: visible;
+  }
+  
+  .custom-donut-chart > *:not(.custom-donut-chart-arcs) {
+    display: none;
+  }
+  
+  .donut-chart-container {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 50%;
+    width: 50%;
+    margin: 2%;
+  }
+  
+  .donut-icon {
+    position: absolute;
+    top: 90%;
+    left: 43%;
+    transform: translate(-50%, -50%);
+  }
+  
+  .custom-donut-chart text {
+    font-size: 10px;
+  }
+  
+  .custom-donut-chart-arcs path {
+    /* Adjust the size of the arcs */
+    transform: scale(0.8);
+  }
+  
+  .custom-donut-chart text {
+    display: none;
+  }
+  
+  .donut-legends {
+    margin-top: 4%;
+    margin-left: -5%;
+  }
+  
+  .donut-title {
+    color: #1A2458;
+    font-weight: bold;
+    font-size: 18px;
+  }
+  
+  .donut-accomplished {
+    display: flex;
+    flex-wrap: wrap;
+    margin-top: 4%;
+  }
+  
+  .donut-unaccomplished {
+    display: flex;
+    flex-wrap: wrap;
+    margin-top: 4%;
+  }
+  
+  .count-label {
+    margin-top: 5px;
+    flex-basis: 100%;
+    text-align: center;
+  }
+  
+  .percentage {
+    color: #1A2458;
+    font-weight: bold;
+  }
+  
+  .per-label {
+    color: #55638A;
+  }
+  
+  .count-label {
+    margin: 0;
+    text-align: left;
+    padding-left: 10%;
+    color: #55638A;
+    font-size: 13px;
+  }
+  
+  
+  
