@@ -179,7 +179,10 @@
     flex-wrap: wrap;
     margin-top: 4%;
   }
-  
+  .top2Right{
+    display: flex;
+    flex-direction: column;
+  }
   .count-label {
     margin-top: 5px;
     flex-basis: 100%;

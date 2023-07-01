@@ -20,6 +20,7 @@ import {
     Legend,
   } from 'chart.js';
 import { Bar } from "react-chartjs-2";
+import ProgressBar from "@ramonak/react-progress-bar";
 
 export default function AdmDashboard(){
     const [data, setData] = useState([]);
@@ -42,6 +43,13 @@ export default function AdmDashboard(){
     const [driverOnTravel, setDriverOnTravel] = useState(0);
     const [vehicleOnTravel, setVehicleOnTravel] = useState(0);
 
+    const [vehicleCountTotal, setVehicleCountTotal] = useState(0);
+    const [driverCountTotal, setDriverCountTotal] = useState(0);
+
+    const [vehicleCountPercentage1, setVehicleCountPercentage1] = useState(0);
+    const [vehicleCountPercentage2, setVehicleCountPercentage2] = useState(0);
+    const [driverCountPercentage, setDriverCountPercentage] = useState(0);
+
     const totalCount = pendingCount + forApprovalCount + approvedCount + accomplishedCount + cancelledCount + rejectedCount;
 
     const penPercent = (pendingCount / totalCount) * 100;
@@ -61,8 +69,6 @@ export default function AdmDashboard(){
     const adjustedAccPercent = accPercent * adjustmentFactor;
     const adjustedCanPercent = canPercent * adjustmentFactor;
     const adjustedRejPercent = rejPercent * adjustmentFactor;
-
-
 
     useEffect(() => {
         const token = localStorage.getItem("token");
@@ -140,7 +146,7 @@ export default function AdmDashboard(){
         const currentDate = new Date();
         const month = currentDate.toLocaleString('default', { month: 'long' });
         setCurrentMonth(month);
-      }, []);
+    }, []);
 
       useEffect(() => {
         
@@ -264,14 +270,21 @@ export default function AdmDashboard(){
                 setVehicleOnPMS(response.data.vehicle_count);
                 setDriverOnTravel(response.data.driver_count);
                 setVehicleOnTravel(response.data.vehicle_count1);
-
-
+                setVehicleCountTotal(response.data.vehicleCountTotal);
+                setDriverCountTotal(response.data.driverCountTotal);
+                setVehicleCountPercentage1(response.data.vehicleCountPercentage1);
+                setVehicleCountPercentage2(response.data.vehicleCountPercentage2);
+                setDriverCountPercentage(response.data.driverCountPercentage);
             }catch(e){
                 alert(e);
             }
         }   
         fetchData();
       },[vehicleOnPMS, vehicleOnTravel, driverOnTravel])
+
+      const Example = () => {
+        return <ProgressBar completed={60} />;
+      };
       
     return(
         <div>
@@ -293,9 +306,12 @@ export default function AdmDashboard(){
                         </div>
                     </div>
                     <div className="top2Right">
-                        <p>On-Travel Vehicle/s {vehicleOnTravel}</p>
-                        <p>On-Travel Driver/s {driverOnTravel}</p>
-                        <p>On-PMS Vehicle/s {vehicleOnPMS}</p>
+                        <p>Driver On-Travel ({driverOnTravel} out of {driverCountTotal})</p>
+                        <ProgressBar completed={driverCountPercentage} maxCompleted={100} />
+                        <p>Vehicle On-Travel ({vehicleOnTravel} out of {vehicleCountTotal})</p>
+                        <ProgressBar completed={vehicleCountPercentage2} maxCompleted={100} />
+                        <p>Vehicle On-PMS ({vehicleOnPMS} out of {vehicleCountTotal })</p>
+                        <ProgressBar completed={vehicleCountPercentage1} maxCompleted={100} />
                     </div>
                 </div>
                 {/* below */}
