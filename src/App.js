@@ -14,6 +14,8 @@ import AdmEmployee from './pages/AdmEmployee';
 import Approved from './pages/AdmComponents/Approved';
 import Rejected from './pages/AdmComponents/Rejected';
 import AdmOnTravel from './pages/AdmOnTravel';
+import GeneratePDF from './utils/pdf';
+import AdmGenerate from './pages/AdmGenerate';
 
 
 function MainContent() {
@@ -54,6 +56,8 @@ function MainContent() {
             <Route path="/AdmEmployee" element={<AdmEmployee />} />
             <Route path="/Approved" element={<Approved />} />
             <Route path="/Rejected" element={<Rejected />} />
+            <Route path="/GeneratePDF" element={<GeneratePDF />} />
+            <Route path="/AdmGenerate" element={<AdmGenerate />} />
         </Routes>
       </div>
     </div>

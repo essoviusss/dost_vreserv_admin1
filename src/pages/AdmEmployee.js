@@ -5,6 +5,7 @@ import axios from "axios";
 import { v4 as uuidv4 } from 'uuid';
 import Header from './Header';
 import './Components/AdmEmployee.css'
+import { BASE_URL } from '../constants/api_url';
 // import  './Components/ViewModal.css'
 
 //material UI
@@ -137,7 +138,7 @@ export default function AdmEmployee() {
 
 //update
 async function handleUpdate() {
-  const url = "http://localhost/vreserv_admin_api/edit_employee.php";
+  const url = `${BASE_URL}/edit_employee.php`;
 
   let fData = new FormData();
   fData.append("employee_id", selectedEmployee.employee_id);
@@ -159,7 +160,7 @@ async function handleUpdate() {
  
   //insert
   function addEmployee(){
-    const url = "http://localhost/vreserv_admin_api/add_employee.php";
+    const url = `${BASE_URL}/add_employee.php`;
 
     let fData = new FormData();
     fData.append("user_id", UID);
@@ -216,7 +217,8 @@ async function handleUpdate() {
 
   //read table
   useEffect(() => {
-    axios.get('http://localhost/vreserv_admin_api/read_employee.php')
+    const url = `${BASE_URL}/read_employee.php`;
+    axios.get(url)
       .then(response => {
         if(Array.isArray(response.data)){
           setEmployees(response.data);
@@ -229,7 +231,7 @@ async function handleUpdate() {
 
   //delete
   async function deleteEmployee(employee_id){
-    const url = "http://localhost/vreserv_admin_api/delete_employee.php";
+    const url = `${BASE_URL}/delete_employee.php`;
   
     let fData = new FormData();
     fData.append("employee_id", employee_id);
@@ -435,13 +437,7 @@ async function handleUpdate() {
                   <TableCell style={{ fontFamily: 'Poppins, sans-serif', textAlign: 'center', wordBreak: 'break-word', maxWidth: '120px' }}>{employee.employee_unit}</TableCell>
                   <TableCell style={{ fontFamily: 'Poppins, sans-serif', textAlign: 'center', wordBreak: 'break-word', maxWidth: '180px' }}>
                     <div style={{ display: 'flex', justifyContent: 'center', gap: '8px' }}>
-                      <Button
-                        variant="contained"
-                        onClick={() => handleOpenView(employee)}
-                        style={{ backgroundColor: '#025BAD' }}
-                      >
-                        <RemoveRedEyeRoundedIcon />
-                      </Button>
+
                       <Button
                         variant="contained"
                         onClick={() => handleOpenEdit(employee)}
@@ -473,110 +469,6 @@ async function handleUpdate() {
           />
         </TableContainer>
       </Paper>
-
-      {/* --- VIEW MODAL --- */}
-      <Dialog open={openView} onClose={CloseView} fullWidth maxWidth="sm">
-        <DialogTitle className="viewemp-title">
-          <img className="viewemp-logo" src="/images/viewemp_logo.png" />
-          <div className="viewdemp-title-content">
-            <h1>View Employee Details</h1>
-            <p>Review the employee's details below</p>         
-          </div>
-          <Button onClick={CloseView} style={{ color: 'gray', position: 'absolute', top: 10, right: 0, paddingLeft: 0, paddingRight: 0 }}>
-            <CloseRoundedIcon />
-          </Button>
-        </DialogTitle>
-        <hr className="viewemp-hr" /> 
-        <DialogContent>
-          <div className='viewemp-fields'>
-            <TextField
-              autoFocus
-              margin="dense"
-              id="name"
-              label="Fullname"
-              type="text"
-              fullWidth
-              variant="standard"
-              defaultValue={selectedEmployee.employee_name}
-              InputLabelProps={{
-                style: {
-                  fontFamily: 'Poppins, sans-serif',
-                  color: 'black',
-                  fontSize: '120%',
-                  fontWeight: '600',
-                  textTransform: 'uppercase',
-                },
-              }}
-              InputProps={{
-                readOnly: true,
-                style: {
-                  fontFamily: 'Poppins, sans-serif',
-                  fontSize: '14px'
-                },
-              }}
-            />
-          </div>
-          <div className='viewemp-fields'>
-            <TextField
-              autoFocus
-              margin="dense"
-              id="name"
-              label="Email"
-              type="email"
-              fullWidth
-              variant="standard"
-              defaultValue={selectedEmployee.email}
-              InputLabelProps={{
-                style: {
-                  fontFamily: 'Poppins, sans-serif',
-                  color: 'black',
-                  fontSize: '120%',
-                  fontWeight: '600',
-                  textTransform: 'uppercase',
-                },
-              }}
-              InputProps={{
-                readOnly: true,
-                style: {
-                  fontFamily: 'Poppins, sans-serif',
-                  fontSize: '14px'
-                },
-              }}
-            />
-          </div>
-          <div className='viewemp-fields'>
-            <TextField
-              autoFocus
-              margin="dense"
-              id="name"
-              label="Employee Unit"
-              type="text"
-              fullWidth
-              variant="standard"
-              defaultValue={selectedEmployee.employee_unit}
-              InputLabelProps={{
-                style: {
-                  fontFamily: 'Poppins, sans-serif',
-                  color: 'black',
-                  fontSize: '120%',
-                  fontWeight: '600',
-                  textTransform: 'uppercase',
-                },
-              }}
-              InputProps={{
-                readOnly: true,
-                style: {
-                  fontFamily: 'Poppins, sans-serif',
-                  fontSize: '14px'
-                },
-              }}
-            />
-          </div>              
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={CloseView} style={{ color: '#025BAD', fontFamily: 'Poppins' }}>Close</Button>
-        </DialogActions>
-      </Dialog>
 
       {/* --- EDIT MODAL --- */}
       <Dialog open={openEdit} onClose={CloseEdit} fullWidth maxWidth="sm">

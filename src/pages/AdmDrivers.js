@@ -4,6 +4,7 @@ import axios from "axios";
 import Header from './Header';
 import { v4 as uuidv4 } from 'uuid';
 import './Components/AdmDrivers.css'
+import { BASE_URL } from '../constants/api_url';
 
 //material ui
 import TextField from '@mui/material/TextField';
@@ -151,8 +152,7 @@ export default function AdmVehicle() {
 
   //insert
   async function addDriver() {
-    
-    const url = "http://localhost/vreserv_admin_api/add_driver.php";
+    const url = `${BASE_URL}/add_driver.php`;
 
     let fData = new FormData();
     fData.append("user_id", UID);
@@ -166,6 +166,8 @@ export default function AdmVehicle() {
     .then(response => {
       if(response.data === "Success"){
         alert("Driver added successfully!");
+      } else {
+        alert("Unsuccessful");
       }
       handleClose();
     })
@@ -193,7 +195,8 @@ export default function AdmVehicle() {
 
   //read
   useEffect(() => {
-    axios.get('http://localhost/vreserv_admin_api/read_driver.php')
+    const url = `${BASE_URL}/read_driver.php`;
+    axios.get(url)
       .then(response => {
         if(Array.isArray(response.data)){
           setDrivers(response.data);
@@ -206,7 +209,7 @@ export default function AdmVehicle() {
 
   //update
   async function handleUpdate() {
-    const url = "http://localhost/vreserv_admin_api/edit_driver.php";
+    const url = `${BASE_URL}/edit_driver.php`;
   
     let fData = new FormData();
     fData.append("driver_id", selectedDriver.driver_id);
@@ -227,7 +230,7 @@ export default function AdmVehicle() {
   }
   //delete
   async function deleteDriver(driver_id){
-    const url = "http://localhost/vreserv_admin_api/delete_driver.php";
+    const url = `${BASE_URL}/delete_driver.php`;
   
     let fData = new FormData();
     fData.append("driver_id", driver_id);
@@ -416,13 +419,13 @@ function filterDriver(driver) {
                   </TableCell>
                   <TableCell style={{ fontFamily: 'Poppins, sans-serif', textAlign: 'center', wordBreak: 'break-word', maxWidth: '150px' }}>
                     <div style={{ display: 'flex', justifyContent: 'center', gap: '8px' }}>
-                      <Button
+                      {/* <Button
                         variant="contained"
                         onClick={() => handleOpenView(driver)}
                         style={{ backgroundColor: '#025BAD' }}
                       >
                         <RemoveRedEyeRoundedIcon />
-                      </Button>
+                      </Button> */}
                       <Button
                         variant="contained"
                         onClick={() => handleOpenEdit(driver)}
@@ -455,95 +458,6 @@ function filterDriver(driver) {
         </TableContainer>
       </Paper>
 
-      {/* --- VIEW MODAL --- */}
-      <Dialog open={openView} onClose={CloseView} fullWidth maxWidth="sm">
-        <DialogTitle className="viewdriver-title">
-          <img className="viewdriver-logo" src="/images/viewdriver_logo.png" />
-          <div className="viewdriver-title-content">
-            <h1>View Vehicle Details</h1>
-            <p>Review the driver's details below</p>         
-          </div>
-          <Button onClick={CloseView} style={{ color: 'gray', position: 'absolute', top: 10, right: 0, paddingLeft: 0, paddingRight: 0 }}>
-            <CloseRoundedIcon />
-          </Button>
-        </DialogTitle>
-        <hr className="viewdriver-hr" /> 
-        <DialogContent>
-          <div className='viewdriver-fields'>
-            <TextField
-              autoFocus
-              margin="dense"
-              id="name"
-              label="Fullname"
-              type="text"
-              fullWidth
-              variant="standard"
-              defaultValue={selectedDriver.driver_name}
-              InputLabelProps={{
-                style: {
-                  fontFamily: 'Poppins, sans-serif',
-                  color: 'black',
-                  fontSize: '120%',
-                  fontWeight: '600',
-                  textTransform: 'uppercase',
-                },
-              }}
-              InputProps={{
-                readOnly: true,
-                style: {
-                  fontFamily: 'Poppins, sans-serif',
-                  fontSize: '14px'
-                },
-              }}
-            />
-          </div>
-          <div className='viewdriver-fields'>
-            <TextField
-              autoFocus
-              margin="dense"
-              id="name"
-              label="Email"
-              type="email"
-              fullWidth
-              variant="standard" 
-              // filled - if want gray background
-              defaultValue={selectedDriver.email}
-              InputLabelProps={{
-                style: {
-                  fontFamily: 'Poppins, sans-serif',
-                  color: 'black',
-                  fontSize: '120%',
-                  fontWeight: '600',
-                  textTransform: 'uppercase',
-                },
-              }}
-              InputProps={{
-                readOnly: true,
-                style: {
-                  fontFamily: 'Poppins, sans-serif',
-                  fontSize: '14px'
-                },
-              }}
-            />
-          </div>
-          <div className='viedriver-fields'>
-            <div className='viewdriver-label'>
-              DRIVER'S STATUS
-            </div>
-            <div className="status-viewdriver">
-              {selectedDriver && (
-                <button className={`status-button ${getDriverStatusClass(selectedDriver.driver_status)}`}>
-                  {selectedDriver.driver_status}
-                </button>
-              )}
-            </div>
-          </div>             
-        </DialogContent>
-        <DialogActions>
-        <Button onClick={CloseView} style={{ color: '#025BAD', fontFamily: 'Poppins' }}>Close</Button>
-        {/* <Button onClick={addEmployee}>Save</Button> */}
-        </DialogActions>
-      </Dialog>
             
       {/* --- EDIT DRIVER MODAL --- */}
       <Dialog open={openEdit} onClose={CloseEdit} fullWidth maxWidth="sm">

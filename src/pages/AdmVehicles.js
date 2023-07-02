@@ -7,6 +7,7 @@ import jwtDecode from 'jwt-decode';
 import useAuth from "../hooks/useAuth";
 import { useNavigate } from "react-router";
 import './Components/AdmVehicles.css'
+import { BASE_URL } from '../constants/api_url';
 
 //material ui
 import Button from '@mui/material/Button';
@@ -141,7 +142,7 @@ export default function AdmVehicle() {
 
   //insert
   function addVehicle(){
-    const url = "http://localhost/vreserv_admin_api/add_vehicle.php";
+    const url = `${BASE_URL}/add_vehicle.php`;
 
     let fData = new FormData();
     fData.append("vehicle_id", UID);
@@ -149,7 +150,11 @@ export default function AdmVehicle() {
 
     axios.post(url, fData)
     .then(response => {
-      alert("Vehicle added successfully!");
+      if(response.data === "Success"){
+        alert("Vehicle added successfully!");
+      } else {
+        alert("Unsuccessful");
+      }  
       handleClose();
     })
     .catch(error => {
@@ -176,8 +181,9 @@ export default function AdmVehicle() {
   
   //read
   useEffect(() => {
+    const url = `${BASE_URL}/read_vehicle.php`;
     axios
-      .get("http://localhost/vreserv_admin_api/read_vehicle.php")
+      .get(url)
       .then((response) => {
         if(Array.isArray(response.data)){
           setVehicle(response.data);
@@ -190,7 +196,7 @@ export default function AdmVehicle() {
 
   //update
   async function handleUpdate() {
-    const url = "http://localhost/vreserv_admin_api/edit_vehicle.php";
+    const url = `${BASE_URL}/edit_vehicle.php`;
   
     let fData = new FormData();
     fData.append("vehicle_id", selectedVehicle.vehicle_id);
@@ -210,7 +216,7 @@ export default function AdmVehicle() {
 
   //delete
   async function deleteVehicle(vehicle_id){
-    const url = "http://localhost/vreserv_admin_api/delete_vehicle.php";
+    const url = `${BASE_URL}/delete_vehicle.php`;
   
     let fData = new FormData();
     fData.append("vehicle_id", vehicle_id);
@@ -351,13 +357,13 @@ export default function AdmVehicle() {
                   </TableCell>
                   <TableCell style={{ fontFamily: 'Poppins, sans-serif', textAlign: 'center', wordBreak: 'break-word', maxWidth: '120px' }}>
                     <div style={{ display: 'flex', justifyContent: 'center', gap: '8px' }}>
-                      <Button
+                      {/* <Button
                         variant="contained"
                         onClick={() => handleOpenView(vehicle)}
                         style={{ backgroundColor: '#025BAD' }}
                       >
                         <RemoveRedEyeRoundedIcon />
-                      </Button>
+                      </Button> */}
                       <Button
                         variant="contained"
                         onClick={() => handleOpenEdit(vehicle)}
@@ -390,7 +396,7 @@ export default function AdmVehicle() {
         </TableContainer>
       </Paper>
       
-      {/* --- VIEW MODAL --- */}
+      {/* --- VIEW MODAL ---
       <Dialog open={openView} onClose={CloseView} fullWidth maxWidth="sm">
         <Button onClick={CloseView} style={{ color: 'gray', position: 'absolute', top: 10, right: 0, paddingLeft: 0, paddingRight: 0 }}>
           <CloseRoundedIcon />
@@ -413,7 +419,7 @@ export default function AdmVehicle() {
             </div>
           </div>
         </DialogContent>
-      </Dialog>
+      </Dialog> */}
 
       {/* --- EDIT MODAL --- */}
       <Dialog open={openEdit} onClose={CloseEdit} fullWidth maxWidth="sm">

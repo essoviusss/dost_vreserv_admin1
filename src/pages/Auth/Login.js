@@ -12,6 +12,7 @@ import { createTheme, ThemeProvider } from '@mui/material/styles';
 import axios from "axios";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { BASE_URL } from '../../constants/api_url';
 const qs = require('qs');
 
 const theme = createTheme({
@@ -41,8 +42,8 @@ export default function Login() {
         alert("No admin role found in local storage!");
         return;
     }
-  
-    const url1 = "http://localhost/vreserv_admin_api/read_request.php";
+    
+    const url1 = `${BASE_URL}/read_request.php`;
 
     let fData1 = new FormData();
     fData1.append("admin_role", admin_role);
@@ -59,8 +60,8 @@ export default function Login() {
 
 
 
-  const signIn = async () => {
-    const url = "http://localhost/vreserv_admin_api/login.php";
+  const signIn = async () => {   
+    const url = `${BASE_URL}/login.php`;
   
     let fData = new FormData();
     fData.append("username", username);
@@ -104,7 +105,7 @@ export default function Login() {
             display: 'flex',
             flexDirection: 'column',
             minHeight: '100vh',
-            paddingTop: '5%',
+            paddingTop: '15vh',
           }}
         >
           <CssBaseline />

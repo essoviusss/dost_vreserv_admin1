@@ -4,6 +4,7 @@ import axios from 'axios';
 import Header from "./Header";
 import { v4 as uuidv4 } from 'uuid';
 import './Components/AdmSchedule.css'
+import { BASE_URL } from '../constants/api_url';
 //materialUI
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
@@ -126,7 +127,8 @@ export default function AdmSchedule() {
   
   //read vehicles
   useEffect(() => {
-    axios.get('http://localhost/vreserv_admin_api/read_vehicle.php')
+    const url = `${BASE_URL}/read_vehicle.php`;
+    axios.get(url)
       .then(response => {
         setVehicles(response.data);
       })
@@ -141,7 +143,8 @@ export default function AdmSchedule() {
 
   //read-pms
   useEffect(() => {
-    axios.get('http://localhost/vreserv_admin_api/read_pms.php')
+    const url = `${BASE_URL}/read_pms.php`;
+    axios.get(url)
       .then(response => {
         if(Array.isArray(response.data)){
             setPMS(response.data);
@@ -181,7 +184,7 @@ export default function AdmSchedule() {
 
   //insert
   function addPms(id) {
-    const url = "http://localhost/vreserv_admin_api/add_pms.php";
+    const url = `${BASE_URL}/add_pms.php`;
     alert(id);
     let fData = new FormData();
     
@@ -223,7 +226,8 @@ export default function AdmSchedule() {
   }, [isLoggedIn, navigate]);
 
   useEffect(() => {
-    axios.get('http://localhost/vreserv_admin_api/read_pms.php')
+    const url = `${BASE_URL}/read_pms.php`;
+    axios.get(url)
       .then(response => {
         if(Array.isArray(response.data)){
             setPMS(response.data);
@@ -236,7 +240,7 @@ export default function AdmSchedule() {
 
   // delete
   async function deleteSchedule(pms_id) {
-    const url = "http://localhost/vreserv_admin_api/delete_pms.php";
+    const url = `${BASE_URL}/delete_pms.php`;
     
     let fData = new FormData();
     fData.append("pms_id", pms_id);
@@ -250,7 +254,7 @@ export default function AdmSchedule() {
   }
     // update
     async function handleUpdate() {
-      const url = "http://localhost/vreserv_admin_api/edit_pms.php";
+      const url = `${BASE_URL}/edit_pms.php`;
       let fData = new FormData();
       fData.append("pms_id", selectedPMS.pms_id); // Use selectedPMS.id instead of selectedPMS.pms_id
     

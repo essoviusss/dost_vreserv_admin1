@@ -1,0 +1,90 @@
+.pdf-container {
+    font-family: Arial, sans-serif;
+    padding: 20px;
+  }
+  
+  .page-title {
+    font-size: 16px;
+    font-weight: bold;
+    text-align: center;
+    margin-bottom: 10px;
+  }
+  
+  .subtitle {
+    font-size: 14px;
+    font-weight: bold;
+    text-align: center;
+    margin-bottom: 20px;
+  }
+  
+  .content {
+    font-size: 12px;
+    margin-bottom: 30px;
+  }
+  
+  .content-line {
+    margin-bottom: 5px;
+  }
+  
+  .recommendation {
+    margin-bottom: 30px;
+  }
+  
+  .recommendation-title {
+    font-size: 12px;
+    font-weight: bold;
+    margin-bottom: 5px;
+  }
+  
+  .recommendation-content {
+    font-size: 12px;
+    margin-bottom: 10px;
+  }
+  
+  .checkbox-line {
+    display: flex;
+    align-items: center;
+    margin-bottom: 5px;
+  }
+  
+  .checkbox-line input[type="checkbox"] {
+    margin-right: 5px;
+  }
+  
+  .recommendation-signature {
+    font-size: 12px;
+    font-weight: bold;
+    margin-bottom: 5px;
+  }
+  
+  .recommendation-date {
+    font-size: 12px;
+    margin-bottom: 5px;
+  }
+  
+  .recommendation-remarks {
+    font-size: 12px;
+    margin-bottom: 10px;
+  }
+  
+  .action {
+    margin-bottom: 30px;
+  }
+  
+  .action-title {
+    font-size: 12px;
+    font-weight: bold;
+    margin-bottom: 5px;
+  }
+  
+  .action-signature {
+    font-size: 12px;
+    font-weight: bold;
+    margin-bottom: 5px;
+  }
+  
+  .action-date {
+    font-size: 12px;
+    margin-bottom: 5px;
+  }
+  

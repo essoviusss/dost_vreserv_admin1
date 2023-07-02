@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import Header from "./Header";
 import './Components/AdmVehicleRequest.css'
+import { BASE_URL } from "../constants/api_url";
 
 //material ui
 import Button from '@mui/material/Button';
@@ -28,6 +29,9 @@ import EditRoundedIcon from '@mui/icons-material/EditRounded';
 import RemoveRedEyeRoundedIcon from '@mui/icons-material/RemoveRedEyeRounded';
 import CustomButton from './StyledComponents/CustomButton';
 import dayjs from "dayjs";
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
 
 
 export default function AdmOnTravel(){
@@ -50,6 +54,9 @@ export default function AdmOnTravel(){
   const [editPMOfficer, setEditPMOfficer] = useState("");
   const [editApprovedBy, setEditApprovedBy] = useState("");
   const [editCAOfficer, setEditCAOfficer] = useState("");
+  const [editDeparture, setEditDeparture] = useState("");
+  const [editArrival, setEditArrival] = useState("");
+  
 
   //search
   const [searchQuery, setSearchQuery] = useState('');
@@ -86,6 +93,8 @@ export default function AdmOnTravel(){
     setEditPMOfficer(request.pm_officer);
     setEditApprovedBy(request.approved_by);
     setEditCAOfficer(request.ca_officer);
+    setEditDeparture(request.departure_time);
+    setEditArrival(request.arrival_time);
     setEditReason(request.reason);
     setOpenEdit(true);
   };
@@ -97,18 +106,38 @@ export default function AdmOnTravel(){
   const CloseEdit = () => {
     setOpenEdit(false);
   };
+
+
+  //date
+  function formatDate(date) {
+    var d = new Date(date),
+        month = '' + (d.getMonth() + 1),
+        day = '' + d.getDate(),
+        year = d.getFullYear(),
+        hours = '' + d.getHours(),
+        minutes = '' + d.getMinutes(),
+        seconds = '' + d.getSeconds();
   
-  //update
-  const STATUSES = [
-    role === "Manager" ? { value: 'Pending', label: 'Pending'} : { value: 'For Approval', label: 'For Approval'},
-    role === "Manager" ? { value: 'For Approval', label: 'For Approval' } : { value: 'Approved', label: 'Approved' }, 
-    role === "Manager" ? { value: 'Cancelled', label: 'Cancelled'} : { value: 'Disapproved', label: 'Disapproved' },
-  ];
+    if (month.length < 2) 
+        month = '0' + month;
+    if (day.length < 2) 
+        day = '0' + day;
+    if (hours.length < 2) 
+        hours = '0' + hours;
+    if (minutes.length < 2) 
+        minutes = '0' + minutes;
+    if (seconds.length < 2) 
+        seconds = '0' + seconds;
+  
+    return [year, month, day].join('-') + ' ' + [hours, minutes, seconds].join(':');
+  }
+  
 
   //read available vehicle
 useEffect(() => {
+  const url = `${BASE_URL}/available_vehicle.php`;
   axios
-    .get("http://localhost/vreserv_api/available_vehicle.php")
+    .get(url)
     .then((response) => {
       if (Array.isArray(response.data)) {
         setVehicles(response.data); 
@@ -124,8 +153,9 @@ useEffect(() => {
 
   // read available driver
 useEffect(() => {
+  const url = `${BASE_URL}/available_driver.php`;
   axios
-    .get("http://localhost/vreserv_api/available_driver.php")
+    .get(url)
     .then((response) => {
       if (Array.isArray(response.data)) {
         setDrivers(response.data); 
@@ -142,7 +172,7 @@ useEffect(() => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const url = "http://localhost/vreserv_admin_api/approved_bypass_request.php";
+        const url = `${BASE_URL}/approved_bypass_request.php`;
 
         const response = await axios.get(url);
 
@@ -159,33 +189,28 @@ useEffect(() => {
 
    //update
    async function handleUpdate() {
-    const url = "http://localhost/vreserv_admin_api/edit_vehicleRequest.php";
+    const url = `${BASE_URL}/edit_onTravel.php`;
     
     let fData = new FormData();
     fData.append("request_id", selectedRequest.request_id);
-    fData.append("form_code", editFormCode);
-    fData.append("rev_code", editRevCode);
     fData.append("vehicle_name", editVehicleName);
     fData.append("driver_name", editDriverName);
     fData.append("pm_officer", editPMOfficer);
     fData.append("approved_by", editApprovedBy);
     fData.append("ca_officer", editCAOfficer);
-    fData.append("request_status", editRequestStatus);
+    fData.append("departure_time", editDeparture);
+    fData.append("arrival_time", editArrival);
     fData.append("selected_vehicle_name", selectedRequest.vehicle_name);
     fData.append("selected_driver_name", selectedRequest.driver_name);
-    fData.append("selected_request_status", selectedRequest.request_status);
     fData.append("selected_PMOfficer", selectedRequest.pm_officer);
     fData.append("selected_ApprovedBy", selectedRequest.approved_by);
     fData.append("selected_CAOfficer", selectedRequest.ca_officer);
-    if(editRequestStatus === 'Cancelled' || editRequestStatus === 'Disapproved' ) {
-      fData.append("reason", editReason);
-    } else {
-      fData.append("reason", "");
-    }
-    
+    fData.append("selected_departure_time", selectedRequest.departure_time);
+    fData.append("selected_arrival_time", selectedRequest.arrival_time);
+
     const response = await axios.post(url, fData);
     if(response.data.message === "Success"){
-      alert("Updated");
+      alert("Modified");
     } else{
       alert("Madi");
     }
@@ -536,15 +561,15 @@ useEffect(() => {
                       >
                         <RemoveRedEyeRoundedIcon />
                       </Button>
-                      { role === "SuperAdmin" ? 
-                        null : 
+                      {role === "Manager" && (
                         <Button
                         variant="contained"
                         onClick={() => handleOpenEdit(request)}
                         style={{ backgroundColor: '#025BAD' }}
                         >
                         <EditRoundedIcon />
-                      </Button>}
+                      </Button>
+                      )}
                     </div>
                   </TableCell>
                   </TableRow>        
@@ -782,38 +807,6 @@ useEffect(() => {
             </FormControl>
           </div>
           <div className="edit-fields">
-            <FormControl fullWidth variant="standard" margin="dense" style={{ fontFamily: 'Poppins' }}>
-              <InputLabel id="request-status-label" style={{ lineHeight: '2' }}>REQUEST STATUS</InputLabel>
-              <Select
-                labelId="request-status-label"
-                id="request-status-select"
-                value={editRequestStatus}
-                label="Request Status"
-                onChange={(event) => setEditRequestStatus(event.target.value)}
-                style={{ height: '40px', fontFamily: 'Poppins', fontSize: '14px' }}
-                MenuProps={{ PaperProps: { style: { maxHeight: '200px' } } }}
-              >
-                {STATUSES.map((status) => (
-                  <MenuItem key={status.value} value={status.value}>
-                    {status.label}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-            {(editRequestStatus === 'Cancelled' || editRequestStatus === 'Disapproved') && (
-              <>
-                <FormLabel>
-                  {editRequestStatus === 'Cancelled' ? 'Reason for Cancellation' : 'Reason for Disapproval'}
-                </FormLabel>
-                <Textarea 
-                  minRows={2} 
-                  value={editReason}
-                  onChange={(event) => setEditReason(event.target.value)}
-                />
-              </>
-            )}
-          </div>
-          <div className="edit-fields">
             <TextField
               autoFocus
               margin="dense"
@@ -823,6 +816,7 @@ useEffect(() => {
               fullWidth
               variant="standard"
               defaultValue={selectedRequest.pm_officer}
+              onChange={(event) => setEditPMOfficer(event.target.value)}
               InputLabelProps={{
                 style: {
                   fontFamily: 'Poppins, sans-serif',
@@ -894,6 +888,31 @@ useEffect(() => {
               }}
             />
           </div>
+
+          <div>
+            <LocalizationProvider dateAdapter={AdapterDayjs}>
+              <DateTimePicker 
+              label="Departure Time"
+              value={dayjs(selectedRequest.departure_time)}
+              onChange={(date) => {
+                const formattedDate = formatDate(date);
+                setEditDeparture(formattedDate);
+              }}
+              />
+            </LocalizationProvider>
+
+            <LocalizationProvider dateAdapter={AdapterDayjs}>
+              <DateTimePicker 
+              label="Estimated Time of Arrival"
+              value={dayjs(selectedRequest.arrival_time)}
+              onChange={(date) => {
+                const formattedDate = formatDate(date);
+                setEditArrival(formattedDate);
+              }}
+               />
+            </LocalizationProvider>
+          </div>
+
           <div className="edit-tablemain">
             <div className="edit-tabletitle">
               Schedule of Travel

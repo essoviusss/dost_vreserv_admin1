@@ -17,7 +17,9 @@ const Sidebar = () => {
 
   const handleToggle = () => {
     setIsToggled(!isToggled);
+    
   };
+  
 
   return (
     <div style={{
@@ -81,6 +83,9 @@ const Sidebar = () => {
             <NavLink exact to="/AdmSchedule" activeClassName="activeClicked">
               <CDBSidebarMenuItem style={location.pathname === '/AdmSchedule' ? { backgroundColor: '#EBF1FF', borderRadius: '15px', padding: '5px' } : { borderRadius: '10px', padding: '5px' }} className={location.pathname === '/AdmSchedule' ? 'text-primary' : 'text-gray'} icon="calendar" iconClassName={`fa-calendar ${location.pathname === '/AdmSchedule' ? 'active-icon' : ''}`}>PMS Schedule</CDBSidebarMenuItem>
             </NavLink>
+            <NavLink exact to="/AdmGenerate" activeClassName="activeClicked">
+              <CDBSidebarMenuItem style={location.pathname === '/AdmGenerate' ? { backgroundColor: '#EBF1FF', borderRadius: '15px', padding: '5px' } : { borderRadius: '10px', padding: '5px' }} className={location.pathname === '/AdmGenerate' ? 'text-primary' : 'text-gray'} icon="calendar" iconClassName={`fa-calendar ${location.pathname === '/AdmGenerate' ? 'active-icon' : ''}`}>Generate</CDBSidebarMenuItem>
+            </NavLink>
           </CDBSidebarMenu>
         </CDBSidebarContent>
   
@@ -134,4 +139,5 @@ const Sidebar = () => {
 };
   
 export default Sidebar;
+
   
