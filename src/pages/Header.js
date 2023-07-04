@@ -29,6 +29,16 @@ const Header = () => {
     setIsDropdownOpen(!isDropdownOpen);
   };
 
+  const roleName = localStorage.getItem('admin_role');
+  let formattedRoleName = '';
+  if (roleName === 'ORD') {
+    formattedRoleName = 'Office of the Regional Director';
+  } else if (roleName === 'Manager') {
+    formattedRoleName = 'Manager';
+  } else if (roleName === 'SuperAdmin') {
+    formattedRoleName = 'Admin';
+  }
+
   return (
     <header
       style={{
@@ -55,6 +65,10 @@ const Header = () => {
         },
       }}
     >
+      <div style={{ position: 'relative', marginRight: '30px', color: '#025BAD'}}>
+        {formattedRoleName}
+      </div>
+
       <div style={{ cursor: 'pointer', position: 'relative', marginRight: '10px' }} onClick={handleDropdownClick}>
         <div
           style={{
