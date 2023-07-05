@@ -30,6 +30,7 @@ import InputBase from '@mui/material/InputBase';
 import SearchIcon from '@mui/icons-material/Search';
 import CloseRoundedIcon from '@mui/icons-material/CloseRounded';
 import CustomButton from './StyledComponents/CustomButton';
+import { faD } from '@fortawesome/free-solid-svg-icons';
 
 
 export default function AdmVehicle() {
@@ -60,6 +61,15 @@ export default function AdmVehicle() {
   //update
   const [editVehicleName, setEditVehicleName] = useState("");
   const [editVehicleStatus, setEditVehicleStatus] = useState("");
+
+  const currentDate = new Date();
+  const year = currentDate.getFullYear();
+  const month = String(currentDate.getMonth() + 1).padStart(2, '0');
+  const day = String(currentDate.getDate()).padStart(2, '0');
+  const hours = String(currentDate.getHours()).padStart(2, '0');
+  const minutes = String(currentDate.getMinutes()).padStart(2, '0');
+  const seconds = String(currentDate.getSeconds()).padStart(2, '0');
+  const formattedDate = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
 
   const STATUSES = [
     { value: 'Available', label: 'Available' },
@@ -141,26 +151,43 @@ export default function AdmVehicle() {
   
 
   //insert
-  function addVehicle(){
+  async function addVehicle(){
     const url = `${BASE_URL}/add_vehicle.php`;
 
     let fData = new FormData();
     fData.append("vehicle_id", UID);
     fData.append("vehicle_name", vehicle_name);
 
-    axios.post(url, fData)
-    .then(response => {
-      if(response.data === "Success"){
-        alert("Vehicle added successfully!");
-      } else {
-        alert("Unsuccessful");
-      }  
-      handleClose();
-    })
-    .catch(error => {
-     alert(error);
-    });
+    try{
+      const response = await axios.post(url, fData);
+      if(response.data.message === "Success"){
+        alert("Vehicle Added Successfully!");
+        handleClose();
+        setVehicleName('');
+      } else{
+        alert(response.data.message);
+        handleClose();
+      }
+    }catch(e){
+      alert(e);
+    }
   }
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const url = `${BASE_URL}/sync_vehicle_status.php`;
+      let fData = new FormData();
+      fData.append("currentDate", formattedDate);
+      try{
+        const response = await axios.post(url, fData);
+      }catch(e){
+        alert(e);
+      }
+    }
+  
+    fetchData();
+  }, [formattedDate]);
+  
 
   //token expiry
   useEffect(() => {
@@ -342,7 +369,9 @@ export default function AdmVehicle() {
                       style={{
                         backgroundColor:
                           vehicle.vehicle_status === "Available" ? '#006600' :
-                          vehicle.vehicle_status === "Not Available" ? '#b21127' : '',
+                          vehicle.vehicle_status === "On-Travel" ? 'red' : 
+                          vehicle.vehicle_status === "On-PMS" ? 'orange' : 
+                          "",
                         color: 'white',
                         padding: '5px 5px',
                         borderRadius: '50px',
