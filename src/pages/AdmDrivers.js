@@ -70,6 +70,15 @@ export default function AdmVehicle() {
   const [editDriverEmail, setEditDriverEmail] = useState("");
   const [editDriverStatus, setEditDriverStatus] = useState("");
 
+  const currentDate = new Date();
+  const year = currentDate.getFullYear();
+  const month = String(currentDate.getMonth() + 1).padStart(2, '0');
+  const day = String(currentDate.getDate()).padStart(2, '0');
+  const hours = String(currentDate.getHours()).padStart(2, '0');
+  const minutes = String(currentDate.getMinutes()).padStart(2, '0');
+  const seconds = String(currentDate.getSeconds()).padStart(2, '0');
+  const formattedDate = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+
   const STATUSES = [
     { value: 'Available', label: 'Available' },
     { value: 'Not Available', label: 'Not Available' },
@@ -159,22 +168,48 @@ export default function AdmVehicle() {
     fData.append("driver_name", driver_name);
     fData.append("driver_email", email);
     fData.append("driver_password", driver_password);
-    fData.append("driver_status", driver_status);
-    console.log(fData);
-
-    axios.post(url, fData)
-    .then(response => {
-      if(response.data === "Success"){
-        alert("Driver added successfully!");
-      } else {
-        alert("Unsuccessful");
+    
+    try{
+      const response = await axios.post(url, fData);
+      if(response.data.message === "Success"){
+        alert("Driver Added Successfully!");
+        handleClose();
+      } else{
+        alert(response.data.message);
       }
-      handleClose();
-    })
-    .catch(error => {
-     alert(error);
-    });
+    }catch(e){
+      alert(e);
+    }
+
+    // axios.post(url, fData)
+    // .then(response => {
+    //   if(response.data === "Success"){
+    //     alert("Driver added successfully!");
+    //   } else {
+    //     alert("Unsuccessful");
+    //   }
+    //   handleClose();
+    // })
+    // .catch(error => {
+    //  alert(error);
+    // });
   }
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const url = `${BASE_URL}/sync_vehicle_status.php`;
+      let fData = new FormData();
+
+      fData.append("currentDate", formattedDate);
+
+      try{
+        const response = await axios.post(url, fData);
+      }catch(e){
+        alert(e);
+      }
+    }
+    fetchData();
+  }, [formattedDate]);
 
   //token expiry
   useEffect(() => {
@@ -404,7 +439,7 @@ function filterDriver(driver) {
                       style={{
                         backgroundColor:
                           driver.driver_status === "Available" ? '#006600' :
-                          driver.driver_status === "Not Available" ? '#b21127' : '',
+                          driver.driver_status === "On-Travel" ? 'red' : '',
                         color: 'white',
                         padding: '5px 5px',
                         borderRadius: '50px',
