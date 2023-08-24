@@ -116,3 +116,6 @@
     justify-content: center;
     margin-top: 2%;
 }
+.hidePickerButtons .MuiDialogActions-root button {
+    display: none;
+}

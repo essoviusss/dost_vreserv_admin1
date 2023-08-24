@@ -6,7 +6,9 @@ import { v4 as uuidv4 } from 'uuid';
 import Header from './Header';
 import './Components/AdmEmployee.css'
 import { BASE_URL } from '../constants/api_url';
-// import  './Components/ViewModal.css'
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import './StyledComponents/ToastStyles.css';
 
 //material UI
 import Button from '@mui/material/Button';
@@ -32,6 +34,7 @@ import EditRoundedIcon from '@mui/icons-material/EditRounded';
 import RemoveRedEyeRoundedIcon from '@mui/icons-material/RemoveRedEyeRounded';
 import CloseRoundedIcon from '@mui/icons-material/CloseRounded';
 import CustomButton from './StyledComponents/CustomButton';
+
 
 export default function AdmEmployee() {
   const UID = uuidv4();
@@ -151,9 +154,11 @@ async function handleUpdate() {
 
   const response = await axios.post(url, fData);
   if(response.data.message === "Success"){
-    alert("Updated");
+    toast.success("Changes applied successfully!", {
+      className: 'toast-font-smaller'
+    });
   } else{
-    alert("Error");
+    toast.error("Failed to apply changes!");
   }
   CloseEdit();
 }
@@ -173,12 +178,14 @@ async function handleUpdate() {
     axios.post(url, fData)
       .then(response => {
         if(response.data === "Success"){
-          alert("Employee added successfully!!");
+          toast.success("Employee added successfully!", {
+            className: 'toast-font-smaller'
+          });
         }
         handleClose();
       })
       .catch(error => {
-       alert(error);
+        toast.error("Failed to add employee!");
       });
   }
 
@@ -207,7 +214,17 @@ async function handleUpdate() {
         const currentTime = Math.floor(Date.now() / 1000); // get the current time
         if (currentTime > decodedToken.exp) {
             localStorage.removeItem("token");
-            alert("Token expired, please login again");
+            toast.info('Token expired, please login again', {
+              position: "top-center",
+              autoClose: 5000,
+              hideProgressBar: false,
+              closeOnClick: true,
+              pauseOnHover: true,
+              draggable: true,
+              progress: undefined,
+              theme: "light",
+              className: 'custom-toast-info',
+            });
             navigate('/');
         }
     } else if (!isLoggedIn) {
@@ -238,9 +255,11 @@ async function handleUpdate() {
   
     const response = await axios.post(url, fData);
     if(response.data.message === "Success"){
-      alert("Employee deleted successfully.");
+      toast.success("Employee deleted successfully!", {
+        className: 'toast-font-smaller'
+      });
     } else{
-      alert("Error");
+      toast.error("Employee deletion failed!");
     }
   }
 

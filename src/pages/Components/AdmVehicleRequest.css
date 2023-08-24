@@ -371,3 +371,75 @@
   .edit-tablecontent td:last-child {
     width: 60%;
   }
+
+
+  /* Modal styles */
+  /* ACCOMPLISHED MODAL */
+.modal-icon {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 16px;
+  margin-top: 5%;
+}
+.modal-icon .modal-svg {
+  width: 100px;
+}
+.modal-title {
+  font-size: 20px;
+  color: rgb(69, 69, 69);
+  font-weight: 600;
+  text-align: center;
+  padding-bottom: 2%;
+}
+
+.modal-subtitle {
+  font-size: 14px; 
+  text-align: center;
+  padding: 2%;
+}
+.button-container {
+  display: flex;
+  justify-content: center;
+}
+.button {
+  margin: 0 10px;
+  color: white;
+}
+.cancel-modal {
+  background-color: rgb(92, 92, 92); /* Set the desired background color */
+  border-radius: 5px; /* Set the border radius */
+}
+
+.confirm-acc {
+  background-color: #006600; /* Set the desired background color */
+  border-radius: 5px; /* Set the border radius */
+}
+
+.cancel-modal:hover,
+.confirm-modal:hover {
+  background-color: yellow; /* Set the desired background color on hover */
+}
+
+.modal-reject-title {
+  font-size: 20px;
+  color: rgb(69, 69, 69);
+  font-weight: 600;
+}
+.modal-reject-subtitle {
+  font-size: 14px; 
+}
+
+.modal-reject-hr {
+  border-top: 1px solid gray;
+  margin: 3% 0% 3% 0%;
+}
+
+.modal-reject-remark {
+  font-size: 14px;
+  color: rgb(69, 69, 69);
+  font-weight: 600;
+}
+
+.edit-time{
+  padding: 2% 0 2% 0;
+}

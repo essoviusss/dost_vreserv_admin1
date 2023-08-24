@@ -19,4 +19,9 @@
 .hidePickerButtons .MuiDialogActions-root button {
     display: none;
   }
+
+  .hidePickerButtons .MuiPickersToolbarText-root.Mui-selected {
+    color: #1976d2; /* Set your desired color value here */
+  }
+  
   

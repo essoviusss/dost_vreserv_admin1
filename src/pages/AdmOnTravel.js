@@ -3,6 +3,10 @@ import axios from "axios";
 import Header from "./Header";
 import './Components/AdmVehicleRequest.css'
 import { BASE_URL } from "../constants/api_url";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import './StyledComponents/ToastStyles.css';
+
 
 //material ui
 import Button from '@mui/material/Button';
@@ -207,12 +211,14 @@ useEffect(() => {
     fData.append("selected_CAOfficer", selectedRequest.ca_officer);
     fData.append("selected_departure_time", selectedRequest.departure_time);
     fData.append("selected_arrival_time", selectedRequest.arrival_time);
+    fData.append("selected_rev_code", selectedRequest.rev_code);
+    fData.append("selected_form_code", selectedRequest.form_code);
 
     const response = await axios.post(url, fData);
     if(response.data.message === "Success"){
-      alert("Modified");
+      toast.success("Changes Applied Successfully");
     } else{
-      alert("Madi");
+      toast.error("Failed to apply changes!");
     }
     CloseEdit();
   }
@@ -237,17 +243,21 @@ useEffect(() => {
     console.log("Passenger Names:", passengerNames);
 
     console.log("Passenger Names:", passengerNames);
-
-    const pageTitle = `
+    
+  const pageTitle = `
+                                                                                                                                    ${selectedRequest.form_code}
+                                                                                                                                    ${selectedRequest.rev_code} \n
     Republic of the Philippines
     DEPARTMENT OF SCIENCE AND TECHNOLOGY
     Regional Office No. 1
     DMMMSU MLUC Campus, City of San Fernando, La Union`;
   
     const subtitle = `
+    
     REQUEST FOR THE USE OF VEHICLE`;
   
     const content1 = `
+    
     Vehicle to be requested: ${selectedRequest.vehicle_name}
     Name of Driver: ${selectedRequest.driver_name}
     Schedule of Travel
@@ -388,10 +398,18 @@ useEffect(() => {
     const checkboxSize = 5;
     const checkboxSpacing = 50;
 
+    // doc.setFontSize(fontSize);
+    // doc.setLineWidth(0.1);
+    // doc.rect(checkboxX, checkboxY, checkboxSize, checkboxSize);
+    // doc.text(checkboxX + checkboxSize + 2, checkboxY + checkboxSize - 1, checkbox1Label);
     doc.setFontSize(fontSize);
     doc.setLineWidth(0.1);
     doc.rect(checkboxX, checkboxY, checkboxSize, checkboxSize);
+    doc.setFont("helvetica", "bold");
+    doc.text('X', checkboxX + checkboxSize / 2 - 1.5, checkboxY + checkboxSize / 2 + 1.5);
     doc.text(checkboxX + checkboxSize + 2, checkboxY + checkboxSize - 1, checkbox1Label);
+
+    
 
     doc.setFontSize(fontSize);
     doc.setLineWidth(0.1);
@@ -409,6 +427,7 @@ useEffect(() => {
     doc.setLineWidth(0.1);
     doc.rect(checkboxX + checkboxSpacing, checkboxY2, checkboxSize, checkboxSize);
     doc.text(checkboxX + checkboxSpacing + checkboxSize + 2, checkboxY2 + checkboxSize - 1, checkbox4Label);
+    
 
     doc.setFontSize(fontSize);
     doc.setLineWidth(0.1);
@@ -457,19 +476,23 @@ useEffect(() => {
     const checkboxSize11 = 5;
     const checkboxSpacing11 = 2;
 
-    // Checkbox 1: Approved
+    // Checkbox 1: Available
     doc.setFontSize(fontSize);
     doc.setLineWidth(0.1);
     doc.rect(checkboxX11, checkboxY11, checkboxSize11, checkboxSize11);
     doc.setFont("helvetica", "normal");
     doc.text(checkboxX11 + checkboxSize11 + 2, checkboxY11 + checkboxSize11 - 1, checkbox1Label6);
+    // doc.text("X", checkboxX + 2, checkboxY + checkboxSize - 1);
+
 
     // Checkbox 2: Disapproved
     doc.setFontSize(fontSize);
     doc.setLineWidth(0.1);
     doc.rect(checkboxX11, checkboxY11 + checkboxSize11 + checkboxSpacing11, checkboxSize11, checkboxSize11);
-    doc.setFont("helvetica", "normal");
+    doc.setFont("helvetica", "bold");
     doc.text(checkboxX11 + checkboxSize11 + 2, checkboxY11 + checkboxSize11 * 2  + checkboxSpacing11, checkbox2Label7);
+    // doc.text("X", checkboxX11 + 2, checkboxY11 + checkboxSize11 - 1);
+    doc.text('X', checkboxX11 + checkboxSize11 / 2 - 1.5, checkboxY11 + checkboxSize11 / 2 + 1.5);
 
     const bTitle2X = pageWidth / 2;
     const bTitle2Y = checkboxY11 + checkboxSize11 * 2 + 20; // Adjust the top margin value here
@@ -486,8 +509,10 @@ useEffect(() => {
     doc.text(bDate2, bDate2X, bDate2Y, { align: "center" });
 
     // Save the PDF
-    doc.save(`${selectedRequest.requested_by}.VRESERV_Request_Report.pdf`);
+    doc.save(`${selectedRequest.requested_by}.VRESERV_Request_Report.pdf`);  
 };
+
+  
     return(
       <div className="page-container">
         <Header/>
@@ -668,7 +693,7 @@ useEffect(() => {
                         </td>
                         <td>
                           <p className="admreq-details">
-                          {selectedRequest.departure_time}</p>
+                          {dayjs(selectedRequest.departure_time).format("MMMM D, YYYY, h:mm A")}</p>
                         </td>
                       </tr>
                       <tr>
@@ -677,7 +702,7 @@ useEffect(() => {
                         </td>
                         <td>
                         <p className="admreq-details">
-                          {selectedRequest.arrival_time}</p>
+                        {dayjs(selectedRequest.arrival_time).format("MMMM D, YYYY, h:mm A")}</p>
                         </td>
                       </tr>
                       <tr>
@@ -758,7 +783,7 @@ useEffect(() => {
           <h1>Edit Details</h1>
           <p>Update the necessary changes to the request</p>         
         </div>
-        <Button onClick={CloseView} style={{ color: 'gray', position: 'absolute', top: 10, right: 0, paddingLeft: 0, paddingRight: 0 }}>
+        <Button onClick={CloseEdit} style={{ color: 'gray', position: 'absolute', top: 10, right: 0, paddingLeft: 0, paddingRight: 0 }}>
           <CloseRoundedIcon />
         </Button>
       </DialogTitle>
@@ -888,8 +913,7 @@ useEffect(() => {
               }}
             />
           </div>
-
-          <div>
+          <div className="edit-time">
             <LocalizationProvider dateAdapter={AdapterDayjs}>
               <DateTimePicker 
               label="Departure Time"
@@ -898,9 +922,22 @@ useEffect(() => {
                 const formattedDate = formatDate(date);
                 setEditDeparture(formattedDate);
               }}
+            sx={{
+              '& input': {
+                fontFamily: 'Poppins, sans-serif',
+                fontSize: '14px',
+                padding: '7%',
+              },
+              '& label': {
+                fontFamily: 'Poppins, sans-serif',
+                fontSize: '17px',
+                fontWeight: 'bold',
+                color: 'black',
+              },
+            }}
               />
             </LocalizationProvider>
-
+            &emsp;&emsp;
             <LocalizationProvider dateAdapter={AdapterDayjs}>
               <DateTimePicker 
               label="Estimated Time of Arrival"
@@ -908,6 +945,19 @@ useEffect(() => {
               onChange={(date) => {
                 const formattedDate = formatDate(date);
                 setEditArrival(formattedDate);
+              }}
+              sx={{
+                '& input': {
+                  fontFamily: 'Poppins, sans-serif',
+                  fontSize: '14px',
+                  padding: '7%',
+                },
+                '& label': {
+                  fontFamily: 'Poppins, sans-serif',
+                  fontSize: '17px',
+                  fontWeight: 'bold',
+                  color: 'black',
+                },
               }}
                />
             </LocalizationProvider>

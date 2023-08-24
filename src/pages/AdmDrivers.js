@@ -5,6 +5,9 @@ import Header from './Header';
 import { v4 as uuidv4 } from 'uuid';
 import './Components/AdmDrivers.css'
 import { BASE_URL } from '../constants/api_url';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import './StyledComponents/ToastStyles.css';
 
 //material ui
 import TextField from '@mui/material/TextField';
@@ -172,13 +175,13 @@ export default function AdmVehicle() {
     try{
       const response = await axios.post(url, fData);
       if(response.data.message === "Success"){
-        alert("Driver Added Successfully!");
+        toast.success("Driver Added Successfully!");
         handleClose();
       } else{
-        alert(response.data.message);
+        toast.error(response.data.message);
       }
     }catch(e){
-      alert(e);
+      toast.error(e);
     }
 
     // axios.post(url, fData)
@@ -190,8 +193,8 @@ export default function AdmVehicle() {
     //   }
     //   handleClose();
     // })
-    // .catch(error => {
-    //  alert(error);
+      // .catch(error => {
+       //  toast.error("Failed to add driver!");
     // });
   }
 
@@ -199,13 +202,11 @@ export default function AdmVehicle() {
     const fetchData = async () => {
       const url = `${BASE_URL}/sync_vehicle_status.php`;
       let fData = new FormData();
-
       fData.append("currentDate", formattedDate);
-
       try{
         const response = await axios.post(url, fData);
       }catch(e){
-        alert(e);
+        toast.info(e);
       }
     }
     fetchData();
@@ -219,9 +220,19 @@ export default function AdmVehicle() {
         const decodedToken = jwtDecode(token);
         const currentTime = Math.floor(Date.now() / 1000); // get the current time
         if (currentTime > decodedToken.exp) {
-            localStorage.removeItem("token");
-            alert("Token expired, please login again");
-            navigate('/');
+          localStorage.removeItem("token");
+          toast.info('Token expired, please login again', {
+            position: "top-center",
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "light",
+            className: 'custom-toast-info',
+            });
+          navigate('/');
         }
     } else if (!isLoggedIn) {
         navigate('/');
@@ -257,9 +268,11 @@ export default function AdmVehicle() {
 
     const response = await axios.post(url, fData);
     if(response.data.message === "Success"){
-      alert("Updated");
+      toast.success("Changes applied successfully!", {
+        className: 'toast-font-smaller'
+      });
     } else{
-      alert("Error");
+      toast.error("Failed to apply changes!");
     }
     CloseEdit();
   }
@@ -272,9 +285,9 @@ export default function AdmVehicle() {
   
     const response = await axios.post(url, fData);
     if(response.data.message === "Success"){
-      alert("Driver deleted successfully.");
+      toast.success("Driver deleted successfully!");
     } else{
-      alert("Error");
+      toast.error("Driver deletion failed!");
     }
 }
 //search

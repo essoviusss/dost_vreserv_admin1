@@ -8,6 +8,9 @@ import useAuth from "../hooks/useAuth";
 import { useNavigate } from "react-router";
 import './Components/AdmVehicles.css'
 import { BASE_URL } from '../constants/api_url';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import './StyledComponents/ToastStyles.css';
 
 //material ui
 import Button from '@mui/material/Button';
@@ -161,15 +164,15 @@ export default function AdmVehicle() {
     try{
       const response = await axios.post(url, fData);
       if(response.data.message === "Success"){
-        alert("Vehicle Added Successfully!");
+        toast.success("Vehicle Added Successfully!");
         handleClose();
         setVehicleName('');
       } else{
-        alert(response.data.message);
+        toast.error(response.data.message);
         handleClose();
       }
     }catch(e){
-      alert(e);
+      toast.error(e);
     }
   }
 
@@ -181,7 +184,7 @@ export default function AdmVehicle() {
       try{
         const response = await axios.post(url, fData);
       }catch(e){
-        alert(e);
+        toast.error(e);
       }
     }
   
@@ -197,9 +200,19 @@ export default function AdmVehicle() {
         const decodedToken = jwtDecode(token);
         const currentTime = Math.floor(Date.now() / 1000); // get the current time
         if (currentTime > decodedToken.exp) {
-            localStorage.removeItem("token");
-            alert("Token expired, please login again");
-            navigate('/');
+          localStorage.removeItem("token");
+          toast.info('Token expired, please login again', {
+            position: "top-center",
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "light",
+            className: 'custom-toast-info',
+          });
+          navigate('/');
         }
     } else if (!isLoggedIn) {
         navigate('/');
@@ -234,10 +247,12 @@ export default function AdmVehicle() {
   
     const response = await axios.post(url, fData);
     if(response.data.message === "Success"){
-      alert("Updated");
+      toast.success("Changes applied successfully!", {
+        className: 'toast-font-smaller'
+      });
     } else{
-      alert("Error");
-    }
+      toast.error("Failed to apply changes!");
+      }
     CloseEdit();
   }
 
@@ -250,9 +265,9 @@ export default function AdmVehicle() {
   
     const response = await axios.post(url, fData);
     if(response.data.message === "Success"){
-      alert("Vehicle deleted successfully.");
+      toast.success("Vehicle deleted successfully!");
     } else{
-      alert("Error");
+      toast.error("Vehicle deletion failed!");
     }
   }
 

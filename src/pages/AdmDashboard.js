@@ -21,6 +21,7 @@ import {
   } from 'chart.js';
 import { Bar } from "react-chartjs-2";
 import ProgressBar from "@ramonak/react-progress-bar";
+import { toast } from "react-toastify";
 
 export default function AdmDashboard(){
     const [data, setData] = useState([]);
@@ -78,7 +79,17 @@ export default function AdmDashboard(){
             const currentTime = Math.floor(Date.now() / 1000); // get the current time
             if (currentTime > decodedToken.exp) {
                 localStorage.removeItem("token");
-                alert("Token expired, please login again");
+                toast.info('Token expired, please login again', {
+                    position: "top-center",
+                    autoClose: 5000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                    theme: "light",
+                    className: 'custom-toast-info',
+                });
                 navigate('/');
             }
         } else if (!isLoggedIn) {
@@ -129,7 +140,7 @@ export default function AdmDashboard(){
                 setRejectedCount(response6.data.totalcount);
 
             }catch(e){
-                alert(e);
+                toast.error(e);
             }
         }
         fetchData();
@@ -209,7 +220,7 @@ export default function AdmDashboard(){
                 setCancelledReq(response2.data.request);
 
             }catch(e){
-                alert(e);
+                toast.error(e);
             }
         }
         fetchData();
@@ -226,40 +237,75 @@ export default function AdmDashboard(){
         Legend
       );
 
-    const data1 = {
+      const data1 = {
         labels,
         datasets: [
-            {
-                label: 'Total Request',
-                data: totalPerMonthReq,
-                
-                backgroundColor: 'blue',
-            },
-            {
-                label: 'Accomplished Request',
-                data: accomplishedReq,
-                backgroundColor: 'red',
-            },
-            {
-                label: 'Cancelled Request',
-                data: cancelledReq,
-                backgroundColor: 'green',
-            },
+          {
+            label: 'Total Request',
+            data: totalPerMonthReq,
+            backgroundColor: '#025BAD',
+          },
+          {
+            label: 'Accomplished Request',
+            data: accomplishedReq,
+            backgroundColor: 'green',
+          },
+          {
+            label: 'Cancelled Request',
+            data: cancelledReq,
+            backgroundColor: 'red',
+          },
         ],
-    };
-
-    const options = {
-        responsive: true,
+      };
+      
+      const options = {
+        layout: {
+            padding: {
+              top: 20, 
+              right: 20, 
+              bottom: 20, 
+              left: 20, 
+            },
+          },
         plugins: {
           legend: {
-            position: 'top' ,
-          },
-          title: {
-            display: true,
-            text: `Current Month ${currentMonth}`,
+            labels: {
+              font: {
+                family: 'Poppins', 
+              },
+            },
+            title: {
+                display: true,
+                text: `Current Month ${currentMonth}`,
+                font: {
+                  family: 'Poppins',
+                  size: 18,
+                  weight: 'bold',
+                },
+                color: '#1A2458',
+            },                           
           },
         },
-      };
+        scales: {
+            x: {
+            ticks: {
+                font: {
+                family: 'Poppins', 
+                },
+            },
+            },
+            y: {
+            ticks: {
+                font: {
+                family: 'Poppins', 
+                },
+            },
+            },
+        },
+        responsive: true,
+        maintainAspectRatio: true, 
+        };
+      
 
       useEffect(() => {
         const fetchData = async () => {
@@ -276,7 +322,7 @@ export default function AdmDashboard(){
                 setVehicleCountPercentage2(response.data.vehicleCountPercentage2);
                 setDriverCountPercentage(response.data.driverCountPercentage);
             }catch(e){
-                alert(e);
+                toast.error(e);
             }
         }   
         fetchData();
@@ -287,31 +333,112 @@ export default function AdmDashboard(){
       };
       
     return(
-        <div>
+        <div className="page-container">
             <Header/>
             <div className="dash-container">
-                <h1>AdmDashboard</h1>
+                {/* <h1>AdmDashboard</h1> */}
                 {/* top */}
                 <div className="upper">
                     <div className="top1Left">
                         <div className="top1Above">
-                            <div className="above-child">Pending {pendingCount}</div>
-                            <div className="above-child">For Approval {forApprovalCount}</div>
-                            <div className="above-child">Approved {approvedCount}</div>
+                            <div className="above-child">
+                                <div className="status-dashlogo">
+                                    <img className="approved_icon" src="/images/pending_icon.png" alt="logo" />
+                                </div>
+                                <div className="status-dashright">
+                                    <div className="drvdash-title">
+                                        <div className="status-dashlabel">Pending</div>
+                                    </div>
+                                    <div className="status-dashcount-container">
+                                        <div className="status-dashcount">{pendingCount}</div>
+                                        <div className="status-dashreq">Requests</div>
+                                    </div>
+                                </div> 
+                            </div>
+                            <div className="above-child">
+                                <div className="status-dashlogo">
+                                    <img className="approved_icon" src="/images/forapproval_icon.png" alt="logo" />
+                                </div>
+                                <div className="status-dashright">
+                                    <div className="drvdash-title">
+                                        <div className="status-dashlabel">For Approval</div>
+                                    </div>
+                                    <div className="status-dashcount-container">
+                                        <div className="status-dashcount">{forApprovalCount}</div>
+                                        <div className="status-dashreq">Requests</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="above-child">
+                                <div className="status-dashlogo">
+                                    <img className="approved_icon" src="/images/approved_icon.png" alt="logo" />
+                                </div>
+                                <div className="status-dashright">
+                                    <div className="drvdash-title">
+                                        <div className="status-dashlabel">Approved</div>
+                                    </div>
+                                    <div className="status-dashcount-container">
+                                        <div className="status-dashcount">{approvedCount}</div>
+                                        <div className="status-dashreq">Requests</div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                         <div className="top1Below">
-                            <div className="below-child">Accomplished {accomplishedCount}</div>
-                            <div className="below-child">Cancelled {cancelledCount}</div>
-                            <div className="below-child">Rejected {rejectedCount}</div>
+                            <div className="below-child">
+                                <div className="status-dashlogo">
+                                    <img className="approved_icon" src="/images/accomplished_icon.png" alt="logo" />
+                                </div>
+                                <div className="status-dashright">
+                                    <div className="drvdash-title">
+                                        <div className="status-dashlabel">Accomplished</div>
+                                    </div>
+                                    <div className="status-dashcount-container">
+                                        <div className="status-dashcount">{accomplishedCount}</div>
+                                        <div className="status-dashreq">Requests</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="below-child">
+                                <div className="status-dashlogo">
+                                    <img className="approved_icon" src="/images/cancelled_icon.png" alt="logo" />
+                                </div>
+                                <div className="status-dashright">
+                                    <div className="drvdash-title">
+                                        <div className="status-dashlabel">Cancelled</div>
+                                    </div>
+                                    <div className="status-dashcount-container">
+                                        <div className="status-dashcount">{cancelledCount}</div>
+                                        <div className="status-dashreq">Requests</div>
+                                    </div>
+                                </div>                               
+                            </div>
+                            <div className="below-child">
+                                <div className="status-dashlogo">
+                                    <img className="approved_icon" src="/images/rejected_icon.png" alt="logo" />
+                                </div>
+                                <div className="status-dashright">
+                                    <div className="drvdash-title">
+                                        <div className="status-dashlabel">Rejected</div>
+                                    </div>
+                                    <div className="status-dashcount-container">
+                                        <div className="status-dashcount">{rejectedCount}</div>
+                                        <div className="status-dashreq">Requests</div>
+                                    </div>
+                                </div>   
+                            </div>
                         </div>
                     </div>
                     <div className="top2Right">
-                        <p>Driver On-Travel ({driverOnTravel} out of {driverCountTotal})</p>
-                        <ProgressBar completed={driverCountPercentage} maxCompleted={100} />
-                        <p>Vehicle On-Travel ({vehicleOnTravel} out of {vehicleCountTotal})</p>
-                        <ProgressBar completed={vehicleCountPercentage2} maxCompleted={100} />
-                        <p>Vehicle On-PMS ({vehicleOnPMS} out of {vehicleCountTotal })</p>
-                        <ProgressBar completed={vehicleCountPercentage1} maxCompleted={100} />
+                        <div className="progressbar-cont">
+                            <div className="progressbar-title">On-Travel</div>
+                            <div className="progressbar-subtitle">Driver On-Travel ({driverOnTravel} out of {driverCountTotal})</div>
+                            <ProgressBar completed={driverCountPercentage} maxCompleted={100} bgColor="#025BAD" labelSize='12px'/>
+                            <div className="progressbar-subtitle">Vehicle On-Travel ({vehicleOnTravel} out of {vehicleCountTotal})</div>
+                            <ProgressBar completed={vehicleCountPercentage2} maxCompleted={100} bgColor="#025BAD" labelSize='12px'/>
+                            <div className="progressbar-subtitle">Vehicle On-PMS ({vehicleOnPMS} out of {vehicleCountTotal })</div>
+                            <ProgressBar completed={vehicleCountPercentage1} maxCompleted={100} bgColor="#025BAD" labelSize='12px'/>
+                        </div>
                     </div>
                 </div>
                 {/* below */}
@@ -328,7 +455,7 @@ export default function AdmDashboard(){
                             strokeWidth={100}
                             className="custom-donut-chart"
                             legend={false}
-                            colors={['#025BAD', '#D9D9D9', '#FFC300', '#9C27B0', '#00BCD4', '#FF5722']}
+                            colors={['#FDC858', '#025BAD', 'green', '#f26419', '#6e6e6e', '#b21127']}
                             hoverColors={['#025BAD', '#D9D9D9']}
                         />
                         <div className="donut-icon">
@@ -338,37 +465,37 @@ export default function AdmDashboard(){
                         <div className="donut-legends">
                         <div className="donut-title">Status Percentage</div>
                         <div className="donut-accomplished">
-                            <CircleRoundedIcon style={{ fontSize: 20, color: '#025BAD' }} /> &nbsp;
+                            <CircleRoundedIcon style={{ fontSize: 20, color: '#FDC858' }} /> &nbsp;
                             <div className="percentage">{adjustedPenPercent.toFixed(2)}%</div> &nbsp;
                             <div className="per-label">Pending</div>
                             <div className="count-label">({pendingCount} Request/s)</div>
                         </div>
                         <div className="donut-unaccomplished">
-                        <CircleRoundedIcon style={{ fontSize: 20, color: '#D9D9D9' }} />  &nbsp;
+                        <CircleRoundedIcon style={{ fontSize: 20, color: '#025BAD' }} />  &nbsp;
                             <div className="percentage">{adjustedForPercent.toFixed(2)}%</div> &nbsp;
                             <div className="per-label">For Approval</div>
                             <div className="count-label">({forApprovalCount} Request/s)</div>
                         </div>
                         <div className="donut-accomplished">
-                            <CircleRoundedIcon style={{ fontSize: 20, color: '#FFC300' }} /> &nbsp;
+                            <CircleRoundedIcon style={{ fontSize: 20, color: 'green' }} /> &nbsp;
                             <div className="percentage">{adjustedAppPercent.toFixed(2)}%</div> &nbsp;
                             <div className="per-label">Approved</div>
                             <div className="count-label">({approvedCount} Request/s)</div>
                         </div>
                         <div className="donut-unaccomplished">
-                        <CircleRoundedIcon style={{ fontSize: 20, color: '#9C27B0' }} />  &nbsp;
+                        <CircleRoundedIcon style={{ fontSize: 20, color: '#f26419' }} />  &nbsp;
                             <div className="percentage">{adjustedAccPercent.toFixed(2)}%</div> &nbsp;
                             <div className="per-label">Accomplished</div>
                             <div className="count-label">({accomplishedCount} Request/s)</div>
                         </div>
                         <div className="donut-accomplished">
-                            <CircleRoundedIcon style={{ fontSize: 20, color: '#00BCD4' }} /> &nbsp;
+                            <CircleRoundedIcon style={{ fontSize: 20, color: '#6e6e6e' }} /> &nbsp;
                             <div className="percentage">{adjustedCanPercent.toFixed(2)}%</div> &nbsp;
                             <div className="per-label">Cancelled</div>
                             <div className="count-label">({cancelledCount} Request/s)</div>
                         </div>
                         <div className="donut-unaccomplished">
-                        <CircleRoundedIcon style={{ fontSize: 20, color: '#FF5722' }} />  &nbsp;
+                        <CircleRoundedIcon style={{ fontSize: 20, color: '#b21127' }} />  &nbsp;
                             <div className="percentage">{adjustedRejPercent.toFixed(2)}%</div> &nbsp;
                             <div className="per-label">Rejected</div>
                             <div className="count-label">({rejectedCount} Request/s)</div>

@@ -1,6 +1,9 @@
 import { useNavigate } from "react-router";
 import axios from "axios";
 import React, { useState, useEffect } from "react";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import './StyledComponents/ToastStyles.css';
 import useAuth from "../hooks/useAuth";
 import Header from "./Header";
 import jwtDecode from 'jwt-decode';
@@ -30,7 +33,17 @@ export default function AdmGenerate() {
       const currentTime = Math.floor(Date.now() / 1000); // get the current time
       if (currentTime > decodedToken.exp) {
         localStorage.removeItem("token");
-        alert("Token expired, please login again");
+        toast.info('Token expired, please login again', {
+          position: "top-center",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "light",
+          className: 'custom-toast-info',
+        });
         navigate('/');
       }
     } else if (!isLoggedIn) {
@@ -40,7 +53,7 @@ export default function AdmGenerate() {
 
   const logout = () => {
     localStorage.removeItem("token");
-    alert("You have been logged out!");
+    toast.info("You have been logged out!");
     navigate("/", { replace: true });
   };
 
@@ -127,7 +140,8 @@ export default function AdmGenerate() {
             height: '100%',
             width: '30%',
           }}>
-          <CSVLink data={requests} headers={headers} filename="vehicle-requests.csv">
+          <CSVLink data={requests} headers={headers} filename="vehicle-requests.csv"
+          style={{ color: 'white', textDecoration: 'none', }}>
             Export CSV
           </CSVLink>
         </Button>

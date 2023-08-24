@@ -1,6 +1,8 @@
 import * as React from 'react';
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import { FormDataProvider } from './pages/FormDataContext';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 //Paths
 import Login from './pages/Auth/Login';
@@ -67,6 +69,7 @@ function App() {
   return (
     <Router>
       <FormDataProvider>
+      <ToastContainer />
         <MainContent />
       </FormDataProvider>
     </Router>

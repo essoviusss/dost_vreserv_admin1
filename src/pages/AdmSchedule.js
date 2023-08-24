@@ -24,10 +24,15 @@ import CloseRoundedIcon from '@mui/icons-material/CloseRounded';
 import CustomButton from './StyledComponents/CustomButton';
 import DeleteRoundedIcon from '@mui/icons-material/DeleteRounded';
 import EditRoundedIcon from '@mui/icons-material/EditRounded';
+import MenuItem from '@mui/material/MenuItem';
+import Select from '@mui/material/Select';
+import InputLabel from '@mui/material/InputLabel';
+import FormControl from '@mui/joy/FormControl';
 
 import jwtDecode from 'jwt-decode';
 import useAuth from "../hooks/useAuth";
 import { useNavigate } from "react-router";
+import { toast } from 'react-toastify';
 
 export default function AdmSchedule() {
   const UID = uuidv4();
@@ -157,20 +162,21 @@ export default function AdmSchedule() {
 
   //insertt
   const months = [
-    { name: "--Select Month--", value: "none"},
-    { name: "January", value: "January" },
-    { name: "February", value: "February" },
-    { name: "March", value: "March" },
-    { name: "April", value: "April" },
-    { name: "May", value: "May" },
-    { name: "June", value: "June" },
-    { name: "July", value: "July" },
-    { name: "August", value: "August" },
-    { name: "September", value: "September" },
-    { name: "October", value: "October" },
-    { name: "November", value: "November" },
-    { name: "December", value: "December" },
+    { label: "January", value: "January" },
+    { label: "February", value: "February" },
+    { label: "March", value: "March" },
+    { label: "April", value: "April" },
+    { label: "May", value: "May" },
+    { label: "June", value: "June" },
+    { label: "July", value: "July" },
+    { label: "August", value: "August" },
+    { label: "September", value: "September" },
+    { label: "October", value: "October" },
+    { label: "November", value: "November" },
+    { label: "December", value: "December" },
   ];
+
+
 
   //search
   function filterPMS(pms) {
@@ -185,7 +191,7 @@ export default function AdmSchedule() {
   //insert
   function addPms(id) {
     const url = `${BASE_URL}/add_pms.php`;
-    alert(id);
+    // alert(id);
     let fData = new FormData();
     
     fData.append("pmsId", UID);
@@ -196,14 +202,17 @@ export default function AdmSchedule() {
       .post(url, fData)
       .then((response) => {
         if(response.data === "Success"){
-            alert("PMS added successfully!!");
+            toast.success("PMS added successfully");
             handleClose();
+            setSelectedVehicle('');
+            setMonth('');
         } else{
-            alert("Error");
+            toast.error("Error adding PMS!");
+            handleClose();
         }
       })
       .catch((error) => {
-        alert(error);
+        toast.error(error);
       });
   }
 
@@ -216,9 +225,19 @@ export default function AdmSchedule() {
         const decodedToken = jwtDecode(token);
         const currentTime = Math.floor(Date.now() / 1000); // get the current time
         if (currentTime > decodedToken.exp) {
-            localStorage.removeItem("token");
-            alert("Token expired, please login again");
-            navigate('/');
+          localStorage.removeItem("token");
+          toast.info('Token expired, please login again', {
+            position: "top-center",
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "light",
+            className: 'custom-toast-info',
+          });
+          navigate('/');
         }
     } else if (!isLoggedIn) {
         navigate('/');
@@ -247,9 +266,9 @@ export default function AdmSchedule() {
     
     const response = await axios.post(url, fData);
     if(response.data.message === "Success"){
-      alert("PMS deleted successfully.");
+      toast.success("PMS deleted successfully.");
     } else{
-      alert("Schedule deletion failed.");
+      toast.error("Schedule deletion failed.");
     }
   }
     // update
@@ -267,7 +286,7 @@ export default function AdmSchedule() {
     
       const response = await axios.post(url, fData);
       if (response.data.message === "Success") {
-        alert("Updated");
+        toast.success("PMS Updated Successfully");
         setPMS((prevPMS) => {
           const updatedPMS = prevPMS.map((pmsItem) => {
             if (pmsItem.pms_id === selectedPMS.pms_id) { // Use pmsItem.id instead of pmsItem.pms_id
@@ -283,7 +302,7 @@ export default function AdmSchedule() {
           return updatedPMS;
         });
       } else {
-        alert("Error");
+        toast.error("Failed to update PMS!");
       }
       CloseEdit();
     }
@@ -403,38 +422,65 @@ export default function AdmSchedule() {
       <DialogContent>
         <div>
           <div className='addpms-field'>
-            <label className='addpms-label' htmlFor="month-select">Select Month</label>
-            <br />
-            <select
-              id="month-select"
-              value={month}
-              onChange={handleChange}
-            >
-              {months.map((month) => (
-                <option key={month.value} value={month.value}>
-                  {month.name}
-                </option>
-              ))}
-            </select>
+            <FormControl fullWidth variant="standard" margin="dense">
+              <InputLabel
+                id="unit-label"
+                style={{
+                  fontFamily: 'Poppins, sans-serif',
+                  fontSize: '83%',
+                  color: 'black',    
+                  fontWeight: '600',
+                }}
+              >
+                Months
+              </InputLabel>
+              <Select
+                labelId="unit-label"
+                id="unit-select"
+                value={month}
+                label="Month"
+                onChange={handleChange}
+                style={{ height: '40px', fontFamily: 'Poppins', fontSize: '14px' }}
+                MenuProps={{ PaperProps: { style: { maxHeight: '200px' } } }}
+              >
+                {months.map((months) => (
+                  <MenuItem key={months.value} value={months.value}>
+                    {months.label}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
           </div>
           <div className='addpms-field'>
             <label className='addpms-label' htmlFor="vehicle-select">Select Vehicle</label>
             <br />
-            <select
-              id="vehicle-select"
-              value={selectedVehicle}
-              onChange={handleVehicleChange}
-            >
-                <option>--Select Vehicle--</option>
-              {
-                
-              vehicles.map((vehicle) => (
-                <option key={vehicle.vehicle_id} value={vehicle.vehicle_id}>
+            <FormControl fullWidth variant="standard" margin="dense">
+              <InputLabel
+                id="unit-label"
+                style={{
+                  fontFamily: 'Poppins, sans-serif',
+                  fontSize: '83%',
+                  color: 'black',    
+                  fontWeight: '600',
+                }}
+              >
+              </InputLabel>
+              <Select
+                labelId="unit-label"
+                id="unit-select"
+                label="Selected Vehicle"
+                value={selectedVehicle}
+                onChange={handleVehicleChange}
+                style={{ height: '40px', fontFamily: 'Poppins', fontSize: '14px' }}
+                MenuProps={{ PaperProps: { style: { maxHeight: '200px' } } }}
+              >
+                {vehicles.map((vehicle) => (
+                <MenuItem key={vehicle.vehicle_id} value={vehicle.vehicle_id}>
                   {vehicle.vehicle_name}
-                </option>
-              ))
-              }
-            </select>
+                </MenuItem>
+              ))}
+              </Select>
+            </FormControl>
           </div>
         </div>
         </DialogContent>
@@ -465,6 +511,7 @@ export default function AdmSchedule() {
             <div className='pmsstart-container'> 
               <LocalizationProvider dateAdapter={AdapterDayjs}>
               <StaticDateTimePicker 
+                className="hidePickerButtons"
                 orientation="landscape"
                 value={editPmsStartdate || dayjs()} 
                 onChange={(newValue) => {
@@ -479,6 +526,7 @@ export default function AdmSchedule() {
             <div className='pmsend-container'>
               <LocalizationProvider dateAdapter={AdapterDayjs}>
                 <StaticDateTimePicker
+                  className="hidePickerButtons"
                   orientation="landscape"
                   label="PMS End Date"
                   value={editPmsEnddate || dayjs()} 
@@ -488,11 +536,7 @@ export default function AdmSchedule() {
                 />
               </LocalizationProvider>
             </div>
-                {/* <LocalizationProvider dateAdapter={AdapterDayjs}>
-                <DemoContainer components={['DateTimePicker']}>
-                  <DateTimePicker label="Basic date time picker" />
-                </DemoContainer>
-              </LocalizationProvider> */}
+
           </div>
         </DialogContent>
         <DialogActions>

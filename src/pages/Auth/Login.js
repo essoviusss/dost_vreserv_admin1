@@ -1,5 +1,8 @@
 import * as React from 'react';
 import '../Auth/Components/Login.css';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import '../StyledComponents/ToastStyles.css';
 import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
@@ -15,6 +18,7 @@ import { useNavigate } from "react-router-dom";
 import { BASE_URL } from '../../constants/api_url';
 const qs = require('qs');
 
+
 const theme = createTheme({
   typography: {
     fontFamily: 'Poppins, sans-serif',
@@ -25,6 +29,8 @@ export default function Login() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [toastCompleted, setToastCompleted] = useState(false);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -39,8 +45,8 @@ export default function Login() {
     const admin_role = localStorage.getItem("admin_role");
 
     if (!admin_role) {
-        alert("No admin role found in local storage!");
-        return;
+      alert("No admin role found in local storage!");
+      return;
     }
     
     const url1 = `${BASE_URL}/read_request.php`;
@@ -72,20 +78,32 @@ export default function Login() {
   
       if (response.data.message !== "Success") {
         console.log("Login failed:", response.data.message);
-        alert(response.data.message);
+        toast.error(response.data.message);
         return;
       }
   
       // Save the JWT token in the local storage
-      const jwtToken = await response.data.token;
-      const admin_role = await response.data.admin_role;
+      const jwtToken = response.data.token;
+      const admin_role = response.data.admin_role;
   
       if (response.data.message === "Success") {
-        alert("Login Successful");
+        setIsLoggedIn(true);
+        setToastCompleted(false);
+  
+        await new Promise((resolve) => {
+          toast.success("You have logged in successfully!", {
+            className: 'login-toast', 
+            bodyClassName: 'login-toast-body', 
+            progressClassName: 'login-toast-progress', 
+            onClose: () => {
+              setToastCompleted(true);
+              resolve();
+            },
+          });
+        });
+  
         localStorage.setItem("token", jwtToken);
         localStorage.setItem("admin_role", admin_role);
-        alert(admin_role);
-        navigate("/AdmDashboard", { replace: true });
       } else {
         alert("User does not exist");
       }
@@ -94,9 +112,19 @@ export default function Login() {
       alert(error);
     }
   };
+  
+  useEffect(() => {
+    if (toastCompleted) {
+      navigate("/AdmDashboard", { replace: true });
+    }
+  }, [toastCompleted]);
+  
+  
+  
 
   return (
     <ThemeProvider theme={theme}>
+      {isLoggedIn && <ToastContainer />}
       <div className='login-page'>
         <Container
           component='main'

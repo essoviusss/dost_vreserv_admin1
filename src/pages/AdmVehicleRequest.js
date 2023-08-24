@@ -4,6 +4,9 @@ import Header from "./Header";
 import './Components/AdmVehicleRequest.css'
 import styles from './Components/AdmVehicleRequest.css'
 import { BASE_URL } from "../constants/api_url";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import './StyledComponents/ToastStyles.css';
 
 //material ui
 import Button from '@mui/material/Button';
@@ -34,6 +37,7 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
 import dayjs from "dayjs";
 import { URL } from "../constants/api_url";
+import CheckRoundedIcon from '@mui/icons-material/CheckRounded';
 
 
 export default function AdmVehicleRequest(){
@@ -159,39 +163,39 @@ export default function AdmVehicleRequest(){
   
 
   //read available vehicle
-useEffect(() => {
-  const url = `${URL}/available_vehicle.php`;
-  axios
-    .get(url)
-    .then((response) => {
-      if (Array.isArray(response.data)) {
-        setVehicles(response.data); 
-      } else {
-        console.error("Unexpected API response format:", response.data);
-      }
-    })
-    .catch((error) => {
-      console.log(error);
-    });
-}, []);
+  useEffect(() => {
+    const url = `${URL}/available_vehicle.php`;
+    axios
+      .get(url)
+      .then((response) => {
+        if (Array.isArray(response.data)) {
+          setVehicles(response.data); 
+        } else {
+          console.error("Unexpected API response format:", response.data);
+        }
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }, []);
   
 
   // read available driver
-useEffect(() => {
-  const url = `${URL}/available_driver.php`;
-  axios
-    .get(url)
-    .then((response) => {
-      if (Array.isArray(response.data)) {
-        setDrivers(response.data); 
-      } else {
-        console.error("Unexpected API response format:", response.data);
-      }
-    })
-    .catch((error) => {
-      console.log(error);
-    });
-}, []);
+  useEffect(() => {
+    const url = `${URL}/available_driver.php`;
+    axios
+      .get(url)
+      .then((response) => {
+        if (Array.isArray(response.data)) {
+          setDrivers(response.data); 
+        } else {
+          console.error("Unexpected API response format:", response.data);
+        }
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }, []);
 
   //read - request
   useEffect(() => {
@@ -239,9 +243,9 @@ useEffect(() => {
   const response = await axios.post(url, fData);
   console.log(response.data);
   if (response.data.message === "Success") {
-    alert("For Approval");
+    toast.success("Request Accepted: For Approval");
   } else {
-    alert("Ayaw");
+    toast.error("Failed to apply changes");
   }
   CloseEdit();
 }
@@ -270,12 +274,13 @@ useEffect(() => {
     const response = await axios.post(url, fData);
     console.log(response.data);
     if (response.data.message === "Success") {
-      alert("Cancelled");
+      toast.success("Request Rejected: Disapproved");
     } else {
-      alert("Ayaw");
+      toast.error("Failed to apply changes");
     }
     CloseEdit();
   }
+
   //update-ORD
   async function handleUpdateORD() {
     const url = `${BASE_URL}/edit_ord_approved.php`;
@@ -287,30 +292,30 @@ useEffect(() => {
 
     const response = await axios.post(url, fData);
     if (response.data.message === "Success") {
-      alert("Approved");
+      toast.success("Request Approved");
     } else {
-      alert("Madi");
+      toast.error("Failed to approve!");
     }
     CloseEdit();
   }
 
-    //update-ORD
-    async function handleUpdateORDNotApproved() {
-      const url = `${BASE_URL}/edit_ord_disapproved.php`;
-      
-      let fData = new FormData();
-      fData.append("request_id", selectedRequest.request_id);
-      fData.append("reason", editReason);
-      fData.append("request_status", "Disapproved");
-      
-      const response = await axios.post(url, fData);
-      if (response.data.message === "Success") {
-        alert("Disapproved");
-      } else {
-        alert("Madi");
-      }
-      CloseEdit();
+  //update-ORD
+  async function handleUpdateORDNotApproved() {
+    const url = `${BASE_URL}/edit_ord_disapproved.php`;
+    
+    let fData = new FormData();
+    fData.append("request_id", selectedRequest.request_id);
+    fData.append("reason", editReason);
+    fData.append("request_status", "Disapproved");
+    
+    const response = await axios.post(url, fData);
+    if (response.data.message === "Success") {
+      toast.success("Request Rejected: Disapproved");
+    } else {
+      toast.error("Failed to apply changes");
     }
+    CloseEdit();
+  }
 
    //search
    function filterRequest(request) {
@@ -601,7 +606,7 @@ useEffect(() => {
         }
 
       }catch(e){
-        alert(e);
+        toast.error(e);
       }
     }
     fetchData();
@@ -698,7 +703,7 @@ useEffect(() => {
                           style={{ backgroundColor: '#025BAD' }}
                           onClick={() => handleORDApproved(request)}
                         >
-                          /
+                          <CheckRoundedIcon />
                         </Button>
                       )}
 
@@ -708,7 +713,7 @@ useEffect(() => {
                           style={{ backgroundColor: '#025BAD' }}
                           onClick={() => handleORDNotApproved(request)}
                         >
-                          X
+                          <CloseRoundedIcon />
                         </Button>
                       )}
 
@@ -801,7 +806,7 @@ useEffect(() => {
                         </td>
                         <td>
                           <p className="admreq-details">
-                          {selectedRequest.departure_time}</p>
+                          {dayjs(selectedRequest.departure_time).format("MMMM D, YYYY, h:mm A")}</p>
                         </td>
                       </tr>
                       <tr>
@@ -810,7 +815,7 @@ useEffect(() => {
                         </td>
                         <td>
                         <p className="admreq-details">
-                          {selectedRequest.arrival_time}</p>
+                        {dayjs(selectedRequest.arrival_time).format("MMMM D, YYYY, h:mm A")}</p>
                         </td>
                       </tr>
                       <tr>
@@ -875,9 +880,9 @@ useEffect(() => {
                 </div>
               </div>
               <div className="div11-admreq">
-                <Button onClick={generatePDF} variant="contained" color="primary" style={{ fontFamily: 'Poppins, sans-serif', textTransform: 'none', backgroundColor: '#025BAD' }}>
+                {/* <Button onClick={generatePDF} variant="contained" color="primary" style={{ fontFamily: 'Poppins, sans-serif', textTransform: 'none', backgroundColor: '#025BAD' }}>
                   Generate Request Form
-                </Button>
+                </Button> */}
               </div>
             </div>
         </DialogContent>
@@ -891,7 +896,7 @@ useEffect(() => {
           <h1>Edit Details</h1>
           <p>Update the necessary changes to the request</p>         
         </div>
-        <Button onClick={CloseView} style={{ color: 'gray', position: 'absolute', top: 10, right: 0, paddingLeft: 0, paddingRight: 0 }}>
+        <Button onClick={CloseEdit} style={{ color: 'gray', position: 'absolute', top: 10, right: 0, paddingLeft: 0, paddingRight: 0 }}>
           <CloseRoundedIcon />
         </Button>
       </DialogTitle>
@@ -908,8 +913,22 @@ useEffect(() => {
                 const formattedDate = formatDate(date);
                 setEditDeparture(formattedDate);
               }}
+              sx={{
+                '& input': {
+                  fontFamily: 'Poppins, sans-serif',
+                  fontSize: '14px',
+                  padding: '7%',
+                },
+                '& label': {
+                  fontFamily: 'Poppins, sans-serif',
+                  fontSize: '17px',
+                  fontWeight: 'bold',
+                  color: 'black',
+                },
+              }}
               />
             </LocalizationProvider>
+            &emsp;&emsp;
             <LocalizationProvider dateAdapter={AdapterDayjs}>
               <DateTimePicker 
               label="Estimated Time of Arrival"
@@ -917,6 +936,19 @@ useEffect(() => {
               onChange={(date) => {
                 const formattedDate = formatDate(date);
                 setEditArrival(formattedDate);
+              }}
+              sx={{
+                '& input': {
+                  fontFamily: 'Poppins, sans-serif',
+                  fontSize: '14px',
+                  padding: '7%',
+                },
+                '& label': {
+                  fontFamily: 'Poppins, sans-serif',
+                  fontSize: '17px',
+                  fontWeight: 'bold',
+                  color: 'black',
+                },
               }}
                />
             </LocalizationProvider>
@@ -1153,46 +1185,107 @@ useEffect(() => {
       </Dialog>
 
       {/* MANAGER Modal (Approved) */}
-      <Dialog open={openManApproved} onClose={() => setOpenManApproved(false)}>
-        <DialogTitle>Confirmation</DialogTitle>
-        <DialogContent>
+      <Dialog open={openManApproved} onClose={() => setOpenManApproved(false)}  fullWidth maxWidth="xs">
+      <DialogContent>
+          <div className='modal-icon'>
+            <img className="modal-svg" src="/svg/accomplished_icon.svg" />
+          </div>
           <DialogContentText>
-            Are you sure you want to perform this action?
+            <div className='modal-title'>Are you sure?</div>
+            <div className='modal-subtitle'>Do you want to approve this travel? This action cannot be undone.</div>
           </DialogContentText>
         </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setOpenManApproved(false)} style={{ color: '#025BAD', fontFamily: 'Poppins' }}>
+        <div class="button-container">
+          <Button
+            onClick={() => setOpenManApproved(false)}
+            style={{
+              backgroundColor: 'rgb(92, 92, 92)',
+              borderRadius: '3px',
+              color: 'white',
+              margin: '0 7px 40px 0',
+              textTransform: 'none',
+              width: '120px',
+              fontFamily: 'Poppins, sans-serif',
+              transition: 'background-color 0.3s',
+            }}
+            onMouseEnter={e => e.target.style.backgroundColor = '#474747'}
+            onMouseLeave={e => e.target.style.backgroundColor = 'rgb(92, 92, 92)'}
+          >
             No
           </Button>
-          <Button onClick={handleUpdate} style={{ color: '#025BAD', fontFamily: 'Poppins' }}>
+          <Button
+            className="confirm-acc"
+            onClick={handleUpdate}
+            style={{
+              backgroundColor: '#006600',
+              borderRadius: '3px',
+              color: 'white',
+              margin: '0 0 40px 7px',
+              textTransform: 'none',
+              width: '120px',
+              fontFamily: 'Poppins, sans-serif',transition: 'background-color 0.3s',
+            }}
+            onMouseEnter={e => e.target.style.backgroundColor = '#094609'}
+            onMouseLeave={e => e.target.style.backgroundColor = '#006600'}
+          >
             Yes
           </Button>
-        </DialogActions>
+        </div>        
       </Dialog>
 
       {/* MANAGER Modal (Reject) */}
       <Dialog open={openManReject} onClose={() => setOpenManReject(false)}>
-        <DialogTitle>Confirmation</DialogTitle>
+        
         <DialogContent>
           <DialogContentText>
-            Are you sure you want to perform this action?
+          <div className='modal-reject-title'>Reject Request</div>
+          <div className='modal-reject-subtitle'>Are you sure you want to perform this action?</div>
+          <hr className="modal-reject-hr" /> 
           </DialogContentText>
-          <FormLabel>
-                  Remarks
-          </FormLabel>
+          <div className='modal-reject-remark'>
+            Remarks
+          </div>
             <Textarea 
               minRows={2} 
               onChange={(event) => setEditReason(event.target.value)}
             />
         </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setOpenManReject(false)} style={{ color: '#025BAD', fontFamily: 'Poppins' }}>
+        <div class="button-container">
+          <Button
+            onClick={() => setOpenManReject(false)}
+            style={{
+              backgroundColor: 'rgb(92, 92, 92)',
+              borderRadius: '3px',
+              color: 'white',
+              margin: '0 7px 40px 0',
+              textTransform: 'none',
+              width: '120px',
+              fontFamily: 'Poppins, sans-serif',
+              transition: 'background-color 0.3s',
+            }}
+            onMouseEnter={e => e.target.style.backgroundColor = '#474747'}
+            onMouseLeave={e => e.target.style.backgroundColor = 'rgb(92, 92, 92)'}
+          >
             No
           </Button>
-          <Button onClick={handleUpdateReject} style={{ color: '#025BAD', fontFamily: 'Poppins' }}>
+          <Button
+            className="confirm-acc"
+            onClick={handleUpdateReject}
+            style={{
+              backgroundColor: '#cf0a0a',
+              borderRadius: '3px',
+              color: 'white',
+              margin: '0 0 40px 7px',
+              textTransform: 'none',
+              width: '120px',
+              fontFamily: 'Poppins, sans-serif',transition: 'background-color 0.3s',
+            }}
+            onMouseEnter={e => e.target.style.backgroundColor = '#b00909'}
+            onMouseLeave={e => e.target.style.backgroundColor = '#cf0a0a'}
+          >
             Yes
           </Button>
-        </DialogActions>
+        </div>        
       </Dialog>
 
     </div>
